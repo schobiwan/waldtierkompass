@@ -78,16 +78,19 @@ def icon_symbols():
 def act_svg(a):
     return f'<svg aria-hidden="true"><use href="#i-{ACT_ICON[a]}"></use></svg>'
 
-HOOF = ('<path d="M22.4 14c-3 1.6-4.4 6-4.1 10.4.2 3.8 1.8 7.4 4.1 8.3.8-3.6.8-12.6 0-18.7z"/>'
-        '<path d="M25.6 14c3 1.6 4.4 6 4.1 10.4-.2 3.8-1.8 7.4-4.1 8.3-.8-3.6-.8-12.6 0-18.7z"/>')
+PAW = ('<path d="M24 25c4 0 6.5 3 6.5 5.6 0 2.6-2.4 3.6-6.5 2.8-4.1.8-6.5-.2-6.5-2.8 0-2.6 2.5-5.6 6.5-5.6z"/>'
+       '<ellipse cx="20.6" cy="17.6" rx="2.3" ry="3"/><ellipse cx="27.4" cy="17.6" rx="2.3" ry="3"/>'
+       '<ellipse cx="15.8" cy="22.6" rx="2.1" ry="2.7" transform="rotate(-25 15.8 22.6)"/>'
+       '<ellipse cx="32.2" cy="22.6" rx="2.1" ry="2.7" transform="rotate(25 32.2 22.6)"/>')
 LOGO = ('<svg class="logo-defs" aria-hidden="true" focusable="false"><symbol id="logo-mark" viewBox="0 0 48 48">'
-        '<circle cx="24" cy="24" r="19.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-opacity=".55"></circle>'
-        '<path d="M24 0.8 28 9.5h-8z" fill="var(--logo-accent)"></path><path d="M24 47.2 21.2 41h5.6z" fill="currentColor" fill-opacity=".55"></path>'
-        '<path d="M47.2 24 41 26.8v-5.6zM0.8 24 7 21.2v5.6z" fill="currentColor" fill-opacity=".55"></path>'
-        '<g fill="currentColor">' + HOOF + '</g></symbol>' + icon_symbols() + '</svg>')
+        '<circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="2.2"></circle>'
+        '<circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 2.5" stroke-opacity=".6"></circle>'
+        '<g fill="currentColor">' + PAW + '</g><path d="M24 1.8 26.6 7.4H21.4z" fill="var(--logo-accent)"></path>'
+        '</symbol>' + icon_symbols() + '</svg>')
 
 FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#233a3e"/>'
-           '<path d="M24 3 27.5 10.5h-7z" fill="#e6b45a"/><g fill="#eef0e6">' + HOOF + '</g></svg>')
+           '<circle cx="24" cy="25" r="17.5" fill="none" stroke="#eef0e6" stroke-width="2.4"/>'
+           '<g fill="#eef0e6" transform="translate(0 1)">' + PAW + '</g><path d="M24 4.5 27 10.5H21z" fill="#e6b45a"/></svg>')
 
 LDJSON = ('<script type="application/ld+json">' + json.dumps({"@context": "https://schema.org", "@type": "WebSite", "name": SITE, "url": DOMAIN + "/",
           "inLanguage": "de-DE", "description": "Waldtiere in Deutschland bestimmen: Fotos, Trittsiegel, Doppelgänger und Waldjahr."}, ensure_ascii=False) + '</script>')
