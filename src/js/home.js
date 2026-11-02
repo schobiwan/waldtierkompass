@@ -119,13 +119,17 @@ $("active").addEventListener("click", (e) => {
   render();
   focusEl($("active").querySelector("button") || q);
 });
-$("now-all")?.addEventListener("click", () => {
-  state.reset(); state.now = true; state.sort = "now"; sortSel.value = "now"; render();
-  $("arten").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
-  focusEl($("rcount"));
-});
 render();
 grid.classList.add("calm");
+
+// Karten "Jetzt unterwegs": bis zu drei Arten in ihrer Hauptzeit, sonst aktive Arten
+{
+  const items = $$("#nowcards > li");
+  let pick = items.filter((li) => nums(li.dataset.peak).includes(NOW));
+  if (pick.length < 3) pick = pick.concat(items.filter((li) => !pick.includes(li) && nums(li.dataset.present).includes(NOW)));
+  pick = pick.slice(0, 3);
+  items.forEach((li) => { li.hidden = !pick.includes(li); });
+}
 
 // Suche im Kopfbereich steuert das Raster
 const hq = $("hq");

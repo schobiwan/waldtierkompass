@@ -208,27 +208,6 @@ def chipset(legend, g, items):
         f'<button class="chip" type="button" data-g="{g}" data-v="{esc(v)}" aria-pressed="false">{esc(t)}</button>' for v, t in items) + '</div></fieldset>'
 
 # ------------------------------------------------------------------ Seiten
-def hero_trail():
-    """Fuchsspur, die von einer Rehfährte gekreuzt wird. Rein dekorativ."""
-    import math
-    def trail(x0, y0, x1, y1, step, art_key, scale, jitter, amber_last=0, start=0):
-        g = art.glyph(art_key)
-        dx, dy = x1 - x0, y1 - y0
-        L = math.hypot(dx, dy); n = int(L // step)
-        ang = math.degrees(math.atan2(dy, dx)) + 90
-        px, py = -dy / L, dx / L
-        out = []
-        for i in range(n + 1):
-            t = i / n
-            side = jitter if i % 2 else -jitter
-            x = x0 + dx * t + px * side; y = y0 + dy * t + py * side
-            cls = "pr amber" if i >= n + 1 - amber_last else "pr"
-            out.append(f'<g class="{cls}" style="--n:{start + i}" transform="translate({x:.1f} {y:.1f}) rotate({ang:.1f}) scale({scale}) translate(-50 -50)">{g}</g>')
-        return "".join(out)
-    fox = trail(600, 560, 1250, -10, 62, "canid", .32, 7, amber_last=3)
-    deer = trail(760, 600, 1260, 120, 74, "hoof_small", .5, 12, start=4)
-    return f'<svg class="trail" viewBox="0 0 1200 520" preserveAspectRatio="xMaxYMid slice" aria-hidden="true" focusable="false">{deer}{fox}</svg>'
-
 def build_home():
     R = ""
     filt = (chipset("Gruppe", "grp", [(g, g) for g in GROUPS]) +
@@ -237,13 +216,18 @@ def build_home():
             chipset("Größe", "size", list(SIZES.items())) +
             '<fieldset><legend>Außerdem</legend><div class="fchips"><button class="chip" type="button" data-g="flag" data-v="now" aria-pressed="false">Jetzt im <span data-now-name>November</span> aktiv</button>'
             '</div></fieldset>')
-    nowl = "".join(f'<li data-peak="{",".join(map(str, s["h"]))}" data-present="{",".join(map(str, s["p"]))}"><a href="arten/{s["k"]}/index.html">{esc(s["n"])}</a></li>' for s in sorted(SPECIES, key=lambda x: x["n"]))
     cards = "".join(card(R, s, i) for i, s in enumerate(sorted(SPECIES, key=lambda x: x["n"])))
-    strip_keys = [("reh", "42% 50%"), ("rotfuchs", "62% 50%"), ("eichhoernchen", "50% 50%"), ("feuersalamander", "40% 50%"), ("dachs", "45% 50%")]
-    strip = "".join(f'<li><a href="arten/{k}/index.html"><img src="photos/{k}-400.webp" alt="" width="400" height="320" style="object-position:{pos}" {"fetchpriority=high" if i < 2 else "loading=eager"}><span>{esc(BY[k]["n"])}</span></a></li>' for i, (k, pos) in enumerate(strip_keys))
-    names = [f'{esc(BY[k]["n"])} von {esc(CREDITS[k][0])}' for k, _ in strip_keys]
-    strip_credit = ", ".join(names[:-1]) + " und " + names[-1]
-    body = f'''<header class="hero3"> {hero_trail()} <div class="wrap hero3-in"> <h1>Wer war hier?</h1> <p class="lede">{len(SPECIES)} Tiere aus deutschen Wäldern, vom Reh bis zum Feuersalamander. Erkenne sie am Foto, an ihren Trittsiegeln und an dem, was sie sonst hinterlassen.</p> <form class="hsearch" id="hsearch" role="search" aria-label="Tier suchen"> <label for="hq"><span class="sr-only">Tier suchen</span>{ICON["find"]}<input type="search" id="hq" placeholder="Tier suchen, zum Beispiel Dachs" autocomplete="off" enterkeyhint="search"></label> <button class="hsearch-btn" type="submit">Suchen</button> </form> <div class="now-box"> <h2 class="now-title">Im <span data-now-name>November</span> unterwegs</h2> <ul class="now-list" id="now-list" data-now-list data-now-fit hidden> {nowl} <li class="now-more-li"><button class="now-more" type="button" aria-expanded="false" aria-controls="now-list" hidden></button></li> </ul> <p class="now-links"><button class="now-all" id="now-all" type="button">Nur diese zeigen</button> <a class="now-all" href="waldjahr/index.html" data-now-link>Der Wald im <span data-now-name>November</span></a></p> </div> </div> <div class="wrap"><ul class="strip" aria-label="Tiere im Porträt"> {strip} </ul></div> </header> <p class="wrap strip-credit">Fotos: {strip_credit}, Wikimedia Commons. Lizenzen im <a href="bildnachweis/index.html">Bildnachweis</a>.</p>
+    NOWM_BUILD = 11
+    ranked = sorted(SPECIES, key=lambda x: (0 if NOWM_BUILD in x["h"] else 1, x["n"]))
+    def nowcard(x, i):
+        first = x["hl"].split(". ")[0].rstrip(".") + "."
+        shown = i < 3
+        return (f'<li data-peak="{",".join(map(str, x["h"]))}" data-present="{",".join(map(str, x["p"]))}"{"" if shown else " hidden"}>'
+                f'<a href="arten/{x["k"]}/index.html"><img src="photos/{x["k"]}-400.webp" alt="" width="400" height="320" loading="{"eager" if shown else "lazy"}">'
+                f'<span class="nc-txt"><b>{esc(x["n"])}</b><span>{esc(first)}</span></span></a>'
+                f'<small>Foto: {esc(CREDITS[x["k"]][0])}</small></li>')
+    nowc = "".join(nowcard(x, i) for i, x in enumerate(ranked))
+    body = f'''<header class="hero4"> <div class="wrap hero4-in"> <div class="hero4-text"> <h1>Wer war hier?</h1> <p class="lede">{len(SPECIES)} Tiere aus deutschen Wäldern, erkannt am Foto, an der Spur und an dem, was sie hinterlassen.</p> <form class="hsearch" id="hsearch" role="search" aria-label="Tier suchen"> <label for="hq"><span class="sr-only">Tier suchen</span>{ICON["find"]}<input type="search" id="hq" placeholder="Tier suchen, zum Beispiel Dachs" autocomplete="off" enterkeyhint="search"></label> <button class="hsearch-btn" type="submit">Suchen</button> </form> </div> <section class="hero4-now" aria-labelledby="now-h"> <div class="now-head"><h2 id="now-h">Jetzt im <span data-now-name>November</span> unterwegs</h2><a href="waldjahr/index.html" data-now-link>Alle im <span data-now-name>November</span></a></div> <ul class="nowcards" id="nowcards">{nowc}</ul> </section> </div> </header>
 <div class="bar" id="arten"> <div class="wrap barrow" role="search" aria-label="Arten suchen und filtern"> <label class="search" for="q">{ICON["find"]}<span class="sr-only">Art suchen</span> <input type="search" id="q" placeholder="Tier suchen, z. B. Marder" autocomplete="off" enterkeyhint="search"></label> <button class="chip ftoggle" id="f-toggle" type="button" aria-expanded="false" aria-controls="fpanel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>Filter<b class="fcount" id="fcount" hidden></b></button> <label class="sortsel" for="sort"><span>Sortieren</span> <select id="sort"><option value="now">Jetzt aktiv zuerst</option><option value="az">Name A–Z</option><option value="size">Größe, klein zuerst</option></select></label> <span class="rcount" id="rcount" aria-live="polite">{len(SPECIES)} Arten</span> </div> <div class="fpanel" id="fpanel" hidden> <div class="wrap fgrid"> {filt} <div class="factions"><button class="btn ghost" id="f-reset" type="button">Alle Filter zurücksetzen</button><button class="btn" id="f-done" type="button">Ergebnisse anzeigen</button></div> </div> </div> <div class="wrap active" id="active" hidden></div> </div>
 <section class="sub" aria-labelledby="arten-h"> <div class="wrap"> <h2 class="sr-only" id="arten-h">Arten</h2> <ul class="grid" id="grid"> {cards} </ul> <div class="empty" id="empty" hidden><p>Kein Tier passt zu deiner Suche oder Auswahl.</p><button class="btn ghost" type="button" id="empty-reset">Suche und Filter zurücksetzen</button></div> </div> </section>
 <section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Gut ausgerüstet in den Wald</h2><a class="gearmore" href="ausruestung/index.html">Alle Empfehlungen ansehen</a></div><ul class="products"> {product(R,"fernglas")}{product(R,"wildkamera")}{product(R,"buch")} </ul>{ADNOTE}</div></section>
