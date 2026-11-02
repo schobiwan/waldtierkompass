@@ -33,10 +33,7 @@ Der Build schreibt `dist/` komplett neu, entfernt ungenutztes CSS, minifiziert C
 
 ## Veröffentlichen
 
-`dist/` ist mit eingecheckt. Ein Hoster wie statichost.eu kann den Ordner direkt ausliefern, ohne selbst zu bauen:
-
-- Ausgabeordner / Publish directory: `dist`
-- Build-Befehl: leer lassen
+`dist/` ist mit eingecheckt. statichost.eu liest die Datei `statichost.yml` und liefert `dist/` direkt aus, ohne selbst zu bauen.
 
 Nach Änderungen an Texten oder Code lokal `npm run build` ausführen und `dist/` mit committen.
 
