@@ -176,6 +176,51 @@ PRODUCTS = {
  "lupe": dict(cat="Zubehör", name="Einschlaglupe 10-fach", by="Auswahl bei Amazon", tip=False, icon="lens",
    why="Für Fraßspuren an Nüssen und Zapfen: Zahnspuren werden mit der Lupe eindeutig.",
    url="https://www.amazon.de/s?k=einschlaglupe+10x&tag=" + TAG),
+ "waermebild": dict(cat="Wärmebild", name="Wärmebildkamera für Naturbeobachtung", by="Auswahl bei Amazon", tip=False, icon="binoc",
+   why="Zeigt warme Tierkörper auch in völliger Dunkelheit und hinter dünnem Gebüsch. So entdeckst du Reh, Fuchs oder Dachs, ohne Licht zu machen.",
+   url="https://www.amazon.de/s?k=w%C3%A4rmebildkamera+monokular&tag=" + TAG),
+ "gips": dict(cat="Spuren", name="Modellgips für Spurenabdrücke", by="Auswahl bei Amazon", tip=False, icon="book",
+   why="Mit etwas Gips hältst du ein Trittsiegel aus dem Matsch dauerhaft fest. Ein schönes Projekt für Kinder und Spurensammler.",
+   url="https://www.amazon.de/s?k=modellgips&tag=" + TAG),
+ "igelhaus": dict(cat="Garten", name="Igelhaus für den Garten", by="Auswahl bei Amazon", tip=False, icon="book",
+   why="Ein geschützter Platz für den Winterschlaf. Stelle es an eine ruhige, schattige Stelle unter Hecken oder Laub.",
+   url="https://www.amazon.de/s?k=igelhaus+winterfest&tag=" + TAG),
+ "fledermauskasten": dict(cat="Garten", name="Fledermauskasten aus Holzbeton", by="Auswahl bei Amazon", tip=False, icon="wave",
+   why="Ersatzquartier für Fledermäuse wie das Braune Langohr. In drei bis fünf Metern Höhe aufhängen, möglichst ohne Lampe in der Nähe.",
+   url="https://www.amazon.de/s?k=fledermauskasten+holzbeton&tag=" + TAG),
+ "futterkasten": dict(cat="Garten", name="Futterkasten für Eichhörnchen", by="Auswahl bei Amazon", tip=False, icon="book",
+   why="Mit Klappdeckel, damit Vögel nicht mitfressen. Am Baumstamm aufgehängt, siehst du die Kletterer aus nächster Nähe.",
+   url="https://www.amazon.de/s?k=eichh%C3%B6rnchen+futterkasten&tag=" + TAG),
+}
+PHOTO = {
+ "fernglas": ("Jacek Halicki", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:2020_Lornetka_Baigish_8x30.jpg"),
+ "wildkamera": ("DYVER", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Wildkamera_mit_Bewegungsmelder_%26_Nachtsicht_-_1.jpg"),
+ "lampe": ("jd", "Public Domain", "https://commons.wikimedia.org/wiki/File:Petzl_Tikka.jpeg"),
+ "buch": ("Dat doris", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Tierspuren_im_Sand.JPG"),
+ "detektor": ("Gilles San Martin", "CC BY-SA 2.0", "https://commons.wikimedia.org/wiki/File:Bat_detector_(2861898848).jpg"),
+ "lupe": ("KENPEI", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:Loupe.jpg"),
+ "gips": ("Gormo", "CC0", "https://commons.wikimedia.org/wiki/File:Procyon_lotor_tracks_in_mud.jpg"),
+ "waermebild": ("Vitaly V. Kuzmin", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:PT-2_thermal_imaging_monocular.jpg"),
+ "igelhaus": ("14GTR", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:Insect_%26_hedgehog_hotel,_Manor_Corner,_Bristol.jpg"),
+ "fledermauskasten": ("Marie-Lan Taÿ Pamart", "CC BY 4.0", "https://commons.wikimedia.org/wiki/File:Schwegler_Bat_Box_2FN_Chanteraines.jpg"),
+ "futterkasten": ("Richard Webb", "CC BY-SA 2.0", "https://commons.wikimedia.org/wiki/File:Squirrel_feeder_in_use_-_geograph.org.uk_-_7138613.jpg"),
+}
+GEAR_GRP = {
+ "Huftiere": ["fernglas", "wildkamera", "waermebild"],
+ "Raubtiere": ["wildkamera", "waermebild", "gips"],
+ "Kleinsäuger": ["wildkamera", "lupe", "buch"],
+ "Amphibien": ["lampe", "buch", "lupe"],
+ "Reptilien": ["fernglas", "buch", "lupe"],
+ "Insekten": ["lupe", "buch", "fernglas"],
+}
+GEAR_FOR = {
+ "igel": ["igelhaus", "wildkamera", "lampe"],
+ "braunes-langohr": ["fledermauskasten", "detektor", "lampe"],
+ "eichhoernchen": ["futterkasten", "fernglas", "lupe"],
+ "siebenschlaefer": ["wildkamera", "lampe", "lupe"],
+ "haselmaus": ["lupe", "wildkamera", "buch"],
+ "rotfuchs": ["wildkamera", "waermebild", "gips"],
+ "wolf": ["gips", "buch", "wildkamera"],
 }
 PICON = {
  "binoc": '<circle cx="8" cy="15" r="4.5"/><circle cx="16" cy="15" r="4.5"/><path d="M8 10.5V6h3v6M16 10.5V6h-3v6"/>',
@@ -191,7 +236,10 @@ def product(R, key, compact=False):
     tip = '<span class="ptip">Unser Tipp</span>' if p["tip"] and not compact else ""
     why = f'<p class="pwhy">{esc(p["why"])}</p>' if not compact else ""
     meta = f'<span>{p["cat"]}{" · Unser Tipp" if (p["tip"] and compact) else ""}</span>'
-    return (f'<li class="product{" pick" if p["tip"] else ""}"> <div class="pimg"><span class="picon"><svg viewBox="0 0 24 24" aria-hidden="true">{PICON[p["icon"]]}</svg></span>{tip}</div> '
+    pic = (f'<img src="{R}photos/p-{key}-400.webp" srcset="{R}photos/p-{key}-400.webp 400w, {R}photos/p-{key}.webp 720w" '
+           f'sizes="{"88px" if compact else "(max-width: 600px) 92vw, 360px"}" alt="" width="400" height="300" loading="lazy" decoding="async">'
+           f'<span class="pcred">Foto: {esc(PHOTO[key][0])}</span>') if key in PHOTO else f'<span class="picon"><svg viewBox="0 0 24 24" aria-hidden="true">{PICON[p["icon"]]}</svg></span>'
+    return (f'<li class="product{" pick" if p["tip"] else ""}"> <div class="pimg">{pic}{tip}</div> '
             f'<div class="pbody"> <p class="pmeta">{meta}<span class="pad">Anzeige</span></p> <h3 class="pname">{esc(p["name"])}</h3> <p class="pby">{esc(p["by"])}</p> {why} '
             f'<a class="plink" href="{p["url"]}" target="_blank" rel="sponsored nofollow noopener"><span>Bei Amazon ansehen<span aria-hidden="true">*</span></span>{ICON["arrow"]}'
             f'<span class="sr-only"> {esc(p["name"])} (Werbelink, öffnet in neuem Fenster)</span></a> </div> </li>')
@@ -230,7 +278,7 @@ def build_home():
     body = f'''<header class="hero4"> <div class="wrap hero4-in"> <div class="hero4-text"> <h1>Wer war hier?</h1> <p class="lede">{len(SPECIES)} Tiere aus deutschen Wäldern, erkannt am Foto, an der Spur und an dem, was sie hinterlassen.</p> <form class="hsearch" id="hsearch" role="search" aria-label="Tier suchen"> <label for="hq"><span class="sr-only">Tier suchen</span>{ICON["find"]}<input type="search" id="hq" placeholder="Tier suchen, zum Beispiel Dachs" autocomplete="off" enterkeyhint="search"></label> <button class="hsearch-btn" type="submit">Suchen</button> </form> </div> <section class="hero4-now" aria-labelledby="now-h"> <div class="now-head"><h2 id="now-h">Jetzt im <span data-now-name>November</span> unterwegs</h2><div class="now-nav"><a href="waldjahr/index.html" data-now-link>Alle im <span data-now-name>November</span></a><button class="cbtn" type="button" id="now-prev" aria-controls="nowcards" aria-label="Vorherige Tiere" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg></button><button class="cbtn" type="button" id="now-next" aria-controls="nowcards" aria-label="Weitere Tiere"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6"/></svg></button></div></div> <ul class="nowcards" id="nowcards" tabindex="-1">{nowc}</ul> </section> </div> </header>
 <div class="bar" id="arten"> <div class="wrap barrow" role="search" aria-label="Arten suchen und filtern"> <label class="search" for="q">{ICON["find"]}<span class="sr-only">Art suchen</span> <input type="search" id="q" placeholder="Tier suchen, z. B. Marder" autocomplete="off" enterkeyhint="search"></label> <button class="chip ftoggle" id="f-toggle" type="button" aria-expanded="false" aria-controls="fpanel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>Filter<b class="fcount" id="fcount" hidden></b></button> <label class="sortsel" for="sort"><span>Sortieren</span> <select id="sort"><option value="now">Jetzt aktiv zuerst</option><option value="az">Name A–Z</option><option value="size">Größe, klein zuerst</option></select></label> <span class="rcount" id="rcount" aria-live="polite">{len(SPECIES)} Arten</span> </div> <div class="fpanel" id="fpanel" hidden> <div class="wrap fgrid"> {filt} <div class="factions"><button class="btn ghost" id="f-reset" type="button">Alle Filter zurücksetzen</button><button class="btn" id="f-done" type="button">Ergebnisse anzeigen</button></div> </div> </div> <div class="wrap active" id="active" hidden></div> </div>
 <section class="sub" aria-labelledby="arten-h"> <div class="wrap"> <h2 class="sr-only" id="arten-h">Arten</h2> <ul class="grid" id="grid"> {cards} </ul> <div class="empty" id="empty" hidden><p>Kein Tier passt zu deiner Suche oder Auswahl.</p><button class="btn ghost" type="button" id="empty-reset">Suche und Filter zurücksetzen</button></div> </div> </section>
-<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Gut ausgerüstet in den Wald</h2><a class="gearmore" href="ausruestung/index.html">Alle Empfehlungen ansehen</a></div><ul class="products"> {product(R,"fernglas")}{product(R,"wildkamera")}{product(R,"buch")} </ul>{ADNOTE}</div></section>
+<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Gut ausgerüstet in den Wald</h2><a class="gearmore" href="ausruestung/index.html">Alle Empfehlungen ansehen</a></div><ul class="products"> {"".join(product(R, g) for g in ("fernglas", "wildkamera", "waermebild", "lampe", "buch", "gips", "lupe", "igelhaus"))} </ul>{ADNOTE}</div></section>
 <section class="block"> <div class="wrap"> <h2>Weiter entdecken</h2> <ul class="explore"> <li><a href="spuren/index.html"><b>Spuren lesen</b><span>Trittsiegel von Huftieren, Hunden, Katzen und Mardern, dazu Fraßspuren an Nüssen und Zapfen.</span></a></li> <li><a href="unterscheiden/index.html"><b>Doppelgänger unterscheiden</b><span>Reh oder Rothirsch, Baum- oder Steinmarder: {len(PAIRS)} Vergleiche mit den entscheidenden Merkmalen.</span></a></li> <li><a href="waldjahr/index.html"><b>Das Waldjahr</b><span>Brunft, Krötenwanderung, Winterschlaf: was im Wald wann passiert, Monat für Monat.</span></a></li> <li><a href="ausruestung/index.html"><b>Ausrüstung</b><span>Fernglas, Wildkamera, Rotlicht-Lampe und Spurenbuch für Beobachtungen in der Dämmerung.</span></a></li> <li><a href="https://vogelkompass.de/" rel="noopener"><b>Vögel im Wald?</b><span>Specht, Eichelhäher und Co. findest du auf der Schwesterseite Vogelkompass.</span></a></li> </ul> </div> </section>'''
     write("index.html", page("index.html", "Waldtierkompass – Waldtiere in Deutschland bestimmen",
         f"Waldtiere bestimmen leicht gemacht: {len(SPECIES)} Tiere aus deutschen Wäldern mit Trittsiegeln, Doppelgängern und Waldkalender.",
@@ -272,7 +320,7 @@ def build_species(s):
         alike = (f'<section class="alike" aria-labelledby="h-alike"> {img(R, okey, name_of(other))} <div> <h2 id="h-alike">Nicht verwechseln mit {ein(BY[other]["g"] if other in BY else EXT[other]["g"], "dat")} {esc(name_of(other))}</h2> '
                  f'<p>{esc(p["short"])}</p> <p><a href="{R}unterscheiden/{p["k"]}/index.html">{esc(name_of(p["a"]))} oder {esc(name_of(p["b"]))}? Alle Unterschiede</a></p> </div> </section>')
     wiki = "https://de.wikipedia.org/w/index.php?search=" + s["lat"].replace(" ", "+")
-    gear = ["fernglas", "wildkamera"] if s["grp"] in ("Huftiere", "Raubtiere") else (["lampe", "buch"] if s["grp"] in ("Amphibien", "Reptilien") else (["detektor", "lampe"] if k == "braunes-langohr" else ["lupe", "buch"]))
+    gear = GEAR_FOR.get(k) or GEAR_GRP[s["grp"]]
     body = f'''<article class="sp wrap"> <div class="sp-top"> <figure class="sp-photo"> {img(R, k, s["n"], eager=True, sizes="(max-width: 760px) 92vw, 560px")} <figcaption>{credit(k)}</figcaption> </figure> <div class="sp-intro"> <h1>{esc(s["n"])}</h1> <p class="latin" lang="la">{esc(s["lat"])}</p> <p class="row"><span class="tag status">{esc(s["grp"])}</span><span class="tag">{esc(s["sz"])}</span>{"".join(f'<span class="tag act-tag">{act_svg(a)}{ACTS[a]}</span>' for a in s["act"])}</p> <p class="habs">{habs}</p> <p class="text">{esc(s["short"])} {esc(s["hl"])}</p> {trackbox(s)} </div> </div>
 <div class="sp-cols"> <div class="sp-main"> <section aria-labelledby="h-marks"> <h2 id="h-marks">So erkennst du {"sie" if s["g"]=="f" else ("es" if s["g"]=="n" else "ihn")}</h2> <ul class="marks">{"".join(f"<li>{esc(m)}</li>" for m in s["marks"])}</ul> <dl class="facts">{facts}</dl> </section> <section aria-labelledby="h-year"> <h2 id="h-year">Wann im Jahr</h2> {months_bar(s)} <p class="sr-only">Aktiv: {mlist(s["p"])}. Hauptzeit: {mlist(s["h"])}.</p> <p class="yeartext">{yeartext}</p> </section> <section class="life" aria-labelledby="h-life"> <h2 id="h-life">Lebensweise</h2> {life} </section> <section class="helpbox" aria-label="Hilfe und Beobachtung"> <details class="fold" open data-fold><summary><h2>Rücksicht und Schutz</h2></summary><p>{esc(s["help"])}</p></details> <details class="fold" open data-fold><summary><h2>Beobachtungstipp</h2></summary><p>{esc(s["tip"])}</p></details> </section> {alike} <section class="more" aria-labelledby="h-more"> <h2 id="h-more">Mehr erfahren</h2> <ul class="morelinks"> <li><a href="{wiki}" target="_blank" rel="noopener">Wikipedia<span class="sr-only"> (öffnet in neuem Fenster)</span></a></li> </ul> </section> </div>
 <aside class="sp-side" aria-label="Empfehlungen"> <section class="gearbox" aria-labelledby="h-gear"><h2 id="h-gear">Passend dazu</h2><ul class="products compact"> {"".join(product(R, g, True) for g in gear)} </ul>{ADNOTE}</section> </aside> </div> </article>'''
@@ -333,9 +381,14 @@ def build_year():
               + "".join(f'<a href="{R}arten/{s["k"]}/index.html">{esc(s["n"])}</a>' for s in sleep) + '</div></div></section>') if sleep else ""
         body = f'''<section class="block page"> <div class="wrap"> <h1>Der Wald im {MONTHS[m-1]}</h1> <p class="intro">{len(peak) + len(act)} der {len(SPECIES)} Arten sind im {MONTHS[m-1]} aktiv, {len(peak)} davon in ihrer Hauptzeit.</p> <ul class="evlist">{ev}</ul> <p class="actions"><a class="btn ghost" href="{R}waldjahr/{MSLUG[prev_m-1]}/index.html">← {MONTHS[prev_m-1]}</a> <a class="btn ghost" href="{R}waldjahr/{MSLUG[next_m-1]}/index.html">{MONTHS[next_m-1]} →</a></p> </div> </section>
 <section class="block" aria-labelledby="h-pk"><div class="wrap"><h2 id="h-pk">Jetzt besonders gut zu beobachten</h2><ul class="grid">{"".join(card(R, s, i) for i, s in enumerate(peak))}</ul></div></section>
-<section class="block" aria-labelledby="h-ac"><div class="wrap"><h2 id="h-ac">Außerdem unterwegs</h2><ul class="grid">{"".join(card(R, s, i) for i, s in enumerate(act))}</ul></div></section> {sl}'''
+<section class="block" aria-labelledby="h-ac"><div class="wrap"><h2 id="h-ac">Außerdem unterwegs</h2><ul class="grid">{"".join(card(R, s, i) for i, s in enumerate(act))}</ul></div></section> {sl} {month_gear(R, m)}'''
         write(f"waldjahr/{MSLUG[m-1]}/index.html", page(f"waldjahr/{MSLUG[m-1]}/index.html", f"Waldtiere im {MONTHS[m-1]}", f"Welche Waldtiere im {MONTHS[m-1]} aktiv sind und was im Wald passiert: {MONTH_EVENTS[m][0]}", body, active="waldjahr",
               crumbs=[("Waldjahr", "waldjahr/index.html"), (MONTHS[m-1], "")]))
+
+def month_gear(R, m):
+    picks = ("igelhaus", "futterkasten", "fernglas", "waermebild") if m in (10, 11, 12, 1, 2) else (("lampe", "buch", "fledermauskasten", "wildkamera") if m in (3, 4, 5) else ("fledermauskasten", "detektor", "wildkamera", "lupe"))
+    return (f'<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Passend zum {MONTHS[m-1]}</h2><a class="gearmore" href="{R}ausruestung/index.html">Alle Empfehlungen ansehen</a></div>'
+            f'<ul class="products">{"".join(product(R, g) for g in picks)}</ul>{ADNOTE}</div></section>')
 
 def build_tracks():
     R = "../"
@@ -364,11 +417,13 @@ def build_tracks():
 <tr><th scope="row">Buntspecht</th><td>grob zerhackt, oft in eine Rindenspalte geklemmt</td></tr>
 </tbody></table></div></div></section>
 <section class="block" aria-labelledby="h-tip"><div class="wrap"><h2 id="h-tip">Tipps für die Spurensuche</h2><ul class="explore tips"><li><div><b>Nach Neuschnee</b><span>Am Morgen nach einer Schneenacht sind die Spuren frisch und scharf. Wenige Stunden später verlaufen sie schon.</span></div></li><li><div><b>Wegränder und Pfützen</b><span>Feuchter Lehm am Rand von Forstwegen und ausgetrocknete Pfützen halten Trittsiegel tagelang.</span></div></li><li><div><b>Fotografieren mit Maßstab</b><span>Lege ein Lineal oder einen Schlüssel neben das Siegel. Ohne Größenangabe ist eine Spur kaum zu bestimmen.</span></div></li><li><div><b>Hunde im Kopf behalten</b><span>Die meisten Pfotenabdrücke auf Spazierwegen stammen von Hunden. Ihre Spur läuft im Zickzack.</span></div></li></ul></div></section>'''
+    body += f'<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Für die Spurensuche</h2><a class="gearmore" href="{R}ausruestung/index.html">Alle Empfehlungen ansehen</a></div><ul class="products">{"".join(product(R, g) for g in ("buch", "gips", "lupe", "wildkamera"))}</ul>{ADNOTE}</div></section>'
     write("spuren/index.html", page("spuren/index.html", "Tierspuren im Wald lesen", "Tierspuren bestimmen: Trittsiegel von Reh, Fuchs, Marder, Wildschwein und Co. mit Zeichnungen, dazu Fraßspuren an Haselnüssen.", body, active="spuren", crumbs=[("Spuren", "")]))
 
 def build_gear():
     R = "../"
-    body = f'''<section class="block page"> <div class="wrap"> <h1>Ausrüstung für Waldbeobachter</h1> <p class="intro">Für die meisten Begegnungen brauchst du nur Geduld, gute Ohren und Wind von vorn. Diese Dinge machen es leichter, vor allem in der Dämmerung.</p> <ul class="products">{"".join(product(R, k) for k in PRODUCTS)}</ul>{ADNOTE} </div> </section>
+    gsec = lambda t, ks: f'<h2 class="h3 gear-h">{t}</h2><ul class="products">{"".join(product(R, k) for k in ks)}</ul>'
+    body = f'''<section class="block page"> <div class="wrap"> <h1>Ausrüstung für Waldbeobachter</h1> <p class="intro">Für die meisten Begegnungen brauchst du nur Geduld, gute Ohren und Wind von vorn. Diese Dinge machen es leichter, vor allem in der Dämmerung.</p> {gsec("Beobachten", ("fernglas", "waermebild", "wildkamera", "lampe"))}{gsec("Spuren und Fraßspuren", ("buch", "gips", "lupe", "detektor"))}{gsec("Für Garten und Waldrand", ("igelhaus", "fledermauskasten", "futterkasten"))}{ADNOTE} </div> </section>
 <section class="block"><div class="wrap prose"><h2>Worauf es beim Fernglas ankommt</h2><p>Für die Dämmerung ist ein 8x42 oder 10x42 ideal: Die zweite Zahl ist der Durchmesser der Objektive in Millimetern. Je größer, desto heller das Bild, wenn Reh und Fuchs am Waldrand auftauchen. Achte auf Wasserdichtigkeit und darauf, dass das Glas dir nach einer Stunde noch nicht zu schwer ist.</p><h2>Wildkameras rücksichtsvoll nutzen</h2><p>Stelle Kameras nur mit Erlaubnis des Eigentümers oder Jagdpächters auf und richte sie nicht auf Wege, auf denen Menschen unterwegs sind. Fotos von Personen dürfen ohne deren Einwilligung nicht entstehen.</p></div></section>'''
     write("ausruestung/index.html", page("ausruestung/index.html", "Ausrüstung", "Fernglas, Wildkamera, Rotlicht-Lampe und Spurenbuch: Ausrüstung für Waldbeobachtungen.", body, crumbs=[("Ausrüstung", "")]))
 
@@ -383,7 +438,8 @@ def build_legal():
         a_, lic, url = CREDITS[k]
         n = name_of(k[2:] if k.startswith("x-") else k)
         rows += f'<tr><th scope="row">{esc(n)}</th><td>{esc(a_)}</td><td>{esc(lic)}</td><td><a href="{esc(url)}" target="_blank" rel="noopener">Quelle<span class="sr-only"> (öffnet in neuem Fenster)</span></a></td></tr>'
-    bn = f'''<section class="block page"> <div class="wrap prose"> <h1>Bildnachweis und Lizenzen</h1> <h2>Fotos</h2> <p>Alle Fotos stammen von Wikimedia Commons und stehen unter den genannten freien Lizenzen. Für die Seite wurden sie verkleinert und auf ein einheitliches Seitenverhältnis zugeschnitten. Die Lizenztexte findest du auf der jeweiligen Quellseite.</p> </div> <div class="wrap"><div class="cmp-wrap"><table class="cmp"><thead><tr><td>Art</td><th scope="col">Urheber</th><th scope="col">Lizenz</th><th scope="col">Quelle</th></tr></thead><tbody>{rows}</tbody></table></div></div> <div class="wrap prose"> <h2>Zeichnungen</h2> <p>Die Trittsiegel sind eigene Zeichnungen für den Waldtierkompass. Sie zeigen typische Formen und sind nicht maßstabsgetreu.</p> <h2>Schriften</h2> <p>Fraunces (Undercase Type) und Figtree (Erik Kennedy), beide unter der SIL Open Font License 1.1, lokal eingebunden über das Projekt Fontsource.</p> </div> </section>'''
+    prows = "".join(f'<tr><th scope="row">{esc(PRODUCTS[k]["name"])}</th><td>{esc(a_)}</td><td>{esc(lic)}</td><td><a href="{esc(url)}" target="_blank" rel="noopener">Quelle<span class="sr-only"> (öffnet in neuem Fenster)</span></a></td></tr>' for k, (a_, lic, url) in PHOTO.items())
+    bn = f'''<section class="block page"> <div class="wrap prose"> <h1>Bildnachweis und Lizenzen</h1> <h2>Fotos</h2> <p>Alle Fotos stammen von Wikimedia Commons und stehen unter den genannten freien Lizenzen. Für die Seite wurden sie verkleinert und auf ein einheitliches Seitenverhältnis zugeschnitten. Die Lizenztexte findest du auf der jeweiligen Quellseite.</p> </div> <div class="wrap"><div class="cmp-wrap"><table class="cmp"><thead><tr><td>Art</td><th scope="col">Urheber</th><th scope="col">Lizenz</th><th scope="col">Quelle</th></tr></thead><tbody>{rows}</tbody></table></div></div> <div class="wrap prose"> <h2>Fotos zu den Produktempfehlungen</h2> <p>Die Fotos zeigen typische Geräte und Beispiele, nicht unbedingt genau das verlinkte Produkt.</p> </div> <div class="wrap"><div class="cmp-wrap"><table class="cmp"><thead><tr><td>Empfehlung</td><th scope="col">Urheber</th><th scope="col">Lizenz</th><th scope="col">Quelle</th></tr></thead><tbody>{prows}</tbody></table></div></div> <div class="wrap prose"> <h2>Zeichnungen</h2> <p>Die Trittsiegel sind eigene Zeichnungen für den Waldtierkompass. Sie zeigen typische Formen und sind nicht maßstabsgetreu.</p> <h2>Schriften</h2> <p>Fraunces (Undercase Type) und Figtree (Erik Kennedy), beide unter der SIL Open Font License 1.1, lokal eingebunden über das Projekt Fontsource.</p> </div> </section>'''
     write("bildnachweis/index.html", page("bildnachweis/index.html", "Bildnachweis und Lizenzen", "Bildnachweis und Lizenzen des Waldtierkompass.", bn, crumbs=[("Bildnachweis", "")]))
 
 HERE = os.path.dirname(os.path.abspath(__file__))

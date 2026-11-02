@@ -46,7 +46,18 @@
 .explore.tips b{font-family:var(--display);font-size:1.2rem;color:var(--heading)}
 .explore.tips span{color:var(--muted);font-size:.94rem}
 
-/* Produkte ohne Foto */
+/* Produkte */
+.pcred{position:absolute;right:6px;bottom:6px;max-width:calc(100% - 12px);padding:1px 7px;border-radius:999px;background:#2a1f18a6;color:#fff;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.products.compact .pcred{display:none}
+.products.compact .pimg img{height:100%}
+.gearband .products{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:18px}
+.gearband .product .pwhy{font-size:.9rem}
+.gear-h{margin:34px 0 14px;color:var(--heading)}
+.gear-h:first-of-type{margin-top:8px}
+@media(max-width:560px){.gearband .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gearband .pwhy,.gearband .pby,.gearband .ptip,.gearband .pcred{display:none}
+.gearband .pbody{padding:10px 11px 12px}.gearband .pname{font-size:.98rem}.gearband .pmeta{font-size:.6rem;letter-spacing:.03em}.gearband .pad{padding:0 6px}
+.gearband .plink{font-size:.82rem;min-height:34px;margin-top:8px}}
 .pimg .picon svg{width:64px;height:64px}
 .home-head .arch-frame img{object-position:50% 50%}
 .trackbox{display:flex;align-items:center;gap:14px;margin:20px 0 0 auto;padding:12px 14px;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);width:min(100%,340px)}
