@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://waldtierkompass.de/sitemap.xml

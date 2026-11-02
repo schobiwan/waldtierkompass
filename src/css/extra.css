@@ -1,0 +1,109 @@
+
+/* ===== Waldtierkompass: Ergänzungen zum Vogelkompass-Grundgerüst ===== */
+.bird img{background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+.acts{position:absolute;left:10px;top:10px;z-index:2;display:flex;gap:4px;pointer-events:none}
+.act{display:grid;place-items:center;width:30px;height:30px;border-radius:999px;background:#152022b8;color:#f3e7c4;backdrop-filter:blur(2px)}
+.act svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.act svg path[d^="M10.5"]{fill:currentColor;stroke:none}
+.act-tag{display:inline-flex;align-items:center;gap:5px}
+.act-tag svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.act-tag svg path[d^="M10.5"]{fill:currentColor;stroke:none}
+.seenmark{position:absolute;right:10px;top:10px;z-index:2;font:700 .72rem var(--body);padding:3px 9px;border-radius:999px;background:var(--seen);color:var(--seen-fg)}
+.grp-h{margin:34px 0 14px;color:var(--heading);font-size:1.5rem}
+.grp-h:first-of-type{margin-top:8px}
+.sp-photo img{background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+.pair figure img,.ph.big img,.alike img{background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+.merksatz{margin:16px 0 0;padding:14px 16px;border-left:4px solid var(--rust);background:var(--surface);border-radius:0 8px 8px 0;max-width:60em}
+.merksatz b{color:var(--rust)}
+.pairpage>section{margin-top:28px}
+.pairpage .ph.big{margin-top:6px}
+
+/* Kalender: Gruppen-Zeilen */
+.cal tr.grow th{text-align:left;padding:18px 0 6px;font:600 1rem var(--display);color:var(--heading)}
+
+/* Waldjahr */
+.yearline{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px}
+.yearline li{display:flex;flex-direction:column;gap:4px;padding:14px 16px;background:var(--surface);border-radius:8px;box-shadow:var(--shadow);border-top:3px solid var(--moss)}
+.yearline li.now{border-top-color:var(--rust)}
+.yearline b{font-family:var(--display);font-size:1.1rem;color:var(--heading)}
+.yearline span{font-size:.94rem;color:var(--muted)}
+.evlist{margin:0;padding:0;list-style:none;display:grid;gap:10px;max-width:46em}
+.evlist li{position:relative;padding:12px 14px 12px 44px;background:var(--surface);border-radius:8px;box-shadow:var(--shadow);font-size:1.02rem}
+.evlist li:before{content:"";position:absolute;left:16px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--moss);box-shadow:0 0 0 4px color-mix(in srgb,var(--moss) 22%,transparent)}
+
+/* Spuren */
+.steps{list-style:none;counter-reset:s;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:12px}
+.steps li{counter-increment:s;padding:16px 18px 18px;background:var(--surface);border-radius:8px;box-shadow:var(--shadow);font-size:.95rem;color:var(--muted)}
+.steps li:before{content:counter(s);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--forest);color:var(--forest-ink);font:700 .95rem var(--body);margin-bottom:10px}
+.steps b{display:block;font-family:var(--display);font-size:1.15rem;color:var(--heading);margin-bottom:4px}
+.trkgrid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:16px}
+.trk a{display:flex;flex-direction:column;gap:4px;height:100%;padding:14px 16px 18px;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);text-decoration:none;transition:transform .25s ease}
+.trk a:hover{transform:translateY(-3px)}
+.trk-img{display:grid;place-items:center;aspect-ratio:1;border-radius:8px;margin-bottom:8px;background:color-mix(in srgb,var(--moss) 12%,var(--surface));color:var(--heading)}
+.trk-img svg{width:62%;height:62%}
+.trk b{font-family:var(--display);font-size:1.2rem;color:var(--heading)}
+.trk span:last-child{font-size:.9rem;color:var(--muted)}
+.explore.tips li>div{display:flex;flex-direction:column;gap:6px;height:100%;padding:18px 20px;background:var(--surface);border-radius:8px;box-shadow:var(--shadow);border-top:3px solid var(--moss)}
+.explore.tips b{font-family:var(--display);font-size:1.2rem;color:var(--heading)}
+.explore.tips span{color:var(--muted);font-size:.94rem}
+
+/* Quiz */
+.qtrack{width:62%;color:var(--heading)}
+.qtrack svg{width:100%;height:auto;display:block}
+.qclue{padding:24px;font-family:var(--display);font-size:clamp(1.15rem,2.2vw,1.45rem);line-height:1.35;color:var(--heading)}
+.qclue p{margin:0 0 12px}
+
+/* Tagebuch */
+.ring-bg{fill:none;stroke:var(--line);stroke-width:10}
+.ring-fg{fill:none;stroke:var(--seen);stroke-width:10;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .6s var(--ease)}
+.ringbox svg{width:100%;height:100%}
+.ring-txt span{font-size:.8rem;color:var(--muted)}
+.pnum{display:flex;align-items:center;gap:18px}
+.pnum p{margin:0;font-weight:700}
+.logm{margin-top:18px}
+.log .dlist li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.log .dlist .del{margin-left:auto}
+.dnote2{color:var(--muted);font-size:.9rem;flex-basis:100%}
+.dlist a{color:var(--rust);font-weight:700}
+
+/* Produkte ohne Foto */
+.pimg .picon svg{width:64px;height:64px}
+.home-head .arch-frame img{object-position:50% 50%}
+.trackbox{display:flex;align-items:center;gap:14px;margin-top:16px;padding:12px 14px;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);max-width:30em}
+.trackbox .trk-img{width:64px;height:64px;flex:none;margin:0}
+.trackbox p{margin:0;font-size:.92rem;color:var(--muted)}
+.trackbox b{display:block;font-family:var(--display);font-size:1.05rem;color:var(--heading)}
+
+/* Startseite: Kopfbereich mit Fotoleiste */
+.hero2{background:linear-gradient(180deg,color-mix(in srgb,var(--moss) 11%,var(--bg)),var(--bg) 85%);padding-block:clamp(28px,5vw,56px) 8px}
+.hero2-top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,4vw,56px);align-items:end}
+.hero2 .eyebrow{margin:0 0 12px;color:var(--muted);font-size:.95rem}
+.hero2 h1{font-size:clamp(2.4rem,5.4vw,4.1rem);color:var(--heading);letter-spacing:-.01em;animation:rise .7s var(--ease) both}
+.hero2 .lede{margin:0;font-size:1.06rem;color:var(--muted);animation:rise .7s var(--ease) .1s both}
+.hero2 .now-box{margin-top:18px}
+.hero2 .now-title{color:var(--heading)}
+.hero2 .now-list li[hidden]{display:none}
+.hero2 .now-list a,.hero2 .now-more{min-height:36px;padding:0 12px;font-size:.86rem}
+.hero2 .now-list a{border-color:var(--line);background:var(--surface);color:var(--fg)}
+.hero2 .now-list a:hover{border-color:var(--forest)}
+.hero2 .now-more{background:var(--heading);color:var(--bg);border-color:var(--heading)}
+.hero2 .now-all{color:var(--heading);text-decoration-color:color-mix(in srgb,var(--heading) 35%,transparent)}
+.hero2 .now-links{margin-top:6px}
+.strip{list-style:none;margin:clamp(28px,4vw,44px) 0 0;padding:0 0 16px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.strip li{animation:rise .8s var(--ease) both;animation-delay:calc(.15s + var(--d,0) * 70ms)}
+.strip li:nth-child(2){--d:1}.strip li:nth-child(3){--d:2}.strip li:nth-child(4){--d:3}.strip li:nth-child(5){--d:4}
+.strip li:nth-child(even){margin-top:22px}
+.strip a{display:block;position:relative;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);text-decoration:none}
+.strip a:focus-visible{outline:3px solid var(--rust);outline-offset:3px}
+.strip img{width:100%;aspect-ratio:4 / 5;object-fit:cover;display:block;transition:transform .5s var(--ease)}
+.strip a:hover img{transform:scale(1.04)}
+.strip span{position:absolute;left:0;right:0;bottom:0;padding:28px 12px 10px;color:#fff;font:600 1.05rem var(--display);background:linear-gradient(transparent,#000000a8)}
+.strip-credit{margin:10px 0 0;font-size:.72rem;color:var(--muted)}
+.strip-credit a{color:inherit}
+@media(max-width:760px){.hero2-top{grid-template-columns:minmax(0,1fr);align-items:start}
+.strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:24px}
+.strip li:nth-child(n+4){display:none}
+.strip li:nth-child(even){margin-top:0}
+.strip a{border-radius:10px}
+.strip span{padding:22px 8px 7px;font-size:.88rem}}
+@media(max-width:400px){.strip span{font-size:.78rem;padding:20px 6px 6px;overflow-wrap:anywhere}}
