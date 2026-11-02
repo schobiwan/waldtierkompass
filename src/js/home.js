@@ -122,13 +122,30 @@ $("active").addEventListener("click", (e) => {
 render();
 grid.classList.add("calm");
 
-// Karten "Jetzt unterwegs": bis zu drei Arten in ihrer Hauptzeit, sonst aktive Arten
+// Karussell "Jetzt unterwegs": Arten in Hauptzeit zuerst, dann alle übrigen aktiven Arten
 {
+  const list = $("nowcards");
   const items = $$("#nowcards > li");
-  let pick = items.filter((li) => nums(li.dataset.peak).includes(NOW));
-  if (pick.length < 3) pick = pick.concat(items.filter((li) => !pick.includes(li) && nums(li.dataset.present).includes(NOW)));
-  pick = pick.slice(0, 3);
-  items.forEach((li) => { li.hidden = !pick.includes(li); });
+  const peak = items.filter((li) => nums(li.dataset.peak).includes(NOW));
+  const rest = items.filter((li) => !peak.includes(li) && nums(li.dataset.present).includes(NOW));
+  items.forEach((li) => { li.hidden = true; li.classList.toggle("pk", peak.includes(li)); });
+  [...peak, ...rest].forEach((li) => { li.hidden = false; list.appendChild(li); });
+  const prev = $("now-prev"), next = $("now-next");
+  const step = () => { const li = list.querySelector("li:not([hidden])"); return li ? li.offsetWidth + 12 : list.clientWidth; };
+  const sync = () => {
+    const max = list.scrollWidth - list.clientWidth - 2;
+    prev.disabled = list.scrollLeft <= 2;
+    next.disabled = list.scrollLeft >= max;
+  };
+  const go = (dir) => {
+    const per = Math.max(1, Math.round(list.clientWidth / step()));
+    list.scrollBy({ left: dir * per * step(), behavior: reduced() ? "auto" : "smooth" });
+  };
+  prev?.addEventListener("click", () => go(-1));
+  next?.addEventListener("click", () => go(1));
+  list.addEventListener("scroll", sync, { passive: true });
+  addEventListener("resize", sync);
+  sync();
 }
 
 // Suche im Kopfbereich steuert das Raster
