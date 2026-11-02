@@ -1,5 +1,5 @@
-// Läuft auf jeder Seite: Navigation, Monatsangaben, Falt-Abschnitte, Tagebuch-Markierungen
-import { $$, nums, NOW, NOW_NAME, MSLUG, href, Diary } from "./util.js";
+// Läuft auf jeder Seite: Navigation, Monatsangaben, Falt-Abschnitte
+import { $$, nums, NOW, NOW_NAME, MSLUG, href } from "./util.js";
 
 // Abschnitte auf dem Handy eingeklappt, am Desktop offen
 const mq = matchMedia("(max-width: 760px)");
@@ -65,16 +65,3 @@ function fit(list, shown) {
   layout();
   document.fonts?.ready.then(layout);
 }
-
-// Tagebuch: Zähler in der Navigation und "Gesehen"-Marken
-function syncDiary() {
-  const n = Diary.count();
-  $$("[data-diary-badge]").forEach((b) => {
-    b.hidden = !n;
-    b.innerHTML = `${n}<span class="sr-only"> ${n === 1 ? "Eintrag" : "Einträge"} im Tagebuch</span>`;
-  });
-  const seen = Diary.seenKeys();
-  $$("[data-seenmark]").forEach((m) => { m.hidden = !seen.has(m.dataset.seenmark); });
-}
-document.addEventListener("wk:diary", syncDiary);
-syncDiary();

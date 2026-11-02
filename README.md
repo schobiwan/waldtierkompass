@@ -2,7 +2,7 @@
 
 Statische Website zum Bestimmen von Waldtieren in Deutschland. Schwesterseite zum [Vogelkompass](https://vogelkompass.de/).
 
-33 Arten mit Fotos, Trittsiegeln, Doppelgängern, Waldjahr, Quiz und einem Tagebuch, das nur im Browser gespeichert wird.
+33 Arten mit Fotos, Trittsiegeln, Doppelgängern und Waldjahr.
 
 ## Ordner
 
@@ -13,7 +13,7 @@ Statische Website zum Bestimmen von Waldtieren in Deutschland. Schwesterseite zu
 | `build.py` | Erzeugt alle HTML-Seiten in `dist/` |
 | `art.py` | Zeichnet die Trittsiegel als SVG |
 | `src/css/` | Stylesheet (`base.css` = Grundgerüst, `extra.css` = Ergänzungen) |
-| `src/js/` | Skripte für Suche und Filter, Tagebuch, Quiz |
+| `src/js/` | Skripte für Suche, Filter und Monatsangaben |
 | `photos/` | Tierfotos als WebP (720 px und 400 px breit) |
 | `photos_src/` | Ausgangsbild für das Vorschaubild in sozialen Netzwerken |
 | `fonts/` | Fraunces und Figtree, lokal eingebunden |

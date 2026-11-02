@@ -1,6 +1,6 @@
 // Startseite: Suche, Filter und Sortierung
 import "./app.js";
-import { $, $$, nums, norm, escapeHtml, NOW, reduced, setPressed, focusEl, Diary } from "./util.js";
+import { $, $$, nums, norm, escapeHtml, NOW, reduced, setPressed, focusEl } from "./util.js";
 
 const grid = $("grid");
 const q = $("q");
@@ -26,12 +26,12 @@ const LABEL = {
 };
 
 const state = {
-  q: "", grp: new Set(), act: new Set(), hab: new Set(), size: new Set(), now: false, open: false, sort: "now",
-  count() { return SETS.reduce((n, k) => n + this[k].size, 0) + (this.now ? 1 : 0) + (this.open ? 1 : 0); },
+  q: "", grp: new Set(), act: new Set(), hab: new Set(), size: new Set(), now: false, sort: "now",
+  count() { return SETS.reduce((n, k) => n + this[k].size, 0) + (this.now ? 1 : 0); },
   reset(keepQuery = false) {
     if (!keepQuery) { this.q = ""; q.value = ""; }
     SETS.forEach((k) => this[k].clear());
-    this.now = false; this.open = false;
+    this.now = false;
   },
   matches(a) {
     const term = norm(this.q.trim());
@@ -40,8 +40,7 @@ const state = {
       && (!this.act.size || a.act.some((x) => this.act.has(x)))
       && (!this.hab.size || a.hab.some((x) => this.hab.has(x)))
       && (!this.size.size || this.size.has(a.size))
-      && (!this.now || a.present.includes(NOW))
-      && (!this.open || !Diary.isSeen(a.key));
+      && (!this.now || a.present.includes(NOW));
   },
 };
 
@@ -84,7 +83,6 @@ function render() {
   if (state.q.trim()) chips.push(chip('data-rm="q"', `Suche: „${state.q.trim()}“`));
   SETS.forEach((g) => state[g].forEach((v) => chips.push(chip(`data-rm="${g}" data-v="${escapeHtml(v)}"`, LABEL[g]?.[v] || v))));
   if (state.now) chips.push(chip('data-rm="now"', "Jetzt aktiv"));
-  if (state.open) chips.push(chip('data-rm="open"', "Noch nicht gesehen"));
   if (chips.length > 1) chips.push('<button type="button" class="clear" data-rm="all">Alles zurücksetzen</button>');
   const act = $("active");
   act.innerHTML = chips.join("");
@@ -116,7 +114,7 @@ $("active").addEventListener("click", (e) => {
   const r = b.dataset.rm;
   if (r === "all") state.reset();
   else if (r === "q") { state.q = ""; q.value = ""; }
-  else if (r === "now" || r === "open") state[r] = false;
+  else if (r === "now") state.now = false;
   else state[r].delete(b.dataset.v);
   render();
   focusEl($("active").querySelector("button") || q);
@@ -126,7 +124,6 @@ $("now-all")?.addEventListener("click", () => {
   $("arten").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
   focusEl($("rcount"));
 });
-document.addEventListener("wk:diary", () => { if (state.open) render(); });
 render();
 grid.classList.add("calm");
 

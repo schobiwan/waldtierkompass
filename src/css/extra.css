@@ -8,7 +8,6 @@
 .act-tag{display:inline-flex;align-items:center;gap:5px}
 .act-tag svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
 .act-tag svg path[d^="M10.5"]{fill:currentColor;stroke:none}
-.seenmark{position:absolute;right:10px;top:10px;z-index:2;font:700 .72rem var(--body);padding:3px 9px;border-radius:999px;background:var(--seen);color:var(--seen-fg)}
 .grp-h{margin:34px 0 14px;color:var(--heading);font-size:1.5rem}
 .grp-h:first-of-type{margin-top:8px}
 .sp-photo img{background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
@@ -46,25 +45,6 @@
 .explore.tips li>div{display:flex;flex-direction:column;gap:6px;height:100%;padding:18px 20px;background:var(--surface);border-radius:8px;box-shadow:var(--shadow);border-top:3px solid var(--moss)}
 .explore.tips b{font-family:var(--display);font-size:1.2rem;color:var(--heading)}
 .explore.tips span{color:var(--muted);font-size:.94rem}
-
-/* Quiz */
-.qtrack{width:62%;color:var(--heading)}
-.qtrack svg{width:100%;height:auto;display:block}
-.qclue{padding:24px;font-family:var(--display);font-size:clamp(1.15rem,2.2vw,1.45rem);line-height:1.35;color:var(--heading)}
-.qclue p{margin:0 0 12px}
-
-/* Tagebuch */
-.ring-bg{fill:none;stroke:var(--line);stroke-width:10}
-.ring-fg{fill:none;stroke:var(--seen);stroke-width:10;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dasharray .6s var(--ease)}
-.ringbox svg{width:100%;height:100%}
-.ring-txt span{font-size:.8rem;color:var(--muted)}
-.pnum{display:flex;align-items:center;gap:18px}
-.pnum p{margin:0;font-weight:700}
-.logm{margin-top:18px}
-.log .dlist li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
-.log .dlist .del{margin-left:auto}
-.dnote2{color:var(--muted);font-size:.9rem;flex-basis:100%}
-.dlist a{color:var(--rust);font-weight:700}
 
 /* Produkte ohne Foto */
 .pimg .picon svg{width:64px;height:64px}
@@ -108,3 +88,4 @@
 .strip span{padding:22px 8px 7px;font-size:.88rem}}
 @media(max-width:400px){.strip span{font-size:.78rem;padding:20px 6px 6px;overflow-wrap:anywhere}}
 .sp-intro .text{margin:18px 0 0}
+@media(max-width:960px){.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}}
