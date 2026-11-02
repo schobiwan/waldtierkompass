@@ -37,7 +37,4 @@ Der Build schreibt `dist/` komplett neu, entfernt ungenutztes CSS, minifiziert C
 
 Nach Änderungen an Texten oder Code lokal `npm run build` ausführen und `dist/` mit committen.
 
-Vor dem Livegang anpassen:
-
-- `DOMAIN` in `build.py` (derzeit `https://waldtierkompass.de`)
-- Hosting-Anbieter in der Datenschutzerklärung (in `build.py`, Funktion `build_legal`, als Platzhalter markiert)
+Die Domain steht in `build.py` unter `DOMAIN` (`https://waldtierkompass.de`).
