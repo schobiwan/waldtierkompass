@@ -139,7 +139,7 @@ grid.classList.add("calm");
     im.srcset = `photos/${k}-400.webp 400w, photos/${k}.webp 720w`;
     $("spot-name").textContent = top.dataset.name;
     $("spot-hl").textContent = top.dataset.hl;
-    $("spot-cred").textContent = `Foto: ${top.dataset.credit}`;
+    $("spot-cred").innerHTML = top.querySelector(".cred")?.innerHTML || "";
   }
   if (top) top.hidden = true; // steht schon groß im Kopfbereich
   $$(".h5-events").forEach((ul) => { ul.hidden = Number(ul.dataset.m) !== NOW; });
