@@ -258,8 +258,9 @@ def product(R, key, compact=False):
     meta = f'<span>{p["cat"]}{" · Unser Tipp" if (p["tip"] and compact) else ""}</span>'
     pic = (f'<img src="{R}photos/p-{key}-400.webp" srcset="{R}photos/p-{key}-400.webp 400w, {R}photos/p-{key}.webp 720w" '
            f'sizes="{"88px" if compact else "(max-width: 600px) 92vw, 360px"}" alt="" width="400" height="300" loading="lazy" decoding="async">'
-           + ("" if compact else f'<small class="pcred">Beispielfoto · {credit_parts(*PHOTO[key])}</small>')) if key in PHOTO else f'<span class="picon"><svg viewBox="0 0 24 24" aria-hidden="true">{PICON[p["icon"]]}</svg></span>'
-    return (f'<li class="product{" pick" if p["tip"] else ""}"> <div class="pimg">{pic}{tip}</div> '
+) if key in PHOTO else f'<span class="picon"><svg viewBox="0 0 24 24" aria-hidden="true">{PICON[p["icon"]]}</svg></span>'
+    under = f'<small class="pcred">Beispielfoto · {credit_parts(*PHOTO[key])}</small>' if (key in PHOTO and not compact) else ""
+    return (f'<li class="product{" pick" if p["tip"] else ""}"> <div class="pimg">{pic}{tip}</div>{under} '
             f'<div class="pbody"> <p class="pmeta">{meta}<span class="pad">Anzeige</span></p> <h3 class="pname">{esc(p["name"])}</h3> <p class="pby">{esc(p["by"])}</p> {why} {f'<small class="pcred2">Beispielfoto · {credit_parts(*PHOTO[key])}</small>' if (compact and key in PHOTO) else ""} '
             f'<a class="plink" href="{p["url"]}" target="_blank" rel="sponsored nofollow noopener"><span>Bei Amazon ansehen<span aria-hidden="true">*</span></span>{ICON["arrow"]}'
             f'<span class="sr-only"> {esc(p["name"])} (Werbelink, öffnet in neuem Fenster)</span></a> </div> </li>')
