@@ -49,7 +49,8 @@
 /* Produkte ohne Foto */
 .pimg .picon svg{width:64px;height:64px}
 .home-head .arch-frame img{object-position:50% 50%}
-.trackbox{display:flex;align-items:center;gap:14px;margin-top:16px;padding:12px 14px;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);max-width:30em}
+.trackbox{display:flex;align-items:center;gap:14px;margin:20px 0 0 auto;padding:12px 14px;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);width:min(100%,340px)}
+@media(max-width:760px){.trackbox{width:100%;margin-left:0}}
 .trackbox .trk-img{width:64px;height:64px;flex:none;margin:0}
 .trackbox p{margin:0;font-size:.92rem;color:var(--muted)}
 .trackbox b{display:block;font-family:var(--display);font-size:1.05rem;color:var(--heading)}
