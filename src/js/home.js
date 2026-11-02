@@ -130,6 +130,19 @@ grid.classList.add("calm");
   const rest = items.filter((li) => !peak.includes(li) && nums(li.dataset.present).includes(NOW));
   items.forEach((li) => { li.hidden = true; li.classList.toggle("pk", peak.includes(li)); });
   [...peak, ...rest].forEach((li) => { li.hidden = false; list.appendChild(li); });
+  // Tier des Monats: erste Art in Hauptzeit
+  const top = peak[0] || rest[0];
+  if (top && top.dataset.k !== $("spot-link")?.getAttribute("href")?.split("/")[1]) {
+    const k = top.dataset.k, im = $("spot-img");
+    $("spot-link").href = `arten/${k}/index.html`;
+    im.src = `photos/${k}.webp`;
+    im.srcset = `photos/${k}-400.webp 400w, photos/${k}.webp 720w`;
+    $("spot-name").textContent = top.dataset.name;
+    $("spot-hl").textContent = top.dataset.hl;
+    $("spot-cred").textContent = `Foto: ${top.dataset.credit}`;
+  }
+  if (top) top.hidden = true; // steht schon groß im Kopfbereich
+  $$(".h5-events").forEach((ul) => { ul.hidden = Number(ul.dataset.m) !== NOW; });
   const prev = $("now-prev"), next = $("now-next");
   const step = () => { const li = list.querySelector("li:not([hidden])"); return li ? li.offsetWidth + 12 : list.clientWidth; };
   const sync = () => {
@@ -147,6 +160,12 @@ grid.classList.add("calm");
   addEventListener("resize", sync);
   sync();
 }
+
+// Tiergruppen im Kopfbereich setzen den Gruppenfilter
+$$(".hchip").forEach((b) => b.addEventListener("click", () => {
+  state.grp.clear(); state.grp.add(b.dataset.hgrp); render();
+  $("arten").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
+}));
 
 // Suche im Kopfbereich steuert das Raster
 const hq = $("hq");
