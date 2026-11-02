@@ -127,3 +127,12 @@ $("now-all")?.addEventListener("click", () => {
 render();
 grid.classList.add("calm");
 
+// Suche im Kopfbereich steuert das Raster
+const hq = $("hq");
+$("hsearch")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  q.value = hq.value; state.q = hq.value; render();
+  $("arten").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
+});
+hq?.addEventListener("input", () => { q.value = hq.value; state.q = hq.value; render(); });
+
