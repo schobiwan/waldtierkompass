@@ -513,6 +513,9 @@ def finalize():
     write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
           + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
+    # Zeitpunkt des Builds, um zu prüfen, ob die Live-Seite aktuell ist
+    import datetime as _dt
+    write("version.txt", _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") + "\n")
 
 if __name__ == "__main__":
     shutil.rmtree(OUT, ignore_errors=True)
