@@ -20,6 +20,12 @@ $$("[data-now-name]").forEach((el) => { el.textContent = NOW_NAME; });
 $$("a[data-now-link]").forEach((a) => { a.href = href(`waldjahr/${MSLUG[NOW - 1]}/`); });
 $$("[data-month]").forEach((el) => { if (Number(el.dataset.month) === NOW) el.classList.add("now"); });
 
+// Kalender auf dem Handy zum aktuellen Monat scrollen
+$$(".cal-wrap").forEach((wrap) => {
+  const th = wrap.querySelector(`thead th[data-month="${NOW}"]`), n = wrap.querySelector(".n");
+  if (th && wrap.scrollWidth > wrap.clientWidth) wrap.scrollLeft = Math.max(0, th.offsetLeft - (n ? n.offsetWidth : 0) - th.offsetWidth * 2);
+});
+
 // "Jetzt unterwegs"-Liste im Kopf der Startseite
 $$("[data-now-list]").forEach((list) => {
   const items = $$("li[data-peak]", list);

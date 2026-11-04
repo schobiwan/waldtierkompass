@@ -10,6 +10,7 @@ const animals = $$("#grid > li.bird").map((li) => ({
   key: li.dataset.key,
   name: li.dataset.name,
   search: norm(li.dataset.search),
+  words: [...new Set(norm(li.dataset.search).split(/[^a-z0-9]+/).filter((w) => w.length > 2))],
   grp: li.dataset.grp,
   act: li.dataset.act.split("|"),
   hab: li.dataset.hab.split("|"),
@@ -35,7 +36,7 @@ const state = {
   },
   matches(a) {
     const term = norm(this.q.trim());
-    return (!term || a.search.includes(term))
+    return (!term || fuzzy(a, term))
       && (!this.grp.size || this.grp.has(a.grp))
       && (!this.act.size || a.act.some((x) => this.act.has(x)))
       && (!this.hab.size || a.hab.some((x) => this.hab.has(x)))
@@ -44,28 +45,68 @@ const state = {
   },
 };
 
+// Tippfehler verzeihen: Levenshtein-Abstand, auch gegen den Wortanfang
+function dist(a, b) {
+  const m = a.length, n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+const tolerance = (t) => (t.length >= 7 ? 2 : t.length >= 3 ? 1 : 0);
+function fuzzy(a, term) {
+  if (a.search.includes(term)) return true;
+  const k = tolerance(term);
+  if (!k || term.includes(" ")) return false;
+  return a.words.some((w) => dist(term, w) <= k || (w.length > term.length && dist(term, w.slice(0, term.length)) <= k));
+}
+function suggest(term) {
+  let best = null, bd = 99;
+  animals.forEach((a) => a.words.forEach((w) => {
+    const d = Math.min(dist(term, w), w.length > term.length ? dist(term, w.slice(0, term.length)) + 1 : 99);
+    if (d < bd) { bd = d; best = a; }
+  }));
+  return bd <= tolerance(term) + (term.length >= 5 ? 1 : 0) ? best : null;
+}
+
+const BIRDS = ["vogel", "voegel", "eule", "kauz", "uhu", "specht", "meise", "amsel", "drossel", "fink", "bussard", "falke", "habicht", "sperber", "kraehe", "rabe", "elster", "haeher", "taube", "kuckuck", "zaunkoenig", "rotkehlchen", "kleiber", "schnepfe", "storch", "reiher", "ente", "gans", "schwan", "milan", "adler"];
 const byName = (a, b) => a.name.localeCompare(b.name, "de");
 const nowRank = (a) => (a.peak.includes(NOW) ? 0 : a.present.includes(NOW) ? 1 : 2);
 let lastOrder = "";
+const sep = document.createElement("li");
+sep.className = "grid-sep";
+sep.setAttribute("role", "presentation");
+sep.innerHTML = "<span>Gerade kaum zu sehen</span>";
 
 function render() {
   const list = animals.filter((a) => state.matches(a));
   if (state.sort === "az") list.sort(byName);
   else if (state.sort === "size") list.sort((a, b) => a.mid - b.mid || byName(a, b));
   else list.sort((a, b) => nowRank(a) - nowRank(b) || byName(a, b));
-  const order = list.map((a) => a.key).join();
+  const order = state.sort + ":" + list.map((a) => a.key).join();
   grid.classList.toggle("calm", order === lastOrder);
   if (order !== lastOrder) {
     animals.forEach((a) => { a.li.hidden = true; });
+    sep.remove();
     list.forEach((a, i) => {
       a.li.hidden = false;
       a.li.style.setProperty("--i", String(Math.min(i, 14)));
+      if (state.sort === "now" && i > 0 && nowRank(a) === 2 && nowRank(list[i - 1]) < 2) grid.appendChild(sep);
       grid.appendChild(a.li);
     });
     if (!reduced()) list.forEach((a) => { a.li.style.animation = "none"; void a.li.offsetWidth; a.li.style.animation = ""; });
   }
   lastOrder = order;
   $("empty").hidden = list.length > 0;
+  const sg = $("empty-suggest"), term = norm(state.q.trim());
+  const hit = !list.length && term ? suggest(term) : null;
+  const bird = !list.length && term && BIRDS.some((w) => term.includes(w) || (term.length >= 4 && w.startsWith(term)));
+  sg.hidden = !hit && !bird;
+  if (bird) sg.innerHTML = `Vögel findest du auf unserer Schwesterseite <a class="linkbtn" href="https://vogelkompass.de/" rel="noopener">Vogelkompass</a>.`;
+  else if (hit) sg.innerHTML = `Meintest du <button type="button" class="linkbtn" data-try="${escapeHtml(hit.name)}">${escapeHtml(hit.name)}</button>?`;
 
   const n = state.count();
   const fc = $("fcount");
@@ -90,7 +131,7 @@ function render() {
 }
 
 let t = 0;
-q.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => { state.q = q.value; render(); }, 120); });
+q.addEventListener("input", () => { const hqf = $("hq"); if (hqf) hqf.value = q.value; clearTimeout(t); t = setTimeout(() => { state.q = q.value; render(); }, 120); });
 q.addEventListener("keydown", (e) => { if (e.key === "Escape" && q.value) { e.preventDefault(); q.value = ""; state.q = ""; render(); } });
 sortSel.addEventListener("change", () => { state.sort = sortSel.value; render(); });
 
@@ -99,7 +140,12 @@ const showPanel = (on = panel.hidden) => { panel.hidden = !on; toggle.setAttribu
 toggle.addEventListener("click", () => showPanel());
 $("f-done").addEventListener("click", () => { showPanel(false); toggle.focus(); });
 $("f-reset").addEventListener("click", () => { state.reset(true); render(); });
-$("empty-reset").addEventListener("click", () => { state.reset(); render(); focusEl(q); });
+$("empty-reset").addEventListener("click", () => { state.reset(); const hqf = $("hq"); if (hqf) hqf.value = ""; render(); focusEl(q); });
+$("empty").addEventListener("click", (e) => {
+  const tryB = e.target.closest("[data-try]"), g = e.target.closest("[data-sgrp]");
+  if (tryB) { q.value = tryB.dataset.try; state.q = q.value; const hqf = $("hq"); if (hqf) hqf.value = q.value; render(); focusEl(q); }
+  if (g) { state.reset(); const hqf = $("hq"); if (hqf) hqf.value = ""; state.grp.add(g.dataset.sgrp); render(); focusEl($("rcount")); }
+});
 panel.addEventListener("click", (e) => {
   const c = e.target.closest(".fchips .chip");
   if (!c) return;
@@ -113,7 +159,7 @@ $("active").addEventListener("click", (e) => {
   if (!b) return;
   const r = b.dataset.rm;
   if (r === "all") state.reset();
-  else if (r === "q") { state.q = ""; q.value = ""; }
+  else if (r === "q") { state.q = ""; q.value = ""; const hqf = $("hq"); if (hqf) hqf.value = ""; }
   else if (r === "now") state.now = false;
   else state[r].delete(b.dataset.v);
   render();
