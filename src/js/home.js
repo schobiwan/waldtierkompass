@@ -82,6 +82,7 @@ sep.setAttribute("role", "presentation");
 sep.innerHTML = "<span>Gerade kaum zu sehen</span>";
 
 function render() {
+  document.querySelectorAll(".hchip").forEach((b) => b.setAttribute("aria-pressed", String(state.grp.size === 1 && state.grp.has(b.dataset.hgrp))));
   const list = animals.filter((a) => state.matches(a));
   if (state.sort === "az") list.sort(byName);
   else if (state.sort === "size") list.sort((a, b) => a.mid - b.mid || byName(a, b));
@@ -208,9 +209,15 @@ grid.classList.add("calm");
 }
 
 // Tiergruppen im Kopfbereich setzen den Gruppenfilter
+// Zum Raster springen: die Suchleiste klebt oben, deshalb Ziel selbst berechnen
+function toResults() {
+  const bar = $("arten"), top = grid.getBoundingClientRect().top + scrollY - (bar ? bar.offsetHeight : 0) - 12;
+  scrollTo({ top: Math.max(0, top), behavior: reduced() ? "auto" : "smooth" });
+}
 $$(".hchip").forEach((b) => b.addEventListener("click", () => {
-  state.grp.clear(); state.grp.add(b.dataset.hgrp); render();
-  $("arten").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
+  const on = state.grp.size === 1 && state.grp.has(b.dataset.hgrp);
+  state.grp.clear(); if (!on) state.grp.add(b.dataset.hgrp); render();
+  if (!on) toResults();
 }));
 
 // Suche im Kopfbereich steuert das Raster
@@ -218,7 +225,7 @@ const hq = $("hq");
 $("hsearch")?.addEventListener("submit", (e) => {
   e.preventDefault();
   q.value = hq.value; state.q = hq.value; render();
-  $("arten").scrollIntoView({ behavior: reduced() ? "auto" : "smooth" });
+  toResults();
 });
 hq?.addEventListener("input", () => { q.value = hq.value; state.q = hq.value; render(); });
 

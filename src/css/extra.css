@@ -228,3 +228,6 @@ section.block>.wrap>h2+.grid,section.block>.wrap>h2+.pills,section.block>.wrap>h
 .cal .grow th{text-align:left;padding:14px 0 4px}
 .cal .grow th span{position:sticky;left:0;display:inline-block;font:700 .82rem var(--body);color:var(--muted)}
 @media(max-width:600px){.cal .n{width:112px;min-width:112px}.cal .n a{width:104px;white-space:nowrap}}
+
+.hchip[aria-pressed="true"]{background:var(--hero-accent);border-color:var(--hero-accent);color:var(--hero-accent-ink)}
+.hchip[aria-pressed="true"] span{color:inherit;opacity:.85}
