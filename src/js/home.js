@@ -145,7 +145,8 @@ sortSel.addEventListener("change", () => { state.sort = sortSel.value; render();
 
 const panel = $("fpanel"), toggle = $("f-toggle");
 const showPanel = (on = panel.hidden) => { panel.hidden = !on; toggle.setAttribute("aria-expanded", String(on)); };
-toggle.addEventListener("click", () => showPanel());
+// 2.4.3: Nach dem Öffnen steht der Fokus auf der ersten Filteroption
+toggle.addEventListener("click", () => { showPanel(); if (!panel.hidden) panel.querySelector(".chip")?.focus(); });
 $("f-done").addEventListener("click", () => { showPanel(false); toggle.focus(); });
 $("f-reset").addEventListener("click", () => { state.reset(true); render(); });
 $("empty-reset").addEventListener("click", () => { state.reset(); setQuery(""); render(); focusEl(q); });

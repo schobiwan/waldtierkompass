@@ -106,7 +106,7 @@ def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=Non
     for key, label, ic in TABS:
         href = R + ("index.html" if key == "index" else f"{key}/index.html")
         cur = ' aria-current="page"' if active == key else ""
-        tabs.append(f'<li><a class="tab" href="{href}"{cur}> {ICON[ic]}<span>{label}</span> </a></li>')
+        tabs.append(f'<li><a class="tab" href="{href}"{cur}> {ICON[ic]}<span>{label.replace("Doppelgänger", "Doppel&shy;gänger")}</span> </a></li>')
     cr = ""
     if crumbs:
         items = [f'<li><a href="{R}index.html">Start</a></li>']

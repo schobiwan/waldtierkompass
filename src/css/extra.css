@@ -215,3 +215,28 @@ footer{margin-top:40px}
 .gearband{margin-top:36px}
 }
 main:has(>.gearband:last-child)+footer,main:has(>section:last-child>.gearband)+footer{margin-top:0;border-top:0}
+
+/* Barrierefreiheit (Bericht vom 4.11.2026) */
+/* 1.4.10: lange Artnamen auf schmalen Karten trennen statt abschneiden */
+.bird h3,.nc-ov b,.pair h3{hyphens:auto;overflow-wrap:anywhere}
+/* 1.4.12: Beschriftung der unteren Navigation umbrechen statt kürzen */
+@media(max-width:960px){.tab span{white-space:normal;overflow:visible;text-overflow:clip;text-align:center;line-height:1.1;hyphens:manual;overflow-wrap:anywhere}}
+/* 2.5.8: Brotkrumen und Textlinks mit mindestens 24 px Tippfläche */
+.crumbs a{display:inline-flex;align-items:center;min-height:24px}
+.gearall a{display:inline-flex;align-items:center;min-height:24px}
+/* 200 % Zoom und niedrige Fenster: Suchleiste klebt nicht mehr und verdeckt nichts */
+@media(max-height:500px){.bar{position:static}}
+/* Windows-Kontrastmodus: Zustände mit Systemfarben und Rahmen statt Hintergrundfarbe */
+@media(forced-colors:active){
+.hsearch label{border:1px solid CanvasText}
+.hsearch-btn,.cbtn,.hchip{border:1px solid ButtonText}
+.hchip[aria-pressed="true"],.chip[aria-pressed="true"]{background:Highlight;color:HighlightText;border-color:Highlight;forced-color-adjust:none}
+.hchip[aria-pressed="true"] span{color:HighlightText}
+.months span,.cal td.m,.legend i{forced-color-adjust:none;background:Canvas;color:CanvasText;border:1px solid CanvasText}
+.months span.p,.cal td.m.p,.legend i.p{background:Canvas;border:2px solid CanvasText;box-shadow:none}
+.months span.h,.cal td.m.h,.legend i.h{background:CanvasText;color:Canvas;border-color:CanvasText}
+.cal td.m.h:after,.legend i.h:after{background:Canvas}
+.months span.h:after{background:Canvas}
+.months span:not(.p):not(.h),.cal td.m:not(.p):not(.h),.legend i:not([class]){border-style:dashed}
+.months span.now,.cal td.m.now,.legend i.now{outline:2px solid Highlight}
+}
