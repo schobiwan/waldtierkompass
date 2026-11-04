@@ -78,11 +78,17 @@ const nowRank = (a) => (a.peak.includes(NOW) ? 0 : a.present.includes(NOW) ? 1 :
 let lastOrder = "";
 const sep = document.createElement("li");
 sep.className = "grid-sep";
-sep.setAttribute("role", "presentation");
 sep.innerHTML = "<span>Gerade kaum zu sehen</span>";
 
+// Beide Suchfelder (Kopfbereich und Raster) zeigen denselben Text
+const hq = $("hq");
+function setQuery(v, { sync = true } = {}) {
+  state.q = v;
+  if (sync) { q.value = v; if (hq) hq.value = v; }
+}
+
 function render() {
-  document.querySelectorAll(".hchip").forEach((b) => b.setAttribute("aria-pressed", String(state.grp.size === 1 && state.grp.has(b.dataset.hgrp))));
+  $$(".hchip").forEach((b) => b.setAttribute("aria-pressed", String(state.grp.size === 1 && state.grp.has(b.dataset.hgrp))));
   const list = animals.filter((a) => state.matches(a));
   if (state.sort === "az") list.sort(byName);
   else if (state.sort === "size") list.sort((a, b) => a.mid - b.mid || byName(a, b));
@@ -132,8 +138,9 @@ function render() {
 }
 
 let t = 0;
-q.addEventListener("input", () => { const hqf = $("hq"); if (hqf) hqf.value = q.value; clearTimeout(t); t = setTimeout(() => { state.q = q.value; render(); }, 120); });
-q.addEventListener("keydown", (e) => { if (e.key === "Escape" && q.value) { e.preventDefault(); q.value = ""; state.q = ""; render(); } });
+const typed = (v) => { clearTimeout(t); t = setTimeout(() => { setQuery(v); render(); }, 120); };
+q.addEventListener("input", () => { if (hq) hq.value = q.value; typed(q.value); });
+q.addEventListener("keydown", (e) => { if (e.key === "Escape" && q.value) { e.preventDefault(); setQuery(""); render(); } });
 sortSel.addEventListener("change", () => { state.sort = sortSel.value; render(); });
 
 const panel = $("fpanel"), toggle = $("f-toggle");
@@ -141,11 +148,11 @@ const showPanel = (on = panel.hidden) => { panel.hidden = !on; toggle.setAttribu
 toggle.addEventListener("click", () => showPanel());
 $("f-done").addEventListener("click", () => { showPanel(false); toggle.focus(); });
 $("f-reset").addEventListener("click", () => { state.reset(true); render(); });
-$("empty-reset").addEventListener("click", () => { state.reset(); const hqf = $("hq"); if (hqf) hqf.value = ""; render(); focusEl(q); });
+$("empty-reset").addEventListener("click", () => { state.reset(); setQuery(""); render(); focusEl(q); });
 $("empty").addEventListener("click", (e) => {
   const tryB = e.target.closest("[data-try]"), g = e.target.closest("[data-sgrp]");
-  if (tryB) { q.value = tryB.dataset.try; state.q = q.value; const hqf = $("hq"); if (hqf) hqf.value = q.value; render(); focusEl(q); }
-  if (g) { state.reset(); const hqf = $("hq"); if (hqf) hqf.value = ""; state.grp.add(g.dataset.sgrp); render(); focusEl($("rcount")); }
+  if (tryB) { setQuery(tryB.dataset.try); render(); focusEl(q); }
+  if (g) { state.reset(); setQuery(""); state.grp.add(g.dataset.sgrp); render(); focusEl($("rcount")); }
 });
 panel.addEventListener("click", (e) => {
   const c = e.target.closest(".fchips .chip");
@@ -160,7 +167,7 @@ $("active").addEventListener("click", (e) => {
   if (!b) return;
   const r = b.dataset.rm;
   if (r === "all") state.reset();
-  else if (r === "q") { state.q = ""; q.value = ""; const hqf = $("hq"); if (hqf) hqf.value = ""; }
+  else if (r === "q") setQuery("");
   else if (r === "now") state.now = false;
   else state[r].delete(b.dataset.v);
   render();
@@ -186,7 +193,8 @@ grid.classList.add("calm");
     im.srcset = `photos/${k}-400.webp 400w, photos/${k}.webp 720w`;
     $("spot-name").textContent = top.dataset.name;
     $("spot-hl").textContent = top.dataset.hl;
-    $("spot-cred").innerHTML = top.querySelector(".cred")?.innerHTML || "";
+    const c = top.querySelector(".cred"), sc = $("spot-cred");
+    if (c && sc) { sc.innerHTML = c.innerHTML; sc.href = c.getAttribute("href"); }
   }
   if (top) top.hidden = true; // steht schon groß im Kopfbereich
   $$(".h5-events").forEach((ul) => { ul.hidden = Number(ul.dataset.m) !== NOW; });
@@ -208,12 +216,12 @@ grid.classList.add("calm");
   sync();
 }
 
-// Tiergruppen im Kopfbereich setzen den Gruppenfilter
 // Zum Raster springen: die Suchleiste klebt oben, deshalb Ziel selbst berechnen
 function toResults() {
   const bar = $("arten"), top = grid.getBoundingClientRect().top + scrollY - (bar ? bar.offsetHeight : 0) - 12;
   scrollTo({ top: Math.max(0, top), behavior: reduced() ? "auto" : "smooth" });
 }
+// Tiergruppen im Kopfbereich setzen den Gruppenfilter, ein zweiter Klick hebt ihn auf
 $$(".hchip").forEach((b) => b.addEventListener("click", () => {
   const on = state.grp.size === 1 && state.grp.has(b.dataset.hgrp);
   state.grp.clear(); if (!on) state.grp.add(b.dataset.hgrp); render();
@@ -221,11 +229,10 @@ $$(".hchip").forEach((b) => b.addEventListener("click", () => {
 }));
 
 // Suche im Kopfbereich steuert das Raster
-const hq = $("hq");
 $("hsearch")?.addEventListener("submit", (e) => {
   e.preventDefault();
-  q.value = hq.value; state.q = hq.value; render();
+  clearTimeout(t); setQuery(hq.value); render();
   toResults();
 });
-hq?.addEventListener("input", () => { q.value = hq.value; state.q = hq.value; render(); });
+hq?.addEventListener("input", () => { q.value = hq.value; typed(hq.value); });
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Statischer Build des Waldtierkompass nach dem Muster von Vogelkompass."""
-import os, json, shutil, html, random, subprocess
+import os, re, json, shutil, html, random, subprocess, datetime as _dt
 from data import SPECIES, PAIRS, EXT, GROUPS, HABS, ACTS, SIZES, MONTH_EVENTS
 import art
 CREDITS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "credits.json"), encoding="utf-8"))
@@ -95,19 +95,18 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect wi
 LDJSON = ('<script type="application/ld+json">' + json.dumps({"@context": "https://schema.org", "@type": "WebSite", "name": SITE, "url": DOMAIN + "/",
           "inLanguage": "de-DE", "description": "Waldtiere in Deutschland bestimmen: Fotos, Trittsiegel, Doppelgänger und Waldjahr."}, ensure_ascii=False) + '</script>')
 
-TABS = [("index", "Arten", "Arten", "find"), ("spuren", "Spuren", "Spuren", "track"),
-        ("unterscheiden", "Doppelgänger", "Doppelgänger", "pair"), ("waldjahr", "Waldjahr", "Waldjahr", "year")]
+TABS = [("index", "Arten", "find"), ("spuren", "Spuren", "track"), ("unterscheiden", "Doppelgänger", "pair"), ("waldjahr", "Waldjahr", "year")]
 
 # ------------------------------------------------------------------ Layout
-def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=None, is_home=False, og="og.jpg"):
+def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=None, is_home=False, og="og.jpg", og_alt=None, og_type="website"):
     depth = path.count("/")
     R = "../" * depth
     canon = DOMAIN + "/" + (path[:-len("index.html")] if path.endswith("index.html") else path)
     tabs = []
-    for key, label, short, ic in TABS:
+    for key, label, ic in TABS:
         href = R + ("index.html" if key == "index" else f"{key}/index.html")
         cur = ' aria-current="page"' if active == key else ""
-        tabs.append(f'<li><a class="tab" href="{href}"{cur}> {ICON[ic]}<span class="tl">{label}</span><span class="ts">{short}</span> </a></li>')
+        tabs.append(f'<li><a class="tab" href="{href}"{cur}> {ICON[ic]}<span>{label}</span> </a></li>')
     cr = ""
     if crumbs:
         items = [f'<li><a href="{R}index.html">Start</a></li>']
@@ -115,10 +114,13 @@ def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=Non
             items.append(f'<li><a href="{R}{href}">{esc(lab)}</a></li>')
         items.append(f'<li><span aria-current="page">{esc(crumbs[-1][0])}</span></li>')
         cr = f'<nav class="crumbs wrap" aria-label="Brotkrumen"><ol> {" ".join(items)} </ol></nav>'
+        trail = [("Start", DOMAIN + "/")] + [(lab, DOMAIN + "/" + href.replace("index.html", "")) for lab, href in crumbs[:-1]] + [(crumbs[-1][0], canon)]
+        cr += ('<script type="application/ld+json">' + json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+               {"@type": "ListItem", "position": i + 1, "name": lab, "item": u} for i, (lab, u) in enumerate(trail)]}, ensure_ascii=False) + '</script>')
     dj = f'<script type="application/json" id="wk-data">{json.dumps(data, ensure_ascii=False)}</script>' if data is not None else ""
     sc = f'<script type="module" src="{R}assets/{(scripts[0] if scripts else "app.js")}"></script>'
     full_title = title if is_home else f"{title} · {SITE}"
-    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}" data-index> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="website"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs"> {"".join(tabs)} </ul> </div> </nav> <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
+    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{960 if og == "og.jpg" else 720}"><meta property="og:image:height" content="{503 if og == "og.jpg" else 377}"><meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs"> {"".join(tabs)} </ul> </div> </nav> <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
 
 def footer(R):
     ent = [("arten/index.html", "Alle Waldtiere"), ("spuren/index.html", "Spuren lesen"), ("unterscheiden/index.html", "Doppelgänger unterscheiden"),
@@ -128,7 +130,40 @@ def footer(R):
     return f'''<footer> <div class="wrap"> <a class="flogo" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span></a> <div class="fcols"> <nav aria-label="Entdecken"><p class="fhead">Entdecken</p><ul>{li(ent)}</ul></nav> <nav aria-label="Rechtliches"><p class="fhead">Rechtliches</p><ul>{li(leg)}</ul></nav> <nav aria-label="Schwesterseite"><p class="fhead">Schwesterseite</p><ul><li><a href="https://vogelkompass.de/" rel="noopener">Vogelkompass: Vögel bestimmen</a></li></ul></nav> </div> <p class="footnote">Fotos: Wikimedia Commons, unter freien Lizenzen. Trittsiegel sind eigene Zeichnungen. Mit * markierte Links sind Werbelinks. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.</p> </div> </footer>'''
 
 # ------------------------------------------------------------------ Bausteine
-def img(R, key, alt="", eager=False, cls="", sizes="(max-width: 600px) 92vw, 400px"):
+def first_sentence(t):
+    return t.split(". ")[0].rstrip(".") + "."
+
+def pronoun(g):
+    return "sie" if g == "f" else ("es" if g == "n" else "ihn")
+
+def photo_key(k):
+    """Doppelgänger ohne eigene Artseite haben Fotos mit Präfix x-."""
+    return k if k in BY else "x-" + k
+
+def actlegend():
+    return (f'<p class="actlegend" aria-hidden="true"><span>{act_svg("tag")} tagaktiv</span><span>{act_svg("daemmerung")} dämmerungsaktiv</span>'
+            f'<span>{act_svg("nacht")} nachtaktiv</span></p>')
+
+def month_state(s, m):
+    """CSS-Klasse und Bezeichnung für Art s im Monat m."""
+    if m in s["h"]:
+        return "h", "Hauptzeit"
+    return ("p", "aktiv") if m in s["p"] else ("", "kaum zu sehen")
+
+def gearband(R, title, picks):
+    return (f'<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">{title}</h2>'
+            f'<a class="gearmore" href="{R}ausruestung/index.html">Alle Empfehlungen ansehen</a></div>'
+            f'<ul class="products">{"".join(product(R, g) for g in picks)}</ul>{ADNOTE}</div></section>')
+
+# Aktueller Monat (deutsche Zeit) zum Zeitpunkt des Builds; die Seite korrigiert ihn im Browser, falls der Build älter ist
+try:
+    from zoneinfo import ZoneInfo
+    NOWM = _dt.datetime.now(ZoneInfo("Europe/Berlin")).month
+except Exception:
+    NOWM = _dt.datetime.now().month
+SIZES_CARD = "(max-width: 760px) 46vw, 320px"
+
+def img(R, key, alt="", eager=False, cls="", sizes=SIZES_CARD):
     lz = "eager" if eager else "lazy"
     c = f' class="{cls}"' if cls else ""
     return (f'<img{c} src="{R}photos/{key}.webp" srcset="{R}photos/{key}-400.webp 400w, {R}photos/{key}.webp 720w" sizes="{sizes}" '
@@ -136,8 +171,7 @@ def img(R, key, alt="", eager=False, cls="", sizes="(max-width: 600px) 92vw, 400
 
 def lic_url(lic):
     """Link auf den Lizenztext (Creative Commons verlangt ihn bei jeder Nutzung)."""
-    import re as _re
-    m = _re.match(r"CC (BY(?:-SA)?) (\d\.\d)(?: (\w\w))?$", lic)
+    m = re.match(r"CC (BY(?:-SA)?) (\d\.\d)(?: (\w\w))?$", lic)
     if m:
         return f"https://creativecommons.org/licenses/{m.group(1).lower()}/{m.group(2)}/" + (f"{m.group(3)}/" if m.group(3) else "")
     if lic == "CC0":
@@ -155,10 +189,10 @@ def credit(key, short=False):
     a, lic, url = CREDITS[key]
     return credit_parts(a, lic, url) + ("" if short else ", Wikimedia Commons, zugeschnitten")
 
-def cred(key, R=""):
+def cred(key, R="", cls="", id_=""):
     """Bildangabe unter dem Foto: ein gut tippbarer Link zur Bildnachweis-Seite mit allen verlinkten Lizenzangaben."""
     a, lic, url = CREDITS[key]
-    return f'<a class="cred" href="{R}bildnachweis/index.html#f-{key}">Foto: {esc(a)}, {esc(lic)}<span class="sr-only"> – Lizenzangaben im Bildnachweis</span></a>'
+    return f'<a class="cred{" " + cls if cls else ""}"{f' id="{id_}"' if id_ else ""} href="{R}bildnachweis/index.html#f-{key}">Foto: {esc(a)}, {esc(lic)}<span class="sr-only"> – Lizenzangaben im Bildnachweis</span></a>'
 
 GRP_SYN = {"Huftiere": "Huftier Paarhufer Hirsch Wild", "Raubtiere": "Raubtier Räuber Beutegreifer", "Kleinsäuger": "Säugetier Nager Maus",
            "Amphibien": "Amphibie Lurch Frosch Kröte Molch", "Reptilien": "Reptil Echse Eidechse Schlange", "Insekten": "Insekt Käfer Krabbeltier"}
@@ -170,13 +204,13 @@ SYN = {"rotfuchs": "Fuchs", "wolf": "Isegrim Rudel", "wildschwein": "Sau Schwein
        "waldeidechse": "Bergeidechse", "erdkroete": "Kröte", "grasfrosch": "Frosch", "feuersalamander": "Salamander Molch", "bergmolch": "Molch",
        "hirschkaefer": "Käfer", "rote-waldameise": "Ameise Ameisenhaufen", "dachs": "Grimbart", "baummarder": "Marder Edelmarder", "steinmarder": "Marder Hausmarder Automarder"}
 
-def card(R, s, i=0, hidden=False):
+def card(R, s, i=0, hidden=False, eager=False):
     acts = "".join(f'<span class="act" title="{ACTS[a]}">{act_svg(a)}<span class="sr-only">{ACTS[a]}</span></span>' for a in s["act"])
     search = " ".join([s["n"], s["lat"], s["grp"], GRP_SYN[s["grp"]], SYN.get(s["k"], ""), s["short"]] + [ACTS[a] for a in s["act"]])
     return (f'<li class="bird" id="{s["k"]}" style="--i:{i}" data-key="{s["k"]}" data-name="{esc(s["n"])}" data-search="{esc(search)}" '
             f'data-grp="{esc(s["grp"])}" data-act="{"|".join(s["act"])}" data-hab="{esc("|".join(s["hab"]))}" data-size="{s["size"]}" data-mid="{s["mid"]}" '
             f'data-present="{",".join(map(str, s["p"]))}" data-peak="{",".join(map(str, s["h"]))}"{" hidden" if hidden else ""}> '
-            f'{img(R, s["k"], "", eager=i < 6)}{cred(s["k"], R)} <div class="txt"> <h3><a class="open" href="{R}arten/{s["k"]}/index.html">{esc(s["n"])}</a></h3> '
+            f'{img(R, s["k"], "", eager=eager)}{cred(s["k"], R)} <div class="txt"> <h3><a class="open" href="{R}arten/{s["k"]}/index.html">{esc(s["n"])}</a></h3> '
             f'<span class="meta"><span class="latin" lang="la">{esc(s["lat"])}</span><span class="size">{esc(s["sz"])}</span></span> '
             f'<span class="row"><span class="tag status">{esc(s["grp"])}</span></span> <p class="short">{esc(s["short"])}</p> </div> '
             f'<span class="acts">{acts}</span> </li>')
@@ -188,8 +222,7 @@ def legend(cur=True):
 def months_bar(s):
     out = []
     for m in range(1, 13):
-        cls = "h" if m in s["h"] else ("p" if m in s["p"] else "")
-        t = "Hauptzeit" if cls == "h" else ("aktiv" if cls == "p" else "kaum zu sehen")
+        cls, t = month_state(s, m)
         out.append(f'<span data-month="{m}" class="{cls}" title="{MONTHS[m-1]}: {t}">{MSHORT[m-1]}</span>')
     return f'<div class="months" aria-hidden="true"> {"".join(out)} </div>'
 
@@ -266,25 +299,29 @@ PICON = {
  "lens": '<circle cx="10" cy="10" r="5.5"/><path d="m14 14 6 6"/>',
 }
 
-def product(R, key, compact=False):
+def product(R, key, compact=False, sizes="(max-width: 560px) 46vw, 280px"):
     p = PRODUCTS[key]
     tip = '<span class="ptip">Unser Tipp</span>' if p["tip"] and not compact else ""
     why = f'<p class="pwhy">{esc(p["why"])}</p>' if not compact else ""
     meta = f'<span>{p["cat"]}{" · Unser Tipp" if (p["tip"] and compact) else ""}</span>'
     pic = (f'<img src="{R}photos/p-{key}-400.webp" srcset="{R}photos/p-{key}-400.webp 400w, {R}photos/p-{key}.webp 720w" '
-           f'sizes="{"88px" if compact else "(max-width: 600px) 92vw, 360px"}" alt="" width="400" height="300" loading="lazy" decoding="async">'
+           f'sizes="{"88px" if compact else sizes}" alt="" width="400" height="300" loading="lazy" decoding="async">'
 ) if key in PHOTO else f'<span class="picon"><svg viewBox="0 0 24 24" aria-hidden="true">{PICON[p["icon"]]}</svg></span>'
-    under = f'<small class="pcred">Beispielfoto · {credit_parts(*PHOTO[key])}</small>' if (key in PHOTO and not compact) else ""
+    under = pcred(R, key, "pcred") if (key in PHOTO and not compact) else ""
     return (f'<li class="product{" pick" if p["tip"] else ""}"> <div class="pimg">{pic}{tip}</div>{under} '
-            f'<div class="pbody"> <p class="pmeta">{meta}<span class="pad">Anzeige</span></p> <h3 class="pname">{esc(p["name"])}</h3> <p class="pby">{esc(p["by"])}</p> {why} {f'<small class="pcred2">Beispielfoto · {credit_parts(*PHOTO[key])}</small>' if (compact and key in PHOTO) else ""} '
+            f'<div class="pbody"> <p class="pmeta">{meta}<span class="pad">Anzeige</span></p> <h3 class="pname">{esc(p["name"])}</h3> <p class="pby">{esc(p["by"])}</p> {why} {pcred(R, key, "pcred2") if (compact and key in PHOTO) else ""} '
             f'<a class="plink" href="{p["url"]}" target="_blank" rel="sponsored nofollow noopener"><span>Bei Amazon ansehen<span aria-hidden="true">*</span></span>{ICON["arrow"]}'
             f'<span class="sr-only"> {esc(p["name"])} (Werbelink, öffnet in neuem Fenster)</span></a> </div> </li>')
+
+def pcred(R, key, cls):
+    a, lic, _ = PHOTO[key]
+    return f'<a class="cred {cls}" href="{R}bildnachweis/index.html#p-{key}">Beispielfoto · Foto: {esc(a)}, {esc(lic)}<span class="sr-only"> – Lizenzangaben im Bildnachweis</span></a>'
 
 ADNOTE = '<p class="adnote"><span aria-hidden="true">*</span> Werbelink: Wenn du über diesen Link etwas kaufst, erhält der Waldtierkompass eine kleine Provision von Amazon. Für dich ändert sich am Preis nichts. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.</p>'
 
 def pair_card(R, p, h="h2"):
-    figs = "".join(f'<figure>{img(R, k if k in BY else "x-" + k, sizes="(max-width: 600px) 46vw, 240px")}<figcaption>{esc(name_of(k))}<small>{credit(k if k in BY else "x-" + k, True)}</small></figcaption></figure>' for k in (p["a"], p["b"]))
-    return (f'<li class="pair"> <div class="ph" aria-hidden="true"> {figs} </div> <div class="pb"> <{h}><a class="pair-link" href="{R}unterscheiden/{p["k"]}/index.html">'
+    figs = "".join(f'<figure>{img(R, photo_key(k), sizes="(max-width: 600px) 46vw, 240px")}<figcaption>{esc(name_of(k))}<small>{credit(photo_key(k), True)}</small></figcaption></figure>' for k in (p["a"], p["b"]))
+    return (f'<li class="pair"> <div class="ph"> {figs} </div> <div class="pb"> <{h}><a class="pair-link" href="{R}unterscheiden/{p["k"]}/index.html">'
             f'{esc(name_of(p["a"]))} oder {esc(name_of(p["b"]))}?</a></{h}> <p>{esc(p["short"])}</p> <span class="to" aria-hidden="true">Alle Unterschiede</span> </div> </li>')
 
 def chipset(legend, g, items):
@@ -294,33 +331,32 @@ def chipset(legend, g, items):
 # ------------------------------------------------------------------ Seiten
 def build_home():
     R = ""
+    NOWM_BUILD, now_name = NOWM, MONTHS[NOWM - 1]
     filt = (chipset("Gruppe", "grp", [(g, g) for g in GROUPS]) +
             chipset("Aktiv", "act", [(k, v) for k, v in ACTS.items()]) +
             chipset("Lebensraum", "hab", [(h, h) for h in HABS]) +
             chipset("Größe", "size", list(SIZES.items())) +
-            '<fieldset><legend>Außerdem</legend><div class="fchips"><button class="chip" type="button" data-g="flag" data-v="now" aria-pressed="false">Jetzt im <span data-now-name>November</span> aktiv</button>'
+            '<fieldset><legend>Außerdem</legend><div class="fchips"><button class="chip" type="button" data-g="flag" data-v="now" aria-pressed="false">Jetzt im <span data-now-name>{now_name}</span> aktiv</button>'
             '</div></fieldset>')
     cards = "".join(card(R, s, i) for i, s in enumerate(sorted(SPECIES, key=lambda x: x["n"])))
-    NOWM_BUILD = 11
     ranked = sorted(SPECIES, key=lambda x: (0 if NOWM_BUILD in x["h"] else 1, x["n"]))
     def nowcard(x, i):
-        first = x["hl"].split(". ")[0].rstrip(".") + "."
         return (f'<li data-peak="{",".join(map(str, x["h"]))}" data-present="{",".join(map(str, x["p"]))}" data-k="{x["k"]}" data-name="{esc(x["n"])}" '
-                f'data-hl="{esc(first)}"{"" if NOWM_BUILD in x["p"] else " hidden"}>'
-                f'<a href="arten/{x["k"]}/index.html"><img src="photos/{x["k"]}-400.webp" alt="" width="400" height="300" loading="{"eager" if i < 3 else "lazy"}" decoding="async">'
+                f'data-hl="{esc(first_sentence(x["hl"]))}"{"" if (NOWM_BUILD in x["p"] and x is not sp) else " hidden"}>'
+                f'<a href="arten/{x["k"]}/index.html"><img src="photos/{x["k"]}-400.webp" alt="" width="400" height="300" loading="{"eager" if 0 < i < 4 else "lazy"}" decoding="async">'
                 f'<span class="nc-ov"><b>{esc(x["n"])}</b><i>Hauptzeit</i></span></a>{cred(x["k"])}</li>')
-    nowc = "".join(nowcard(x, i) for i, x in enumerate(ranked))
     sp = ranked[0]
-    sp_first = sp["hl"].split(". ")[0].rstrip(".") + "."
+    nowc = "".join(nowcard(x, i) for i, x in enumerate(ranked))
+    sp_first = first_sentence(sp["hl"])
     gcount = {g: sum(1 for x in SPECIES if x["grp"] == g) for g in GROUPS}
     gchips = "".join(f'<button type="button" class="hchip" data-hgrp="{g}">{g}<span>{gcount[g]}</span></button>' for g in GROUPS)
     events = "".join(f'<ul class="h5-events" data-m="{m}"{"" if m == NOWM_BUILD else " hidden"}>' + "".join(f"<li>{esc(e)}</li>" for e in MONTH_EVENTS[m]) + "</ul>" for m in range(1, 13))
-    body = f'''<header class="hero5"> <div class="wrap hero5-in"> <div class="h5-text"> <h1>Wer war hier?</h1> <p class="lede">{len(SPECIES)} Tiere aus deutschen Wäldern, erkannt am Foto, an der Spur und an dem, was sie hinterlassen.</p> <form class="hsearch" id="hsearch" role="search" aria-label="Tier suchen"> <label for="hq"><span class="sr-only">Tier suchen</span>{ICON["find"]}<input type="search" id="hq" placeholder="Tier suchen, zum Beispiel Dachs" autocomplete="off" enterkeyhint="search"></label> <button class="hsearch-btn" type="submit">Suchen</button> </form> <div class="hchips" role="group" aria-label="Nach Tiergruppe zeigen">{gchips}</div> <div class="h5-month"><h2 class="h5-mh">Im Wald im <span data-now-name>November</span></h2>{events}</div> </div>
-<figure class="spot" id="spot"> <a href="arten/{sp["k"]}/index.html" id="spot-link"><img id="spot-img" src="photos/{sp["k"]}.webp" srcset="photos/{sp["k"]}-400.webp 400w, photos/{sp["k"]}.webp 720w" sizes="(max-width: 900px) 92vw, 600px" alt="" width="720" height="540" fetchpriority="high"> <figcaption><span class="spot-tag">Hauptzeit im <span data-now-name>November</span></span><b id="spot-name">{esc(sp["n"])}</b><span id="spot-hl">{esc(sp_first)}</span></figcaption></a> <a class="spot-cred cred" id="spot-cred" href="bildnachweis/index.html#f-{sp["k"]}">Foto: {esc(CREDITS[sp["k"]][0])}, {esc(CREDITS[sp["k"]][1])}<span class="sr-only"> – Lizenzangaben im Bildnachweis</span></a> </figure> </div> </header>
-<section class="nowband" aria-labelledby="now-h"> <div class="wrap"> <div class="now-head"><h2 id="now-h">Jetzt im <span data-now-name>November</span> unterwegs</h2><div class="now-nav"><a href="waldjahr/index.html" data-now-link>Alle im <span data-now-name>November</span></a><button class="cbtn" type="button" id="now-prev" aria-controls="nowcards" aria-label="Vorherige Tiere" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg></button><button class="cbtn" type="button" id="now-next" aria-controls="nowcards" aria-label="Weitere Tiere"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6"/></svg></button></div></div> <ul class="nowcards" id="nowcards">{nowc}</ul> </div> </section>
+    body = f'''<header class="hero5"> <div class="wrap hero5-in"> <div class="h5-text"> <h1>Wer war hier?</h1> <p class="lede">{len(SPECIES)} Tiere aus deutschen Wäldern, erkannt am Foto, an der Spur und an dem, was sie hinterlassen.</p> <form class="hsearch" id="hsearch" role="search" aria-label="Tier suchen"> <label for="hq"><span class="sr-only">Tier suchen</span>{ICON["find"]}<input type="search" id="hq" placeholder="Tier suchen, zum Beispiel Dachs" autocomplete="off" enterkeyhint="search"></label> <button class="hsearch-btn" type="submit">Suchen</button> </form> <div class="hchips" role="group" aria-label="Nach Tiergruppe zeigen">{gchips}</div> <div class="h5-month"><h2 class="h5-mh">Im Wald im <span data-now-name>{now_name}</span></h2>{events}</div> </div>
+<figure class="spot" id="spot"> <a href="arten/{sp["k"]}/index.html" id="spot-link"><img id="spot-img" src="photos/{sp["k"]}.webp" srcset="photos/{sp["k"]}-400.webp 400w, photos/{sp["k"]}.webp 720w" sizes="(max-width: 900px) 92vw, 600px" alt="" width="720" height="540" fetchpriority="high"> <figcaption><span class="spot-tag">Hauptzeit im <span data-now-name>{now_name}</span></span><b id="spot-name">{esc(sp["n"])}</b><span id="spot-hl">{esc(sp_first)}</span></figcaption></a> {cred(sp["k"], cls="spot-cred", id_="spot-cred")} </figure> </div> </header>
+<section class="nowband" aria-labelledby="now-h"> <div class="wrap"> <div class="now-head"><h2 id="now-h">Jetzt im <span data-now-name>{now_name}</span> unterwegs</h2><div class="now-nav"><a href="waldjahr/index.html" data-now-link>Alle im <span data-now-name>{now_name}</span></a><button class="cbtn" type="button" id="now-prev" aria-controls="nowcards" aria-label="Vorherige Tiere" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg></button><button class="cbtn" type="button" id="now-next" aria-controls="nowcards" aria-label="Weitere Tiere"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6"/></svg></button></div></div> <ul class="nowcards" id="nowcards">{nowc}</ul> </div> </section>
 <div class="bar" id="arten"> <div class="wrap barrow" role="search" aria-label="Arten suchen und filtern"> <label class="search" for="q">{ICON["find"]}<span class="sr-only">Art suchen</span> <input type="search" id="q" placeholder="Tier suchen, z. B. Marder" autocomplete="off" enterkeyhint="search"></label> <button class="chip ftoggle" id="f-toggle" type="button" aria-expanded="false" aria-controls="fpanel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>Filter<b class="fcount" id="fcount" hidden></b></button> <label class="sortsel" for="sort"><span>Sortieren</span> <select id="sort"><option value="now">Jetzt aktiv zuerst</option><option value="az">Name A–Z</option><option value="size">Größe, klein zuerst</option></select></label> <span class="rcount" id="rcount" aria-live="polite">{len(SPECIES)} Arten</span> </div> <div class="fpanel" id="fpanel" hidden> <div class="wrap fgrid"> {filt} <div class="factions"><button class="btn ghost" id="f-reset" type="button">Alle Filter zurücksetzen</button><button class="btn" id="f-done" type="button">Ergebnisse anzeigen</button></div> </div> </div> <div class="wrap active" id="active" hidden></div> </div>
-<section class="sub" aria-labelledby="arten-h"> <div class="wrap"> <h2 class="sr-only" id="arten-h">Arten</h2> <p class="actlegend" aria-hidden="true"><span>{act_svg("tag")} tagaktiv</span><span>{act_svg("daemmerung")} dämmerungsaktiv</span><span>{act_svg("nacht")} nachtaktiv</span></p> <ul class="grid" id="grid"> {cards} </ul> <div class="empty" id="empty" hidden><p id="empty-msg">Kein Tier passt zu deiner Suche oder Auswahl.</p><p id="empty-suggest" hidden></p><div class="empty-groups" aria-label="Stattdessen eine Tiergruppe ansehen">{"".join(f'<button type="button" class="chip" data-sgrp="{g}">{g}</button>' for g in GROUPS)}</div><button class="btn ghost" type="button" id="empty-reset">Suche und Filter zurücksetzen</button></div> </div> </section>
-<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Gut ausgerüstet in den Wald</h2><a class="gearmore" href="ausruestung/index.html">Alle Empfehlungen ansehen</a></div><ul class="products"> {"".join(product(R, g) for g in ("fernglas", "wildkamera", "waermebild", "lampe", "buch", "gips", "lupe", "igelhaus"))} </ul>{ADNOTE}</div></section>
+<section class="sub" aria-labelledby="arten-h"> <div class="wrap"> <h2 class="sr-only" id="arten-h">Arten</h2> {actlegend()} <ul class="grid" id="grid"> {cards} </ul> <div class="empty" id="empty" hidden><p id="empty-msg">Kein Tier passt zu deiner Suche oder Auswahl.</p><p id="empty-suggest" hidden></p><div class="empty-groups" aria-label="Stattdessen eine Tiergruppe ansehen">{"".join(f'<button type="button" class="chip" data-sgrp="{g}">{g}</button>' for g in GROUPS)}</div><button class="btn ghost" type="button" id="empty-reset">Suche und Filter zurücksetzen</button></div> </div> </section>
+{gearband(R, "Gut ausgerüstet in den Wald", ("fernglas", "wildkamera", "waermebild", "lampe", "buch", "gips", "lupe", "igelhaus"))}
 <section class="block"> <div class="wrap"> <h2>Weiter entdecken</h2> <ul class="explore"> <li><a href="spuren/index.html"><b>Spuren lesen</b><span>Trittsiegel von Huftieren, Hunden, Katzen und Mardern, dazu Fraßspuren an Nüssen und Zapfen.</span></a></li> <li><a href="unterscheiden/index.html"><b>Doppelgänger unterscheiden</b><span>Reh oder Rothirsch, Baum- oder Steinmarder: {len(PAIRS)} Vergleiche mit den entscheidenden Merkmalen.</span></a></li> <li><a href="waldjahr/index.html"><b>Das Waldjahr</b><span>Brunft, Krötenwanderung, Winterschlaf: was im Wald wann passiert, Monat für Monat.</span></a></li> <li><a href="ausruestung/index.html"><b>Ausrüstung</b><span>Fernglas, Wildkamera, Rotlicht-Lampe und Spurenbuch für Beobachtungen in der Dämmerung.</span></a></li> <li><a href="https://vogelkompass.de/" rel="noopener"><b>Vögel im Wald?</b><span>Specht, Eichelhäher und Co. findest du auf der Schwesterseite Vogelkompass.</span></a></li> </ul> </div> </section>'''
     write("index.html", page("index.html", "Waldtierkompass – Waldtiere in Deutschland bestimmen",
         f"Waldtiere bestimmen leicht gemacht: {len(SPECIES)} Tiere aus deutschen Wäldern mit Trittsiegeln, Doppelgängern und Waldkalender.",
@@ -328,11 +364,12 @@ def build_home():
 
 def build_arten_index():
     R = "../"
-    sec = []
+    sec, n = [], 0
     for g in GROUPS:
         ss = sorted([s for s in SPECIES if s["grp"] == g], key=lambda x: x["n"])
-        sec.append(f'<h2 class="h3 grp-h">{g}</h2><ul class="grid">{"".join(card(R, s, i) for i, s in enumerate(ss))}</ul>')
-    body = f'<section class="block page"> <div class="wrap"> <h1>Alle Waldtiere</h1> <p class="actlegend" aria-hidden="true"><span>{act_svg("tag")} tagaktiv</span><span>{act_svg("daemmerung")} dämmerungsaktiv</span><span>{act_svg("nacht")} nachtaktiv</span></p> <p class="intro">{len(SPECIES)} Arten, nach Gruppen geordnet. Zum Suchen und Filtern geht es zur <a href="../index.html#arten">Startseite</a>.</p> {"".join(sec)} </div> </section>'
+        sec.append(f'<h2 class="h3 grp-h">{g}</h2><ul class="grid">{"".join(card(R, s, i, eager=n + i < 4) for i, s in enumerate(ss))}</ul>')
+        n += len(ss)
+    body = f'<section class="block page"> <div class="wrap"> <h1>Alle Waldtiere</h1> {actlegend()} <p class="intro">{len(SPECIES)} Arten, nach Gruppen geordnet. Zum Suchen und Filtern geht es zur <a href="../index.html#arten">Startseite</a>.</p> {"".join(sec)} </div> </section>'
     write("arten/index.html", page("arten/index.html", "Alle Waldtiere", "Alle Waldtiere im Überblick: Huftiere, Raubtiere, Kleinsäuger, Amphibien, Reptilien und Insekten.", body, active="index", crumbs=[("Arten", "")]))
 
 def trackbox(s):
@@ -342,6 +379,15 @@ def trackbox(s):
     if not tr:
         return ""
     return f'<div class="trackbox"><span class="trk-img">{art.small_track(s["art"])}</span><p><b>Trittsiegel</b>{esc(tr[0].upper() + tr[1:])}</p></div>'
+
+def species_desc(s):
+    """Meta-Beschreibung, höchstens 160 Zeichen."""
+    for d in (f"{s['n']} ({s['lat']}): {s['short']} Merkmale, Spuren und wann du {pronoun(s['g'])} siehst.",
+              f"{s['n']} ({s['lat']}): {s['short']} Merkmale und Spuren.",
+              f"{s['n']}: {s['short']} Merkmale und Spuren."):
+        if len(d) <= 160:
+            return d
+    return d[:157].rsplit(" ", 1)[0] + " …"
 
 def build_species(s):
     R = "../../"
@@ -358,16 +404,16 @@ def build_species(s):
     if s["alike"]:
         p = PAIRBY[s["alike"]]
         other = p["b"] if p["a"] == k else p["a"]
-        okey = other if other in BY else "x-" + other
-        alike = (f'<section class="alike" aria-labelledby="h-alike"> {img(R, okey, name_of(other))} <div> <h2 id="h-alike">Nicht verwechseln mit {ein(BY[other]["g"] if other in BY else EXT[other]["g"], "dat")} {esc(name_of(other))}</h2> '
+        okey = photo_key(other)
+        alike = (f'<section class="alike" aria-labelledby="h-alike"> {img(R, okey, name_of(other), sizes="(max-width: 900px) 96px, 140px")} <div> <h2 id="h-alike">Nicht verwechseln mit {ein(BY[other]["g"] if other in BY else EXT[other]["g"], "dat")} {esc(name_of(other))}</h2> '
                  f'<p>{esc(p["short"])}</p> <p><a href="{R}unterscheiden/{p["k"]}/index.html">{esc(name_of(p["a"]))} oder {esc(name_of(p["b"]))}? Alle Unterschiede</a></p> </div> </section>')
     wiki = "https://de.wikipedia.org/w/index.php?search=" + s["lat"].replace(" ", "+")
     gear = GEAR_FOR.get(k) or GEAR_GRP[s["grp"]]
     body = f'''<article class="sp wrap"> <div class="sp-top"> <figure class="sp-photo"> {img(R, k, s["n"], eager=True, sizes="(max-width: 760px) 92vw, 560px")} <figcaption>{credit(k)}</figcaption> </figure> <div class="sp-intro"> <h1>{esc(s["n"])}</h1> <p class="latin" lang="la">{esc(s["lat"])}</p> <p class="row"><span class="tag status">{esc(s["grp"])}</span><span class="tag">{esc(s["sz"])}</span>{"".join(f'<span class="tag act-tag">{act_svg(a)}{ACTS[a]}</span>' for a in s["act"])}</p> <p class="habs">{habs}</p> <p class="text">{esc(s["short"])} {esc(s["hl"])}</p> {trackbox(s)} </div> </div>
-<div class="sp-cols"> <div class="sp-main"> <section aria-labelledby="h-marks"> <h2 id="h-marks">So erkennst du {"sie" if s["g"]=="f" else ("es" if s["g"]=="n" else "ihn")}</h2> <ul class="marks">{"".join(f"<li>{esc(m)}</li>" for m in s["marks"])}</ul> <dl class="facts">{facts}</dl> </section> <section aria-labelledby="h-year"> <h2 id="h-year">Wann im Jahr</h2> {months_bar(s)} {legend(False)} <p class="sr-only">Aktiv: {mlist(s["p"])}. Hauptzeit: {mlist(s["h"])}.</p> <p class="yeartext">{yeartext}</p> </section> <section class="life" aria-labelledby="h-life"> <h2 id="h-life">Lebensweise</h2> {life} </section> <section class="helpbox" aria-label="Hilfe und Beobachtung"> <details class="fold" open><summary><h2>Rücksicht und Schutz</h2></summary><p>{esc(s["help"])}</p></details> <details class="fold" open><summary><h2>Beobachtungstipp</h2></summary><p>{esc(s["tip"])}</p></details> </section> {alike} <section class="more" aria-labelledby="h-more"> <h2 id="h-more">Mehr erfahren</h2> <ul class="morelinks"> <li><a href="{wiki}" target="_blank" rel="noopener">Wikipedia<span class="sr-only"> (öffnet in neuem Fenster)</span></a></li> </ul> </section> </div>
+<div class="sp-cols"> <div class="sp-main"> <section aria-labelledby="h-marks"> <h2 id="h-marks">So erkennst du {pronoun(s["g"])}</h2> <ul class="marks">{"".join(f"<li>{esc(m)}</li>" for m in s["marks"])}</ul> <dl class="facts">{facts}</dl> </section> <section aria-labelledby="h-year"> <h2 id="h-year">Wann im Jahr</h2> {months_bar(s)} {legend(False)} <p class="sr-only">Aktiv: {mlist(s["p"])}. Hauptzeit: {mlist(s["h"])}.</p> <p class="yeartext">{yeartext}</p> </section> <section class="life" aria-labelledby="h-life"> <h2 id="h-life">Lebensweise</h2> {life} </section> <section class="helpbox" aria-label="Hilfe und Beobachtung"> <details class="fold" open><summary><h2>Rücksicht und Schutz</h2></summary><p>{esc(s["help"])}</p></details> <details class="fold" open><summary><h2>Beobachtungstipp</h2></summary><p>{esc(s["tip"])}</p></details> </section> {alike} <section class="more" aria-labelledby="h-more"> <h2 id="h-more">Mehr erfahren</h2> <ul class="morelinks"> <li><a href="{wiki}" target="_blank" rel="noopener">Wikipedia<span class="sr-only"> (öffnet in neuem Fenster)</span></a></li> </ul> </section> </div>
 <aside class="sp-side" aria-label="Empfehlungen"> <section class="gearbox" aria-labelledby="h-gear"><h2 id="h-gear">Passend dazu</h2><ul class="products compact"> {"".join(product(R, g, True) for g in gear)} </ul>{ADNOTE}<p class="gearall"><a href="{R}ausruestung/index.html">Alle Ausrüstungstipps ansehen</a></p></section> </aside> </div> </article>'''
-    write(f"arten/{k}/index.html", page(f"arten/{k}/index.html", f"{s['n']} erkennen", f"{s['n']} ({s['lat']}): {s['short']} Merkmale, Spuren, Lebensweise und wann du {'sie' if s['g']=='f' else ('es' if s['g']=='n' else 'ihn')} im Wald siehst.",
-                                        body, active="index", crumbs=[("Arten", "arten/index.html"), (s["n"], "")], og=f"{k}.webp"))
+    write(f"arten/{k}/index.html", page(f"arten/{k}/index.html", f"{s['n']} erkennen", species_desc(s),
+                                        body, active="index", crumbs=[("Arten", "arten/index.html"), (s["n"], "")], og=f"og-{k}.jpg", og_alt=s["n"], og_type="article"))
 
 def build_pairs():
     R = "../"
@@ -377,8 +423,8 @@ def build_pairs():
         R = "../../"
         figs = ""
         for k in (p["a"], p["b"]):
-            ik = k if k in BY else "x-" + k
-            figs += f'<figure>{img(R, ik, name_of(k), eager=True)}<figcaption>{esc(name_of(k))} <i lang="la">{esc(lat_of(k))}</i><small>{credit(ik)}</small></figcaption></figure>'
+            ik = photo_key(k)
+            figs += f'<figure>{img(R, ik, name_of(k), eager=True, sizes="(max-width: 760px) 92vw, 560px")}<figcaption>{esc(name_of(k))} <i lang="la">{esc(lat_of(k))}</i><small>{credit(ik)}</small></figcaption></figure>'
         na, nb = esc(name_of(p["a"])), esc(name_of(p["b"]))
         rows = "".join(f'<tr><th scope="row">{esc(a)}</th><td data-label="{na}">{esc(b)}</td><td data-label="{nb}">{esc(c)}</td></tr>' for a, b, c in p["rows"])
         btns = " ".join(f'<a class="btn{"" if i==0 else " ghost"}" href="{R}arten/{k}/index.html">{esc(name_of(k))} im Porträt</a>' for i, k in enumerate([x for x in (p["a"], p["b"]) if x in BY]))
@@ -398,8 +444,7 @@ def cal_table(R):
         for s in sorted([x for x in SPECIES if x["grp"] == g], key=lambda x: x["n"]):
             tds = ""
             for m in range(1, 13):
-                c = "h" if m in s["h"] else ("p" if m in s["p"] else "")
-                t = "Hauptzeit" if c == "h" else ("aktiv" if c == "p" else "kaum zu sehen")
+                c, t = month_state(s, m)
                 tds += f'<td data-month="{m}" class="m {c}" title="{esc(s["n"])}, {MONTHS[m-1]}: {t}"><span class="sr-only">{MONTHS[m-1]}: {t}</span></td>'
             rows.append(f'<tr><th scope="row" class="n"><a href="{R}arten/{s["k"]}/index.html">{esc(s["n"])}</a></th> {tds} </tr>')
     return f'<div class="cal-wrap" tabindex="0" role="region" aria-label="Kalender: wann welche Art aktiv ist"><table class="cal"> <caption class="sr-only">Aktivität aller Arten nach Monaten</caption> <thead><tr><th scope="col"><span class="sr-only">Art</span></th> {head}</tr></thead> <tbody> {"".join(rows)} </tbody> </table></div>'
@@ -425,19 +470,17 @@ def build_year():
         sl = (f'<section class="block" aria-labelledby="h-sl"><div class="wrap"><h2 id="h-sl">In Winterruhe oder kaum zu sehen</h2><div class="pills">'
               + "".join(f'<a href="{R}arten/{s["k"]}/index.html">{esc(s["n"])}</a>' for s in sleep) + '</div></div></section>') if sleep else ""
         body = f'''<section class="block page"> <div class="wrap"> <h1>Der Wald im {MONTHS[m-1]}</h1> <p class="intro">{len(peak) + len(act)} der {len(SPECIES)} Arten sind im {MONTHS[m-1]} aktiv, {len(peak)} davon in ihrer Hauptzeit.</p> <ul class="evlist">{ev}</ul> <p class="actions"><a class="btn ghost" href="{R}waldjahr/{MSLUG[prev_m-1]}/index.html">← {MONTHS[prev_m-1]}</a> <a class="btn ghost" href="{R}waldjahr/{MSLUG[next_m-1]}/index.html">{MONTHS[next_m-1]} →</a></p> </div> </section>
-<section class="block" aria-labelledby="h-pk"><div class="wrap"><h2 id="h-pk">Jetzt besonders gut zu beobachten</h2><ul class="grid">{"".join(card(R, s, i) for i, s in enumerate(peak))}</ul></div></section>
+<section class="block" aria-labelledby="h-pk"><div class="wrap"><h2 id="h-pk">Jetzt besonders gut zu beobachten</h2><ul class="grid">{"".join(card(R, s, i, eager=i < 2) for i, s in enumerate(peak))}</ul></div></section>
 <section class="block" aria-labelledby="h-ac"><div class="wrap"><h2 id="h-ac">Außerdem unterwegs</h2><ul class="grid">{"".join(card(R, s, i) for i, s in enumerate(act))}</ul></div></section> {sl} {month_gear(R, m)}'''
         write(f"waldjahr/{MSLUG[m-1]}/index.html", page(f"waldjahr/{MSLUG[m-1]}/index.html", f"Waldtiere im {MONTHS[m-1]}", f"Welche Waldtiere im {MONTHS[m-1]} aktiv sind und was im Wald passiert: {MONTH_EVENTS[m][0]}", body, active="waldjahr",
               crumbs=[("Waldjahr", "waldjahr/index.html"), (MONTHS[m-1], "")]))
 
 def month_gear(R, m):
     picks = ("igelhaus", "futterkasten", "fernglas", "waermebild") if m in (10, 11, 12, 1, 2) else (("lampe", "buch", "fledermauskasten", "wildkamera") if m in (3, 4, 5) else ("fledermauskasten", "detektor", "wildkamera", "lupe"))
-    return (f'<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Passend zum {MONTHS[m-1]}</h2><a class="gearmore" href="{R}ausruestung/index.html">Alle Empfehlungen ansehen</a></div>'
-            f'<ul class="products">{"".join(product(R, g) for g in picks)}</ul>{ADNOTE}</div></section>')
+    return gearband(R, f"Passend zum {MONTHS[m-1]}", picks)
 
-import re as _re2
 def slug(t):
-    return _re2.sub(r"[^a-z0-9]+", "-", t.lower().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")).strip("-")
+    return re.sub(r"[^a-z0-9]+", "-", t.lower().replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")).strip("-")
 
 # ungefähre Länge eines Trittsiegels in cm, für die maßstäbliche Darstellung auf der Spuren-Seite
 TRACK_CM = {"reh": 4.5, "damhirsch": 6, "rothirsch": 8.5, "wildschwein": 6.5, "rotfuchs": 5, "wolf": 10, "marderhund": 4.5,
@@ -465,7 +508,7 @@ def build_tracks():
             tr = next(v for a, v in s["facts"] if a in ("Trittsiegel", "Spuren"))
             items += (f'<li class="trk"><a href="{R}arten/{k}/index.html"><span class="trk-img" style="--s:{track_scale(k):.2f}">{art.small_track(s["art"])}</span>'
                       f'<span class="trk-t"><b>{esc(s["n"])}</b><span>{esc(tr[0].upper() + tr[1:])}</span></span></a></li>')
-        secs += f'<section class="block" aria-label="{title}" id="g-{slug(title)}"><div class="wrap"><h2>{title}</h2><p class="intro">{intro}</p><ul class="trkgrid">{items}</ul></div></section>'
+        secs += f'<section class="block" aria-labelledby="h-{slug(title)}" id="g-{slug(title)}"><div class="wrap"><h2 id="h-{slug(title)}">{title}</h2><p class="intro">{intro}</p><ul class="trkgrid">{items}</ul></div></section>'
     body = f'''<section class="block page"> <div class="wrap"> <h1>Spuren lesen</h1> <p class="intro">Die meisten Waldtiere sind scheu und nachts unterwegs. Ihre Spuren verraten sie trotzdem: im Schnee, im Matsch am Wegrand oder als angenagte Nuss. Einen einzelnen Fußabdruck nennt man Trittsiegel, eine Reihe davon Fährte oder Spur.</p> <ol class="steps"><li><b>Zehen zählen</b> Zwei Schalen, vier oder fünf Zehen? Damit ist die Tiergruppe meist schon klar.</li><li><b>Krallen suchen</b> Hunde und Marder zeigen Krallen, Katzen nicht.</li><li><b>Größe messen</b> Ein Lineal oder ein Stift daneben hilft, Fuchs und Hund oder Reh und Hirsch zu trennen.</li><li><b>Muster ansehen</b> Gerade Linie, Paare oder Vierergruppen verraten die Gangart.</li></ol> <nav class="jump" aria-label="Zu den Gruppen springen"><ul class="pills">{"".join(f'<li><a href="#g-{slug(t)}">{t}</a></li>' for t, _, _ in groups)}<li><a href="#h-nut">Fraßspuren</a></li></ul></nav> <p class="intro small">Die Zeichnungen sind im Verhältnis zueinander skaliert: Ein großes Siegel ist auch in Wirklichkeit größer.</p> </div> </section> {secs}
 <section class="block" aria-labelledby="h-nut"><div class="wrap"><h2 id="h-nut">Wer hat die Haselnuss geknackt?</h2><p class="intro">Fraßspuren halten sich lange und sind oft leichter zu finden als Trittsiegel. Mit einer Lupe sind sie eindeutig.</p><div class="cmp-wrap"><table class="cmp"><thead><tr><td></td><th scope="col">So sieht die Nuss aus</th></tr></thead><tbody>
 <tr><th scope="row"><a href="{R}arten/eichhoernchen/index.html">Eichhörnchen</a></th><td>Schale in zwei Hälften gesprengt oder mit grobem, gezacktem Rand</td></tr>
@@ -474,12 +517,12 @@ def build_tracks():
 <tr><th scope="row">Buntspecht</th><td>grob zerhackt, oft in eine Rindenspalte geklemmt</td></tr>
 </tbody></table></div></div></section>
 <section class="block" aria-labelledby="h-tip"><div class="wrap"><h2 id="h-tip">Tipps für die Spurensuche</h2><ul class="explore tips"><li><div><b>Nach Neuschnee</b><span>Am Morgen nach einer Schneenacht sind die Spuren frisch und scharf. Wenige Stunden später verlaufen sie schon.</span></div></li><li><div><b>Wegränder und Pfützen</b><span>Feuchter Lehm am Rand von Forstwegen und ausgetrocknete Pfützen halten Trittsiegel tagelang.</span></div></li><li><div><b>Fotografieren mit Maßstab</b><span>Lege ein Lineal oder einen Schlüssel neben das Siegel. Ohne Größenangabe ist eine Spur kaum zu bestimmen.</span></div></li><li><div><b>Hunde im Kopf behalten</b><span>Die meisten Pfotenabdrücke auf Spazierwegen stammen von Hunden. Ihre Spur läuft im Zickzack.</span></div></li></ul></div></section>'''
-    body += f'<section class="gearband" aria-labelledby="h-gear"><div class="wrap"><div class="head-row"><h2 id="h-gear">Für die Spurensuche</h2><a class="gearmore" href="{R}ausruestung/index.html">Alle Empfehlungen ansehen</a></div><ul class="products">{"".join(product(R, g) for g in ("buch", "gips", "lupe", "wildkamera"))}</ul>{ADNOTE}</div></section>'
+    body += gearband(R, "Für die Spurensuche", ("buch", "gips", "lupe", "wildkamera"))
     write("spuren/index.html", page("spuren/index.html", "Tierspuren im Wald lesen", "Tierspuren bestimmen: Trittsiegel von Reh, Fuchs, Marder, Wildschwein und Co. mit Zeichnungen, dazu Fraßspuren an Haselnüssen.", body, active="spuren", crumbs=[("Spuren", "")]))
 
 def build_gear():
     R = "../"
-    gsec = lambda t, ks: f'<h2 class="h3 gear-h">{t}</h2><ul class="products">{"".join(product(R, k) for k in ks)}</ul>'
+    gsec = lambda t, ks: f'<h2 class="h3 gear-h">{t}</h2><ul class="products">{"".join(product(R, k, sizes="(max-width: 600px) 92vw, 360px") for k in ks)}</ul>'
     body = f'''<section class="block page"> <div class="wrap"> <h1>Ausrüstung für Waldbeobachter</h1> <p class="intro">Für die meisten Begegnungen brauchst du nur Geduld, gute Ohren und Wind von vorn. Diese Dinge machen es leichter, vor allem in der Dämmerung.</p> {gsec("Beobachten", ("fernglas", "waermebild", "wildkamera", "lampe"))}{gsec("Spuren und Fraßspuren", ("buch", "gips", "lupe", "detektor"))}{gsec("Für Garten und Waldrand", ("igelhaus", "fledermauskasten", "futterkasten"))}{ADNOTE} </div> </section>
 <section class="block"><div class="wrap prose"><h2>Worauf es beim Fernglas ankommt</h2><p>Für die Dämmerung ist ein 8x42 oder 10x42 ideal: Die zweite Zahl ist der Durchmesser der Objektive in Millimetern. Je größer, desto heller das Bild, wenn Reh und Fuchs am Waldrand auftauchen. Achte auf Wasserdichtigkeit und darauf, dass das Glas dir nach einer Stunde noch nicht zu schwer ist.</p><h2>Wildkameras rücksichtsvoll nutzen</h2><p>Stelle Kameras nur mit Erlaubnis des Eigentümers oder Jagdpächters auf und richte sie nicht auf Wege, auf denen Menschen unterwegs sind. Fotos von Personen dürfen ohne deren Einwilligung nicht entstehen.</p></div></section>'''
     write("ausruestung/index.html", page("ausruestung/index.html", "Ausrüstung", "Fernglas, Wildkamera, Rotlicht-Lampe und Spurenbuch: Ausrüstung für Waldbeobachtungen.", body, crumbs=[("Ausrüstung", "")]))
@@ -495,8 +538,8 @@ def build_legal():
         a_, lic, url = CREDITS[k]
         n = name_of(k[2:] if k.startswith("x-") else k)
         rows += f'<tr id="f-{k}"><th scope="row">{esc(n)}</th><td>{esc(a_)}</td><td>{lic_link(lic)}</td><td><a href="{esc(url)}" target="_blank" rel="noopener">Quelle<span class="sr-only"> (öffnet in neuem Fenster)</span></a></td></tr>'
-    prows = "".join(f'<tr><th scope="row">{esc(PRODUCTS[k]["name"])}</th><td>{esc(a_)}</td><td>{lic_link(lic)}</td><td><a href="{esc(url)}" target="_blank" rel="noopener">Quelle<span class="sr-only"> (öffnet in neuem Fenster)</span></a></td></tr>' for k, (a_, lic, url) in PHOTO.items())
-    bn = f'''<section class="block page"> <div class="wrap prose"> <h1>Bildnachweis und Lizenzen</h1> <h2>Fotos</h2> <p>Alle Fotos stammen von Wikimedia Commons und stehen unter den genannten freien Lizenzen. Für die Seite wurden sie verkleinert und zugeschnitten. Die Lizenz ist jeweils mit ihrem Lizenztext verlinkt, die Quelle mit der Originaldatei. Bearbeitete Fotos unter einer Share-alike-Lizenz (BY-SA) stehen unter derselben Lizenz wie das Original.</p> </div> <div class="wrap"><div class="cmp-wrap" tabindex="0" role="region" aria-label="Bildnachweis der Tierfotos"><table class="cmp"><thead><tr><td>Art</td><th scope="col">Urheber</th><th scope="col">Lizenz</th><th scope="col">Quelle</th></tr></thead><tbody>{rows}</tbody></table></div></div> <div class="wrap prose"> <h2>Fotos zu den Produktempfehlungen</h2> <p>Die Fotos sind als Beispielfoto gekennzeichnet. Sie zeigen typische Geräte und Beispiele, nicht das verlinkte Produkt. Sichtbare Markenlogos wurden unkenntlich gemacht.</p> </div> <div class="wrap"><div class="cmp-wrap" tabindex="0" role="region" aria-label="Bildnachweis der Produktfotos"><table class="cmp"><thead><tr><td>Empfehlung</td><th scope="col">Urheber</th><th scope="col">Lizenz</th><th scope="col">Quelle</th></tr></thead><tbody>{prows}</tbody></table></div></div> <div class="wrap prose"> <h2>Zeichnungen</h2> <p>Die Trittsiegel sind eigene Zeichnungen für den Waldtierkompass. Sie zeigen typische Formen und sind nicht maßstabsgetreu.</p> <h2>Schriften</h2> <p>Fraunces (Undercase Type) und Figtree (Erik Kennedy), beide unter der SIL Open Font License 1.1, lokal eingebunden über das Projekt Fontsource.</p> </div> </section>'''
+    prows = "".join(f'<tr id="p-{k}"><th scope="row">{esc(PRODUCTS[k]["name"])}</th><td>{esc(a_)}</td><td>{lic_link(lic)}</td><td><a href="{esc(url)}" target="_blank" rel="noopener">Quelle<span class="sr-only"> (öffnet in neuem Fenster)</span></a></td></tr>' for k, (a_, lic, url) in PHOTO.items())
+    bn = f'''<section class="block page"> <div class="wrap prose"> <h1>Bildnachweis und Lizenzen</h1> <h2>Fotos</h2> <p>Alle Fotos stammen von Wikimedia Commons und stehen unter den genannten freien Lizenzen. Für die Seite wurden sie verkleinert und zugeschnitten. Die Lizenz ist jeweils mit ihrem Lizenztext verlinkt, die Quelle mit der Originaldatei. Bearbeitete Fotos unter einer Share-alike-Lizenz (BY-SA) stehen unter derselben Lizenz wie das Original.</p> </div> <div class="wrap"><div class="cmp-wrap" tabindex="0" role="region" aria-label="Bildnachweis der Tierfotos"><table class="cmp"><thead><tr><th scope="col">Art</th><th scope="col">Urheber</th><th scope="col">Lizenz</th><th scope="col">Quelle</th></tr></thead><tbody>{rows}</tbody></table></div></div> <div class="wrap prose"> <h2>Fotos zu den Produktempfehlungen</h2> <p>Die Fotos sind als Beispielfoto gekennzeichnet. Sie zeigen typische Geräte und Beispiele, nicht das verlinkte Produkt. Sichtbare Markenlogos wurden unkenntlich gemacht.</p> </div> <div class="wrap"><div class="cmp-wrap" tabindex="0" role="region" aria-label="Bildnachweis der Produktfotos"><table class="cmp"><thead><tr><th scope="col">Empfehlung</th><th scope="col">Urheber</th><th scope="col">Lizenz</th><th scope="col">Quelle</th></tr></thead><tbody>{prows}</tbody></table></div></div> <div class="wrap prose"> <h2>Zeichnungen</h2> <p>Die Trittsiegel sind eigene Zeichnungen für den Waldtierkompass. Sie zeigen typische Formen und sind nicht maßstabsgetreu.</p> <h2>Schriften</h2> <p>Fraunces (Undercase Type) und Figtree (Erik Kennedy), beide unter der SIL Open Font License 1.1, lokal eingebunden über das Projekt Fontsource.</p> </div> </section>'''
     write("bildnachweis/index.html", page("bildnachweis/index.html", "Bildnachweis und Lizenzen", "Bildnachweis und Lizenzen des Waldtierkompass.", bn, crumbs=[("Bildnachweis", "")]))
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -515,6 +558,11 @@ def build_assets():
     im = Image.open(os.path.join(HERE, "photos_src", "wk-reh.jpg")).convert("RGB")
     w, h = im.size; th = round(w / 1.91); y = (h - th) // 2
     im.crop((0, y, w, y + th)).save(os.path.join(OUT, "photos", "og.jpg"), quality=80, optimize=True, progressive=True)
+    # Vorschaubilder je Art im Format 1.91:1 (JPG, weil nicht jeder Dienst WebP anzeigt)
+    for sp in SPECIES:
+        im = Image.open(os.path.join(HERE, "photos", sp["k"] + ".webp")).convert("RGB")
+        w, h = im.size; th = round(w / 1.91); y = max(0, (h - th) // 3)
+        im.crop((0, y, w, y + th)).save(os.path.join(OUT, "photos", f"og-{sp['k']}.jpg"), quality=78, optimize=True, progressive=True)
 
 def finalize():
     """CSS entschlacken und minifizieren, JS bündeln, Sitemap schreiben."""
@@ -533,6 +581,16 @@ def finalize():
     entries = [os.path.join(HERE, "src", "js", f) for f in ("app.js", "home.js")]
     subprocess.run([os.path.join(TOOLS, "esbuild"), *entries, "--bundle", "--format=esm", "--minify", "--target=es2020",
                     "--legal-comments=none", f"--outdir={os.path.join(OUT, 'assets')}", "--log-level=warning"], check=True)
+    # Dateiversion an CSS und JS hängen, damit Browser nach einer Änderung nicht die alte Fassung aus dem Cache nehmen
+    import hashlib
+    ver = {f: hashlib.sha1(open(os.path.join(OUT, "assets", f), "rb").read()).hexdigest()[:8] for f in ("site.css", "app.js", "home.js")}
+    for d, _, fs in os.walk(OUT):
+        for f in fs:
+            if f.endswith(".html"):
+                fp = os.path.join(d, f); t = open(fp, encoding="utf-8").read()
+                for a, v in ver.items():
+                    t = t.replace(f'assets/{a}"', f'assets/{a}?v={v}"')
+                open(fp, "w", encoding="utf-8").write(t)
     urls = []
     for d, _, fs in os.walk(OUT):
         for f in fs:
@@ -544,7 +602,6 @@ def finalize():
           + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
     # Zeitpunkt des Builds, um zu prüfen, ob die Live-Seite aktuell ist
-    import datetime as _dt
     write("version.txt", _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") + "\n")
 
 if __name__ == "__main__":
