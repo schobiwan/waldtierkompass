@@ -85,8 +85,8 @@ figcaption small a,.sp-photo figcaption a{position:relative;z-index:3;color:inhe
 .hsearch-btn:hover{background:color-mix(in srgb,var(--hero-accent) 85%,#000)}
 .hsearch label:focus-within,.hsearch-btn:focus-visible,.hchip:focus-visible,.cbtn:focus-visible{outline:3px solid var(--hero-accent);outline-offset:2px}
 .hchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;max-width:520px}
-.hchip{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 13px;border-radius:999px;border:1px solid color-mix(in srgb,var(--forest-ink) 28%,var(--forest));background:transparent;color:var(--forest-ink);font:600 .88rem var(--body);cursor:pointer;transition:background .2s ease,border-color .2s ease}
-.hchip span{font-size:.76rem;font-weight:700;color:color-mix(in srgb,var(--forest-ink) 80%,var(--forest));font-variant-numeric:tabular-nums}
+.hchip{display:inline-block;line-height:34px;white-space:nowrap;min-height:36px;padding:0 13px;border-radius:999px;border:1px solid color-mix(in srgb,var(--forest-ink) 28%,var(--forest));background:transparent;color:var(--forest-ink);font:600 .88rem var(--body);cursor:pointer;transition:background .2s ease,border-color .2s ease}
+.hchip span{margin-left:7px;font-size:.76rem;font-weight:700;color:color-mix(in srgb,var(--forest-ink) 80%,var(--forest));font-variant-numeric:tabular-nums}
 .hchip:hover{background:color-mix(in srgb,var(--forest-ink) 12%,var(--forest));border-color:color-mix(in srgb,var(--forest-ink) 45%,var(--forest))}
 .h5-month{margin-top:24px;padding-top:16px;border-top:1px solid color-mix(in srgb,var(--forest-ink) 16%,var(--forest));max-width:500px}
 .h5-mh{font:700 .86rem var(--body);color:var(--hero-accent);margin:0 0 6px}
