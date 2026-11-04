@@ -1,6 +1,6 @@
 // Startseite: Suche, Filter und Sortierung
 import "./app.js";
-import { $, $$, nums, norm, escapeHtml, NOW, reduced, setPressed, focusEl } from "./util.js";
+import { $, $$, nums, norm, escapeHtml, NOW, reduced, setPressed, focusEl, IDX } from "./util.js";
 
 const grid = $("grid");
 const q = $("q");
@@ -189,7 +189,7 @@ grid.classList.add("calm");
   const top = peak[0] || rest[0];
   if (top && top.dataset.k !== $("spot-link")?.getAttribute("href")?.split("/")[1]) {
     const k = top.dataset.k, im = $("spot-img");
-    $("spot-link").href = `arten/${k}/index.html`;
+    $("spot-link").href = `arten/${k}/${IDX}`;
     im.src = `photos/${k}.webp`;
     im.srcset = `photos/${k}-400.webp 400w, photos/${k}.webp 720w`;
     $("spot-name").textContent = top.dataset.name;

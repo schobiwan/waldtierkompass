@@ -12,7 +12,9 @@ export const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&a
 export const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 export const setPressed = (el, on) => el.setAttribute("aria-pressed", String(!!on));
 const root = document.documentElement.dataset.root || "./";
-export const href = (p) => root + p + "index.html";
+// Live-Seite nutzt kurze Adressen (/arten/dachs/), die Vorschau verlinkt index.html
+export const IDX = document.documentElement.hasAttribute("data-clean") ? "" : "index.html";
+export const href = (p) => root + p + IDX;
 export function focusEl(el) {
   if (!(el instanceof HTMLElement)) return;
   if (!el.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute("tabindex", "-1");

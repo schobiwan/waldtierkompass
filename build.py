@@ -7,7 +7,11 @@ CREDITS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__))
 
 SITE = "Waldtierkompass"
 DOMAIN = "https://waldtierkompass.de"
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dist")
+import sys
+# Live-Seite (dist/) mit kurzen Adressen wie /arten/dachs/.
+# Mit --preview entsteht preview/ mit Links auf index.html für die Vorschau im Chat, die keine Ordner-Adressen kennt.
+PREVIEW = "--preview" in sys.argv
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "preview" if PREVIEW else "dist")
 MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
 MSHORT = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
 MSLUG = ["januar", "februar", "maerz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"]
@@ -120,7 +124,7 @@ def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=Non
     dj = f'<script type="application/json" id="wk-data">{json.dumps(data, ensure_ascii=False)}</script>' if data is not None else ""
     sc = f'<script type="module" src="{R}assets/{(scripts[0] if scripts else "app.js")}"></script>'
     full_title = title if is_home else f"{title} · {SITE}"
-    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{960 if og == "og.jpg" else 720}"><meta property="og:image:height" content="{503 if og == "og.jpg" else 377}"><meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs"> {"".join(tabs)} </ul> </div> </nav> <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
+    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}"{"" if PREVIEW else " data-clean"}> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{960 if og == "og.jpg" else 720}"><meta property="og:image:height" content="{503 if og == "og.jpg" else 377}"><meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs"> {"".join(tabs)} </ul> </div> </nav> <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
 
 def footer(R):
     ent = [("arten/index.html", "Alle Waldtiere"), ("spuren/index.html", "Spuren lesen"), ("unterscheiden/index.html", "Doppelgänger unterscheiden"),
@@ -581,6 +585,15 @@ def finalize():
     entries = [os.path.join(HERE, "src", "js", f) for f in ("app.js", "home.js")]
     subprocess.run([os.path.join(TOOLS, "esbuild"), *entries, "--bundle", "--format=esm", "--minify", "--target=es2020",
                     "--legal-comments=none", f"--outdir={os.path.join(OUT, 'assets')}", "--log-level=warning"], check=True)
+    # Kurze Adressen: interne Links ohne index.html (nur Live-Seite)
+    if not PREVIEW:
+        link = re.compile(r'href="(?![a-z]+:|#|/)([^"]*?)index\.html(#[^"]*)?"')
+        for d, _, fs in os.walk(OUT):
+            for f in fs:
+                if f.endswith(".html"):
+                    fp = os.path.join(d, f); t = open(fp, encoding="utf-8").read()
+                    t = link.sub(lambda m: f'href="{m.group(1) or "./"}{m.group(2) or ""}"', t)
+                    open(fp, "w", encoding="utf-8").write(t)
     # Dateiversion an CSS und JS hängen, damit Browser nach einer Änderung nicht die alte Fassung aus dem Cache nehmen
     import hashlib
     ver = {f: hashlib.sha1(open(os.path.join(OUT, "assets", f), "rb").read()).hexdigest()[:8] for f in ("site.css", "app.js", "home.js")}
