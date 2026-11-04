@@ -150,8 +150,8 @@ figcaption small a,.sp-photo figcaption a{position:relative;z-index:3;color:inhe
 /* Rechtliche Seiten: ruhigere Überschriften */
 section.block.page>.wrap.prose>h1{font-size:clamp(1.7rem,3vw,2.2rem);margin-bottom:10px}
 section.block.page>.wrap.prose>h2{font:700 1.08rem/1.3 var(--body);color:var(--heading);margin:26px 0 6px}
-/* Kopfbereich hell wie trockenes Laub (im Dunkelmodus bleibt er dunkel) */
-:root{--chrome:#eadbc4;--chrome-ink:#3b2a20;--chrome-line:#d9c5a6;--hero-accent:#a63d22;--hero-accent-ink:#fff}
+/* Kopfbereich hellgrün wie junges Laub (im Dunkelmodus bleibt er dunkel) */
+:root{--chrome:#dfe6cc;--chrome-ink:#2f3524;--chrome-line:#c5cfab;--hero-accent:#a63d22;--hero-accent-ink:#fff}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--chrome:#1f1612;--chrome-ink:#efe6da;--chrome-line:#3d3029;--hero-accent:#e8a24a;--hero-accent-ink:#2a1f18}}
 :root[data-theme=dark]{--chrome:#1f1612;--chrome-ink:#efe6da;--chrome-line:#3d3029;--hero-accent:#e8a24a;--hero-accent-ink:#2a1f18}
 .appnav,.hero5,.nowband{--forest:var(--chrome);--forest-ink:var(--chrome-ink)}
@@ -159,7 +159,7 @@ body:before{background:var(--chrome)}
 .appnav{border-bottom-color:var(--chrome-line)}
 .appnav .logo{--logo-accent:var(--hero-accent)}
 .appnav :focus-visible,.appnav .tabs .tab:focus-visible{outline-color:var(--hero-accent)}
-.hero5{background:radial-gradient(55% 90% at 82% 30%,color-mix(in srgb,#e8a24a 22%,transparent),transparent 70%),var(--chrome)}
+.hero5{background:radial-gradient(55% 90% at 82% 30%,color-mix(in srgb,#f3f0c8 70%,transparent),transparent 70%),var(--chrome)}
 .h5-mh{color:var(--hero-accent)}
 .h5-events li:before{background:var(--hero-accent)}
 .hsearch label{box-shadow:inset 0 0 0 1px var(--chrome-line)}
