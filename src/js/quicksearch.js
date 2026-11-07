@@ -1,7 +1,8 @@
 // Schnellsuche auf jeder Seite (wie beim Vogelkompass): Knopf „Suchen“ in der Leiste oder Taste „/“.
 // Auf der Startseite springt sie stattdessen zum Suchfeld im Kopfbereich.
 import { $, escapeHtml, focusEl, IDX } from "./util.js";
-import { prepare, rank, suggest } from "./search.js";
+import { prepare, rank, suggest, fold } from "./search.js";
+import { sisterFor, sisterHint } from "./sisters.js";
 
 const ROOT = document.documentElement.dataset.root || "./";
 const dlg = $("sdlg"), btn = $("navsearch"), sq = $("sq"), list = $("sresults"), more = $("smore"), moreLink = $("smore-link"), status = $("sstatus");
@@ -29,7 +30,8 @@ async function results() {
   if (!hits.length) {
     const g = suggest(q, all.map((x) => x.name));
     const hit = g && all.find((x) => x.name === g);
-    list.innerHTML = `<li class="snone">Nichts gefunden.${hit ? ` Meintest du <a href="${ROOT}arten/${hit.key}/${IDX}">${escapeHtml(hit.name)}</a>?` : ""}</li>`;
+    const sister = sisterFor(fold(q));
+    list.innerHTML = `<li class="snone">Nichts gefunden.${sister ? " " + sisterHint(sister) : hit ? ` Meintest du <a href="${ROOT}arten/${hit.key}/${IDX}">${escapeHtml(hit.name)}</a>?` : ""}</li>`;
   } else {
     list.innerHTML = hits.slice(0, 8).map((x) =>
       `<li><a href="${ROOT}arten/${x.key}/${IDX}"><img src="${ROOT}photos/${x.key}-400.webp" alt="" width="48" height="38" loading="lazy">${escapeHtml(x.name)}${x.r >= 3 ? `<span>${x.r === 3 ? "ähnelt der gesuchten Art" : "passt zu den Merkmalen"}</span>` : ""}</a></li>`).join("");

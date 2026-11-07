@@ -2,6 +2,7 @@
 import "./app.js";
 import { $, $$, nums, norm, escapeHtml, NOW, reduced, setPressed, focusEl, IDX } from "./util.js";
 import { distance } from "./search.js";
+import { sisterFor, sisterHint } from "./sisters.js";
 
 const grid = $("grid");
 const q = $("q");
@@ -64,7 +65,6 @@ function suggest(term) {
   return bd <= tolerance(term) + (term.length >= 5 ? 1 : 0) ? best : null;
 }
 
-const BIRDS = ["vogel", "voegel", "eule", "kauz", "uhu", "specht", "meise", "amsel", "drossel", "fink", "bussard", "falke", "habicht", "sperber", "kraehe", "rabe", "elster", "haeher", "taube", "kuckuck", "zaunkoenig", "rotkehlchen", "kleiber", "schnepfe", "storch", "reiher", "ente", "gans", "schwan", "milan", "adler"];
 const byName = (a, b) => a.name.localeCompare(b.name, "de");
 const nowRank = (a) => (a.peak.includes(NOW) ? 0 : a.present.includes(NOW) ? 1 : 2);
 let lastOrder = "";
@@ -102,9 +102,9 @@ function render() {
   $("empty").hidden = list.length > 0;
   const sg = $("empty-suggest"), term = norm(state.q.trim());
   const hit = !list.length && term ? suggest(term) : null;
-  const bird = !list.length && term && BIRDS.some((w) => term.includes(w) || (term.length >= 4 && w.startsWith(term)));
-  sg.hidden = !hit && !bird;
-  if (bird) sg.innerHTML = `Vögel findest du auf unserer Schwesterseite <a class="linkbtn" href="https://vogelkompass.de/" rel="noopener">Vogelkompass</a>.`;
+  const sister = !list.length && term ? sisterFor(term) : null;
+  sg.hidden = !hit && !sister;
+  if (sister) sg.innerHTML = sisterHint(sister);
   else if (hit) sg.innerHTML = `Meintest du <button type="button" class="linkbtn" data-try="${escapeHtml(hit.name)}">${escapeHtml(hit.name)}</button>?`;
 
   const n = state.count();
