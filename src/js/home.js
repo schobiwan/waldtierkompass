@@ -174,6 +174,9 @@ $("active").addEventListener("click", (e) => {
   render();
   focusEl($("active").querySelector("button") || q);
 });
+// Suchbegriff aus der Schnellsuche anderer Seiten übernehmen (index.html?q=…#arten)
+const fromUrl = new URLSearchParams(location.search).get("q");
+if (fromUrl) setQuery(fromUrl);
 render();
 grid.classList.add("calm");
 

@@ -1,4 +1,6 @@
-// Läuft auf jeder Seite: Navigation, Monatsangaben, Falt-Abschnitte
+// Läuft auf jeder Seite: Navigation, Schnellsuche, Monatsangaben, Falt-Abschnitte
+import "./nav.js";
+import "./quicksearch.js";
 import { $$, NOW, NOW_NAME, MSLUG, href } from "./util.js";
 
 // Falt-Abschnitte: Am Desktop immer offen und nicht bedienbar, auf dem Handy aufklappbar.

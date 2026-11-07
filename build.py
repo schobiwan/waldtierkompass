@@ -61,6 +61,8 @@ def mrange(ms):
 
 # ------------------------------------------------------------------ Icons
 ICON = {
+ "pack": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V6"/><rect x="5" y="6" width="14" height="15" rx="4"/><path d="M9 13h6M9 13v3h6v-3"/></svg>',
+ "chev": '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>',
  "find": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>',
  "track": '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15.5" rx="4" ry="3.5"/><circle cx="6.5" cy="10" r="1.7"/><circle cx="10" cy="6.5" r="1.7"/><circle cx="14" cy="6.5" r="1.7"/><circle cx="17.5" cy="10" r="1.7"/></svg>',
  "pair": '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="8" height="12" rx="2"/><rect x="13" y="6" width="8" height="12" rx="2"/></svg>',
@@ -99,18 +101,53 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect wi
 LDJSON = ('<script type="application/ld+json">' + json.dumps({"@context": "https://schema.org", "@type": "WebSite", "name": SITE, "url": DOMAIN + "/",
           "inLanguage": "de-DE", "description": "Waldtiere in Deutschland bestimmen: Fotos, Trittsiegel, Doppelgänger und Waldjahr."}, ensure_ascii=False) + '</script>')
 
-TABS = [("index", "Arten", "find"), ("spuren", "Spuren", "track"), ("unterscheiden", "Doppelgänger", "pair"), ("waldjahr", "Waldjahr", "year")]
+# Hauptnavigation nach den Fragen der Besucher (wie beim Vogelkompass):
+# Bestimmen ▾ (Wer ist das?) · Spuren (Wer war das?) · Waldjahr (Was ist jetzt los?) · Ausrüstung
+# Ohne JavaScript führt „Bestimmen“ zur Startseite mit der Suche.
+def _ng(*g): return sum(1 for x in SPECIES if x["grp"] in g)
+NAV = [
+    dict(key="bestimmen", label="Bestimmen", icon="find", href="index.html", intro="Wer ist das?", items=[
+        ("index.html#arten", "Nach Name oder Merkmal", "Suchen und filtern, z. B. „Pinselohren“"),
+        ("arten/index.html#g-huftiere", "Huftiere", f"{_ng('Huftiere')} Arten, vom Reh bis zum Wildschwein"),
+        ("arten/index.html#g-raubtiere", "Raubtiere", f"{_ng('Raubtiere')} Arten, vom Fuchs bis zum Luchs"),
+        ("arten/index.html#g-kleinsaeuger", "Kleinsäuger", f"{_ng('Kleinsäuger')} Arten, vom Eichhörnchen bis zur Fledermaus"),
+        ("arten/index.html#g-amphibien", "Amphibien, Reptilien und Insekten", f"{_ng('Amphibien', 'Reptilien', 'Insekten')} Arten, vom Feuersalamander bis zum Hirschkäfer"),
+        ("unterscheiden/index.html", "Doppelgänger unterscheiden", f"{len(PAIRS)} ähnliche Arten im direkten Vergleich"),
+        ("arten/index.html", "Alle Arten im Überblick", f"{len(SPECIES)} Steckbriefe nach Gruppen"),
+    ]),
+    dict(key="spuren", label="Spuren", icon="track", href="spuren/index.html"),
+    dict(key="waldjahr", label="Waldjahr", icon="year", href="waldjahr/index.html"),
+    dict(key="ausruestung", label="Ausrüstung", icon="pack", href="ausruestung/index.html"),
+]
+# Seiten-Schlüssel (active) → Bereich der Navigation
+AREA = {"index": "bestimmen", "unterscheiden": "bestimmen", "spuren": "spuren", "waldjahr": "waldjahr", "ausruestung": "ausruestung"}
+
+def nav_tabs(R, path, active):
+    area = AREA.get(active or "")
+    out = []
+    for m in NAV:
+        inner = f'{ICON[m["icon"]]}<span>{m["label"]}</span>'
+        if "items" not in m:
+            cur = ' aria-current="page"' if area == m["key"] else ""
+            out.append(f'<li><a class="tab" href="{R}{m["href"]}"{cur}>{inner}</a></li>')
+            continue
+        cur = ' aria-current="true"' if area == m["key"] else ""
+        lis = "".join(f'<li><a href="{R}{h}"{" aria-current=\"page\"" if h == path else ""}><b>{t}</b><span>{d}</span></a></li>' for h, t, d in m["items"])
+        out.append(f'<li class="has-menu"><a class="tab" href="{R}{m["href"]}" data-menu="{m["key"]}"{cur}>{inner}{ICON["chev"]}</a>'
+                   f'<div class="mpanel" id="menu-{m["key"]}" hidden><p class="mintro">{m["intro"]}</p><ul>{lis}</ul></div></li>')
+    return "".join(out)
+
+SEARCH_DLG = ('<dialog class="sdlg" id="sdlg" aria-labelledby="sdlg-title"> <form method="get" action="{R}index.html" class="sform" id="sform">'
+              '<h2 class="sr-only" id="sdlg-title">Tier suchen</h2><label class="search" for="sq">' + ICON["find"] + '<span class="sr-only">Name oder Merkmal</span>'
+              '<input type="search" id="sq" name="q" placeholder="Name oder Merkmal, z. B. Pinselohren" autocomplete="off" enterkeyhint="search"></label>'
+              '<button type="button" class="sclose" id="sclose">Schließen</button></form> <p class="sr-only" id="sstatus" role="status" aria-live="polite"></p><ul class="sresults" id="sresults" aria-label="Treffer"></ul>'
+              '<p class="smore" id="smore" hidden><a id="smore-link" href="{R}index.html#arten">Alle Treffer mit Filtern anzeigen</a></p> </dialog>')
 
 # ------------------------------------------------------------------ Layout
 def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=None, is_home=False, og="og.jpg", og_alt=None, og_type="website"):
     depth = path.count("/")
     R = "../" * depth
     canon = DOMAIN + "/" + (path[:-len("index.html")] if path.endswith("index.html") else path)
-    tabs = []
-    for key, label, ic in TABS:
-        href = R + ("index.html" if key == "index" else f"{key}/index.html")
-        cur = ' aria-current="page"' if active == key else ""
-        tabs.append(f'<li><a class="tab" href="{href}"{cur}> {ICON[ic]}<span>{label.replace("Doppelgänger", "Doppel&shy;gänger")}</span> </a></li>')
     cr = ""
     if crumbs:
         items = [f'<li><a href="{R}index.html">Start</a></li>']
@@ -124,7 +161,7 @@ def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=Non
     dj = f'<script type="application/json" id="wk-data">{json.dumps(data, ensure_ascii=False)}</script>' if data is not None else ""
     sc = f'<script type="module" src="{R}assets/{(scripts[0] if scripts else "app.js")}"></script>'
     full_title = title if is_home else f"{title} · {SITE}"
-    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}"{"" if PREVIEW else " data-clean"}> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark"><link rel="icon" href="{R}favicon.ico" sizes="48x48"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="{R}apple-touch-icon.png"><link rel="manifest" href="{R}site.webmanifest"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{960 if og == "og.jpg" else 720}"><meta property="og:image:height" content="{503 if og == "og.jpg" else 377}"><meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs"> {"".join(tabs)} </ul> </div> </nav> <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
+    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}"{"" if PREVIEW else " data-clean"}> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark"><link rel="icon" href="{R}favicon.ico" sizes="48x48"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="{R}apple-touch-icon.png"><link rel="manifest" href="{R}site.webmanifest"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{960 if og == "og.jpg" else 720}"><meta property="og:image:height" content="{503 if og == "og.jpg" else 377}"><meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs" id="tabs"> {nav_tabs(R, path, active)} </ul> <button class="navsearch" type="button" id="navsearch" aria-haspopup="dialog" aria-controls="sdlg">{ICON["find"]}<span class="sr-only">Tier suchen</span><span class="nsl" aria-hidden="true">Suchen</span></button> </div> <div class="mbackdrop" id="mbackdrop" hidden></div> </nav> {SEARCH_DLG.replace("{R}", R or "")} <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
 
 def footer(R):
     ent = [("arten/index.html", "Alle Waldtiere"), ("spuren/index.html", "Spuren lesen"), ("unterscheiden/index.html", "Doppelgänger unterscheiden"),
@@ -371,7 +408,7 @@ def build_arten_index():
     sec, n = [], 0
     for g in GROUPS:
         ss = sorted([s for s in SPECIES if s["grp"] == g], key=lambda x: x["n"])
-        sec.append(f'<h2 class="h3 grp-h">{g}</h2><ul class="grid">{"".join(card(R, s, i, eager=n + i < 4) for i, s in enumerate(ss))}</ul>')
+        sec.append(f'<h2 class="h3 grp-h" id="g-{slug(g)}">{g}</h2><ul class="grid">{"".join(card(R, s, i, eager=n + i < 4) for i, s in enumerate(ss))}</ul>')
         n += len(ss)
     body = f'<section class="block page"> <div class="wrap"> <h1>Alle Waldtiere</h1> {actlegend()} <p class="intro">{len(SPECIES)} Arten, nach Gruppen geordnet. Zum Suchen und Filtern geht es zur <a href="../index.html#arten">Startseite</a>.</p> {"".join(sec)} </div> </section>'
     write("arten/index.html", page("arten/index.html", "Alle Waldtiere", "Alle Waldtiere im Überblick: Huftiere, Raubtiere, Kleinsäuger, Amphibien, Reptilien und Insekten.", body, active="index", crumbs=[("Arten", "")]))
@@ -529,7 +566,7 @@ def build_gear():
     gsec = lambda t, ks: f'<h2 class="h3 gear-h">{t}</h2><ul class="products">{"".join(product(R, k, sizes="(max-width: 600px) 92vw, 360px") for k in ks)}</ul>'
     body = f'''<section class="block page"> <div class="wrap"> <h1>Ausrüstung für Waldbeobachter</h1> <p class="intro">Für die meisten Begegnungen brauchst du nur Geduld, gute Ohren und Wind von vorn. Diese Dinge machen es leichter, vor allem in der Dämmerung.</p> {gsec("Beobachten", ("fernglas", "waermebild", "wildkamera", "lampe"))}{gsec("Spuren und Fraßspuren", ("buch", "gips", "lupe", "detektor"))}{gsec("Für Garten und Waldrand", ("igelhaus", "fledermauskasten", "futterkasten"))}{ADNOTE} </div> </section>
 <section class="block"><div class="wrap prose"><h2>Worauf es beim Fernglas ankommt</h2><p>Für die Dämmerung ist ein 8x42 oder 10x42 ideal: Die zweite Zahl ist der Durchmesser der Objektive in Millimetern. Je größer, desto heller das Bild, wenn Reh und Fuchs am Waldrand auftauchen. Achte auf Wasserdichtigkeit und darauf, dass das Glas dir nach einer Stunde noch nicht zu schwer ist.</p><h2>Wildkameras rücksichtsvoll nutzen</h2><p>Stelle Kameras nur mit Erlaubnis des Eigentümers oder Jagdpächters auf und richte sie nicht auf Wege, auf denen Menschen unterwegs sind. Fotos von Personen dürfen ohne deren Einwilligung nicht entstehen.</p></div></section>'''
-    write("ausruestung/index.html", page("ausruestung/index.html", "Ausrüstung", "Fernglas, Wildkamera, Rotlicht-Lampe und Spurenbuch: Ausrüstung für Waldbeobachtungen.", body, crumbs=[("Ausrüstung", "")]))
+    write("ausruestung/index.html", page("ausruestung/index.html", "Ausrüstung", "Fernglas, Wildkamera, Rotlicht-Lampe und Spurenbuch: Ausrüstung für Waldbeobachtungen.", body, active="ausruestung", crumbs=[("Ausrüstung", "")]))
 
 def build_legal():
     R = "../"
@@ -553,6 +590,14 @@ SAFELIST = ["now", "open", "calm", "scrolled", "clear", "fcount", "pk"]
 def build_assets():
     from PIL import Image
     write("favicon.svg", FAVICON)
+    # Suchdaten für die Schnellsuche: [Name, Schlüssel, Namen, Doppelgänger, Merkmale getrennt mit |]
+    rows = []
+    for sp in SPECIES:
+        k = sp["k"]
+        alt = " ".join(name_of(p["b"] if p["a"] == k else p["a"]) for p in PAIRS if k in (p["a"], p["b"]))
+        rows.append([sp["n"], k, " ".join([sp["n"], sp["lat"], SYN.get(k, "")]), alt,
+                     "|".join([sp["grp"] + " " + GRP_SYN[sp["grp"]], sp["short"], " ".join(ACTS[a] for a in sp["act"])])])
+    write("search.json", json.dumps(rows, ensure_ascii=False, separators=(",", ":")))
     # Symbole für Browser ohne SVG-Favicon, Google-Suchergebnisse und den Startbildschirm (aus icons/, erzeugt aus favicon.svg)
     for f in os.listdir(os.path.join(HERE, "icons")):
         shutil.copy(os.path.join(HERE, "icons", f), os.path.join(OUT, f))

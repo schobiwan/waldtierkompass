@@ -240,3 +240,58 @@ main:has(>.gearband:last-child)+footer,main:has(>section:last-child>.gearband)+f
 .months span:not(.p):not(.h),.cal td.m:not(.p):not(.h),.legend i:not([class]){border-style:dashed}
 .months span.now,.cal td.m.now,.legend i.now{outline:2px solid Highlight}
 }
+
+/* ---------- Schnellsuche (wie Vogelkompass) ---------- */
+.navsearch{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;margin-left:8px;border-radius:999px;border:1px solid color-mix(in srgb,var(--chrome-ink) 28%,transparent);background:transparent;color:var(--chrome-ink);font:700 .9rem var(--body);cursor:pointer;flex:none}
+.navsearch svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.navsearch:hover{background:color-mix(in srgb,var(--chrome-ink) 8%,transparent);border-color:var(--chrome-ink)}
+.navsearch:focus-visible{outline:3px solid var(--hero-accent);outline-offset:2px}
+.sdlg{border:0;border-radius:16px;padding:16px;width:min(560px,calc(100vw - 32px));margin-top:10vh;background:var(--surface);color:var(--fg);box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.sdlg::backdrop{background:rgba(0,0,0,.4)}
+.sform{display:flex;gap:8px;align-items:center}
+.sform .search{flex:1;max-width:none}
+.sclose{font:600 .9rem var(--body);background:none;border:0;color:var(--muted);min-height:44px;padding:0 6px;cursor:pointer}
+.sclose:hover{color:var(--fg)}
+.sresults{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:2px}
+.sresults a{display:grid;grid-template-columns:48px 1fr;align-items:center;column-gap:12px;padding:6px;border-radius:10px;color:var(--fg);text-decoration:none;font-weight:700}
+.sresults a:hover,.sresults a:focus-visible{background:color-mix(in srgb,var(--moss) 14%,var(--surface))}
+.sresults img{width:48px;height:38px;object-fit:cover;border-radius:6px;grid-row:span 2}
+.sresults a span{grid-column:2;font-weight:400;font-size:.84rem;color:var(--muted)}
+.snone{color:var(--muted);padding:8px 6px}
+.snone a{color:var(--rust);font-weight:700}
+.smore{margin:10px 6px 0;font-weight:700}
+.smore a{color:var(--rust)}
+@media(max-width:960px){.appnav .navsearch{margin-left:auto}.navsearch .nsl{display:none}.navsearch{padding:0 11px}}
+
+/* ---------- Aufklappmenü der Hauptnavigation (wie Vogelkompass) ---------- */
+.tabs>li.has-menu{position:relative}
+.tab .chev{width:14px;height:14px;margin-left:-2px;opacity:.7;transition:transform .2s ease}
+.tab[aria-expanded=true] .chev{transform:rotate(180deg)}
+.tab[aria-current=true]{background:color-mix(in srgb,var(--forest-ink) 18%,transparent)}
+.tab[aria-expanded=true]{background:color-mix(in srgb,var(--forest-ink) 12%,transparent)}
+.mpanel{position:absolute;top:calc(100% + 6px);left:-8px;z-index:30;width:360px;padding:12px;border-radius:14px;background:var(--surface);color:var(--fg);box-shadow:0 18px 48px rgba(0,0,0,.22),0 2px 6px rgba(0,0,0,.08)}
+.mpanel:before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px}
+.mpanel .mintro{margin:2px 10px 8px;font-size:.8rem;font-weight:700;color:var(--muted)}
+.mpanel ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.mpanel a{display:grid;gap:1px;padding:9px 10px;border-radius:10px;color:var(--fg);text-decoration:none}
+.mpanel a b{font-weight:700;font-size:.98rem;color:var(--heading)}
+.mpanel a span{color:var(--muted);font-size:.86rem}
+.mpanel a:hover{background:color-mix(in srgb,var(--moss) 14%,var(--surface))}
+.mpanel a:hover b{color:var(--rust)}
+.mpanel a[aria-current=page]{background:color-mix(in srgb,var(--moss) 20%,var(--surface))}
+.mpanel :focus-visible{outline-color:var(--rust)}
+.mbackdrop{position:fixed;inset:0;z-index:19;background:rgba(0,0,0,.35)}
+.grp-h{scroll-margin-top:calc(var(--nav-h) + 16px)}
+@keyframes sheet{from{transform:translateY(16px);opacity:0}}
+@media(max-width:960px){
+  .tab .chev{display:none}
+  .tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .tabs>li{display:flex;min-width:0}
+  .tabs>li>.tab{flex:1;width:100%}
+  .tab[aria-current=true]{color:var(--heading);background:color-mix(in srgb,var(--moss) 18%,var(--surface))}
+  .tab[aria-expanded=true]{color:var(--heading);background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+  .mpanel{position:fixed;top:auto;left:8px;right:8px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:auto;max-height:calc(100vh - 140px);overflow:auto;animation:sheet .22s ease both}
+  .mpanel:before{display:none}
+}
+.tabs>li{display:flex}
+.mpanel li{display:block}
