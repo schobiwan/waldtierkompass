@@ -53,6 +53,8 @@ $("sclose")?.addEventListener("click", () => dlg.close());
 dlg?.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
 let t = 0;
 sq?.addEventListener("input", () => { clearTimeout(t); t = window.setTimeout(results, 100); });
+// Escape schließt das Fenster sofort, statt erst das Feld zu leeren
+sq?.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); dlg.close(); } });
 $("sform")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   await results();

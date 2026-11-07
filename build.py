@@ -126,7 +126,9 @@ def nav_tabs(R, path, active):
     area = AREA.get(active or "")
     out = []
     for m in NAV:
-        inner = f'{ICON[m["icon"]]}<span>{m["label"]}</span>'
+        # Trennstellen für die schmale untere Leiste (unsichtbar, solange das Wort passt)
+        lab = m["label"].replace("Bestimmen", "Bestim&shy;men").replace("Ausrüstung", "Aus&shy;rüstung").replace("Waldjahr", "Wald&shy;jahr")
+        inner = f'{ICON[m["icon"]]}<span>{lab}</span>'
         if "items" not in m:
             cur = ' aria-current="page"' if area == m["key"] else ""
             out.append(f'<li><a class="tab" href="{R}{m["href"]}"{cur}>{inner}</a></li>')

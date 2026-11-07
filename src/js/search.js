@@ -36,7 +36,7 @@ export function rank(e, query) {
   return -1;
 }
 
-function distance(a, b) {
+export function distance(a, b) {
   const row = Array.from({ length: b.length + 1 }, (_, i) => i);
   for (let i = 1; i <= a.length; i++) {
     let prev = row[0]; row[0] = i;

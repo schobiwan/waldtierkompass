@@ -189,8 +189,8 @@ section.block>.wrap>h2+.grid,section.block>.wrap>h2+.pills,section.block>.wrap>h
  table.cmp-pair th{padding:0 0 6px;border:0;font:700 .95rem var(--body);color:var(--heading)}
  table.cmp-pair td{padding:4px 0;border:0}
  table.cmp-pair td:before{content:attr(data-label);display:block;font:700 .76rem var(--body);color:var(--muted)}
- .cal .n{max-width:118px;overflow:hidden;text-overflow:ellipsis;font-size:.84rem;box-shadow:6px 0 8px -6px #0000002e}
- .cal .n a{display:block;overflow:hidden;text-overflow:ellipsis;line-height:40px}
+ .cal .n{max-width:118px;white-space:normal;font-size:.84rem;box-shadow:6px 0 8px -6px #0000002e}
+ .cal .n a{display:flex;align-items:center;min-height:40px;line-height:1.2;hyphens:auto;overflow-wrap:anywhere}
 }
 @media(max-width:560px){
  .trkgrid{grid-template-columns:minmax(0,1fr);gap:10px}
@@ -203,7 +203,7 @@ section.block>.wrap>h2+.grid,section.block>.wrap>h2+.pills,section.block>.wrap>h
 .cal .n{position:sticky;left:0;z-index:2;background:var(--surface)}
 .cal thead th:first-child{position:sticky;left:0;z-index:3;background:var(--surface)}
 .cal .grow th span{position:sticky;left:0;display:inline-block;font:700 .82rem var(--body);color:var(--muted)}
-@media(max-width:600px){.cal .n{width:112px;min-width:112px}.cal .n a{width:104px;white-space:nowrap}}
+@media(max-width:600px){.cal .n{width:112px;min-width:112px}.cal .n a{width:104px}}
 
 .hchip[aria-pressed="true"]{background:var(--hero-accent);border-color:var(--hero-accent);color:var(--hero-accent-ink)}
 .hchip[aria-pressed="true"] span{color:inherit;opacity:.85}
@@ -264,7 +264,9 @@ main:has(>.gearband:last-child)+footer,main:has(>section:last-child>.gearband)+f
 @media(max-width:960px){.appnav .navsearch{margin-left:auto}.navsearch .nsl{display:none}.navsearch{padding:0 11px}}
 
 /* ---------- Aufklappmenü der Hauptnavigation (wie Vogelkompass) ---------- */
+.tabs>li{display:flex}
 .tabs>li.has-menu{position:relative}
+.mpanel li{display:block}
 .tab .chev{width:14px;height:14px;margin-left:-2px;opacity:.7;transition:transform .2s ease}
 .tab[aria-expanded=true] .chev{transform:rotate(180deg)}
 .tab[aria-current=true]{background:color-mix(in srgb,var(--forest-ink) 18%,transparent)}
@@ -286,12 +288,10 @@ main:has(>.gearband:last-child)+footer,main:has(>section:last-child>.gearband)+f
 @media(max-width:960px){
   .tab .chev{display:none}
   .tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .tabs>li{display:flex;min-width:0}
+  .tabs>li{min-width:0}
   .tabs>li>.tab{flex:1;width:100%}
   .tab[aria-current=true]{color:var(--heading);background:color-mix(in srgb,var(--moss) 18%,var(--surface))}
   .tab[aria-expanded=true]{color:var(--heading);background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
   .mpanel{position:fixed;top:auto;left:8px;right:8px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:auto;max-height:calc(100vh - 140px);overflow:auto;animation:sheet .22s ease both}
   .mpanel:before{display:none}
 }
-.tabs>li{display:flex}
-.mpanel li{display:block}

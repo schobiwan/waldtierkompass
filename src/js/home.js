@@ -1,6 +1,7 @@
 // Startseite: Suche, Filter und Sortierung
 import "./app.js";
 import { $, $$, nums, norm, escapeHtml, NOW, reduced, setPressed, focusEl, IDX } from "./util.js";
+import { distance } from "./search.js";
 
 const grid = $("grid");
 const q = $("q");
@@ -45,17 +46,8 @@ const state = {
   },
 };
 
-// Tippfehler verzeihen: Levenshtein-Abstand, auch gegen den Wortanfang
-function dist(a, b) {
-  const m = a.length, n = b.length;
-  let prev = Array.from({ length: n + 1 }, (_, j) => j);
-  for (let i = 1; i <= m; i++) {
-    const cur = [i];
-    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-    prev = cur;
-  }
-  return prev[n];
-}
+// Tippfehler verzeihen: Levenshtein-Abstand (gemeinsam mit der Schnellsuche), auch gegen den Wortanfang
+const dist = distance;
 const tolerance = (t) => (t.length >= 7 ? 2 : t.length >= 3 ? 1 : 0);
 function fuzzy(a, term) {
   if (a.search.includes(term)) return true;
