@@ -99,7 +99,8 @@ FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect wi
            '<g fill="#f6efe4" transform="translate(0 1)">' + PAW + '</g><path d="M24 4.5 27 10.5H21z" fill="#e8a24a"/></svg>')
 
 LDJSON = ('<script type="application/ld+json">' + json.dumps({"@context": "https://schema.org", "@type": "WebSite", "name": SITE, "url": DOMAIN + "/",
-          "inLanguage": "de-DE", "description": "Waldtiere in Deutschland bestimmen: Fotos, Trittsiegel, Doppelgänger und Waldjahr."}, ensure_ascii=False) + '</script>')
+          "inLanguage": "de-DE", "description": "Waldtiere in Deutschland bestimmen: Fotos, Trittsiegel, Doppelgänger und Waldjahr.",
+          "publisher": {"@type": "Person", "name": "Nico Schober", "url": DOMAIN + "/ueber/"}}, ensure_ascii=False) + '</script>')
 
 # Hauptnavigation nach den Fragen der Besucher (wie beim Vogelkompass):
 # Bestimmen ▾ (Wer ist das?) · Spuren (Wer war das?) · Waldjahr (Was ist jetzt los?) · Ausrüstung
@@ -171,7 +172,7 @@ def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=Non
 def footer(R):
     ent = [("arten/index.html", "Alle Waldtiere"), ("spuren/index.html", "Spuren lesen"), ("unterscheiden/index.html", "Doppelgänger unterscheiden"),
            ("waldjahr/index.html", "Waldjahr und Kalender"), ("ausruestung/index.html", "Ausrüstung")]
-    leg = [("impressum/index.html", "Impressum"), ("datenschutz/index.html", "Datenschutz"), ("bildnachweis/index.html", "Bildnachweis und Lizenzen")]
+    leg = [("ueber/index.html", "Über den Waldtierkompass"), ("impressum/index.html", "Impressum"), ("datenschutz/index.html", "Datenschutz"), ("bildnachweis/index.html", "Bildnachweis und Lizenzen")]
     li = lambda xs: "".join(f'<li><a href="{R}{h}">{t}</a></li>' for h, t in xs)
     return f'''<footer> <div class="wrap"> <a class="flogo" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span></a> <div class="fcols"> <nav aria-label="Entdecken"><p class="fhead">Entdecken</p><ul>{li(ent)}</ul></nav> <nav aria-label="Rechtliches"><p class="fhead">Rechtliches</p><ul>{li(leg)}</ul></nav> <nav aria-label="Schwesterseite"><p class="fhead">Schwesterseite</p><ul><li><a href="https://vogelkompass.de/" rel="noopener">Vogelkompass: Vögel bestimmen</a></li><li><a href="https://meereskompass.de/" rel="noopener">Meereskompass: Tiere an der Küste</a></li></ul></nav> </div> <p class="footnote">Fotos: Wikimedia Commons, unter freien Lizenzen. Trittsiegel sind eigene Zeichnungen. Mit * markierte Links sind Werbelinks. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.</p> </div> </footer>'''
 
@@ -440,7 +441,7 @@ def species_ld(s):
     k = s["k"]; a, lic, url = CREDITS[k]
     return {"@context": "https://schema.org", "@type": "WebPage", "name": f"{s['n']} ({s['lat']})", "description": species_desc(s),
             "inLanguage": "de-DE", "url": f"{DOMAIN}/arten/{k}/",
-            "author": {"@type": "Person", "name": "Nico Schober"},
+            "author": {"@type": "Person", "name": "Nico Schober", "url": f"{DOMAIN}/ueber/"},
             "about": {"@type": "Taxon", "name": s["lat"], "alternateName": s["n"], "taxonRank": "species"},
             "image": f"{DOMAIN}/photos/{k}.webp",
             "primaryImageOfPage": {"@type": "ImageObject", "contentUrl": f"{DOMAIN}/photos/{k}.webp", "creator": {"@type": "Person", "name": a},
@@ -639,6 +640,41 @@ def build_assets():
         w, h = im.size; th = round(w / 1.91); y = max(0, (h - th) // 3)
         im.crop((0, y, w, y + th)).save(os.path.join(OUT, "photos", f"og-{sp['k']}.jpg"), quality=78, optimize=True, progressive=True)
 
+def build_about():
+    """Über den Waldtierkompass: wer die Seite macht, woher die Inhalte stammen, wie sie sich finanziert (wie beim Vogelkompass).
+    Wichtig für Vertrauen bei Besuchern und für Google (Erfahrung, Fachwissen, Vertrauenswürdigkeit)."""
+    R = "../"
+    ext = lambda u, t: f'<a href="{u}" rel="noopener">{t}</a>'
+    body = f'''<section class="block page"> <div class="wrap prose"> <h1>Über den Waldtierkompass</h1>
+<p>Der Waldtierkompass hilft dir, die Tiere zu erkennen, die dir in Deutschland im Wald und am Waldrand begegnen, und die Spuren, die sie hinterlassen. Er zeigt {len(SPECIES)} typische Arten, von Reh und Fuchs über Igel und Fledermaus bis zu Feuersalamander und Hirschkäfer, mit Foto, Merkmalen und Aktivität im Jahresverlauf. In {len(PAIRS)} Vergleichen erklärt er, wie du sie von ihren Doppelgängern unterscheidest.</p>
+<h2>Wer den Waldtierkompass macht</h2>
+<p>Den Waldtierkompass betreibt Nico Schober aus Bremen als privates, unabhängiges Angebot. Texte, Auswahl der Arten und Gestaltung stammen von ihm. Die Seite gehört zu keinem Verband, keiner Jägerschaft und keinem Hersteller. Die Kontaktdaten stehen im <a href="{R}impressum/index.html">Impressum</a>.</p>
+<h2>Woher die Inhalte stammen</h2>
+<ul>
+<li><b>Steckbriefe:</b> Merkmale, Größe und Lebensweise sind kurz und alltagstauglich zusammengefasst. Jede Artseite verlinkt unter „Mehr erfahren“ den passenden Wikipedia-Artikel zum Nachlesen.</li>
+<li><b>Jahreszeiten und Aktivität:</b> Die Angaben, wann eine Art aktiv und gut zu sehen ist, sind grobe Richtwerte für Deutschland. Je nach Region, Höhenlage und Wetter weichen sie ab.</li>
+<li><b>Fotos:</b> von Wikimedia Commons, unter freien Lizenzen, mit Namen der Fotografinnen und Fotografen an jedem Bild.</li>
+<li><b>Trittsiegel:</b> eigene, vereinfachte Zeichnungen. Die Größenangaben sind typische Werte, einzelne Abdrücke können je nach Boden und Tier abweichen.</li>
+</ul>
+<p>Alle Urheber und Lizenzen stehen gesammelt unter <a href="{R}bildnachweis/index.html">Bildnachweis und Lizenzen</a>.</p>
+<h2>Wie sich die Seite finanziert</h2>
+<p>Der Waldtierkompass ist kostenlos und ohne Anmeldung nutzbar. Einige Seiten empfehlen Ferngläser, Wildkameras oder Bücher mit Werbelinks zu Amazon, die mit * gekennzeichnet sind. Kaufst du über einen solchen Link, erhält der Betreiber eine kleine Provision, für dich ändert sich am Preis nichts. Die Empfehlungen sind nicht selbst getestet, und Hersteller haben keinen Einfluss auf die Auswahl.</p>
+<h2>Deine Daten</h2>
+<p>Der Waldtierkompass setzt keine Cookies, misst keine Reichweite und speichert nichts in deinem Browser. Mehr dazu in der <a href="{R}datenschutz/index.html">Datenschutzerklärung</a>.</p>
+<h2>Fehler gefunden?</h2>
+<p>Wenn dir eine falsche Angabe, ein falsch zugeordnetes Foto oder eine ungenaue Spur auffällt, schreib gern an <a href="mailto:info@nicoschober.com">info@nicoschober.com</a>. Hinweise werden geprüft und eingearbeitet.</p>
+<h2>Schwesterseiten</h2>
+<ul>
+<li>{ext("https://vogelkompass.de/", "Vogelkompass")}: Vögel in Deutschland erkennen, mit Rufen zum Anhören</li>
+<li>{ext("https://meereskompass.de/", "Meereskompass")}: Seevögel, Robben, Wale und Strandfunde an Nord- und Ostsee</li>
+</ul> </div> </section>'''
+    ld = {"@context": "https://schema.org", "@type": "AboutPage", "name": f"Über den {SITE}", "url": f"{DOMAIN}/ueber/", "inLanguage": "de-DE",
+          "mainEntity": {"@type": "Person", "name": "Nico Schober", "address": {"@type": "PostalAddress", "addressLocality": "Bremen", "addressCountry": "DE"}},
+          "about": {"@type": "WebSite", "name": SITE, "url": DOMAIN + "/"}}
+    write("ueber/index.html", page("ueber/index.html", "Über den Waldtierkompass: Macher, Quellen, Finanzierung",
+          "Wer den Waldtierkompass macht, woher Fotos, Steckbriefe und Trittsiegel stammen, wie die Seite sich finanziert und wie du Fehler meldest.",
+          body, crumbs=[("Über den Waldtierkompass", "")], ld=ld))
+
 def build_extras():
     """Fehlerseite, Cache-Header für statichost und llms.txt (übernommen vom Vogelkompass)."""
     body = (f'<section class="block page"><div class="wrap prose"><h1>Hier ist kein Tier</h1>'
@@ -672,7 +708,8 @@ def build_extras():
              f"- [Doppelgänger unterscheiden]({DOMAIN}/unterscheiden/): ähnliche Arten im direkten Vergleich",
              f"- [Spuren lesen]({DOMAIN}/spuren/): Trittsiegel und andere Hinweise",
              f"- [Waldjahr]({DOMAIN}/waldjahr/): welche Tiere in welchem Monat aktiv sind",
-             f"- [Ausrüstung]({DOMAIN}/ausruestung/): Fernglas, Wildkamera, Bestimmungsbücher", ""]
+             f"- [Ausrüstung]({DOMAIN}/ausruestung/): Fernglas, Wildkamera, Bestimmungsbücher",
+             f"- [Über den Waldtierkompass]({DOMAIN}/ueber/): wer die Seite macht, Quellen und Finanzierung", ""]
     for g, xs in grp.items():
         lines.append(f"## {g}")
         lines += [f"- [{x['n']}]({DOMAIN}/arten/{x['k']}/): {x['short']}" for x in sorted(xs, key=lambda x: x["n"])]
@@ -736,7 +773,7 @@ if __name__ == "__main__":
     build_assets(); build_home(); build_arten_index()
     for s in SPECIES:
         build_species(s)
-    build_pairs(); build_year(); build_tracks(); build_gear(); build_legal(); build_extras()
+    build_pairs(); build_year(); build_tracks(); build_gear(); build_legal(); build_about(); build_extras()
     finalize()
     n = sum(len(fs) for _, _, fs in os.walk(OUT))
     print("Dateien:", n)

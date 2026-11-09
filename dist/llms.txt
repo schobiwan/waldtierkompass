@@ -11,6 +11,7 @@ Sprache: Deutsch. Angaben zu Aktivität und Jahreszeiten sind grobe Richtwerte f
 - [Spuren lesen](https://waldtierkompass.de/spuren/): Trittsiegel und andere Hinweise
 - [Waldjahr](https://waldtierkompass.de/waldjahr/): welche Tiere in welchem Monat aktiv sind
 - [Ausrüstung](https://waldtierkompass.de/ausruestung/): Fernglas, Wildkamera, Bestimmungsbücher
+- [Über den Waldtierkompass](https://waldtierkompass.de/ueber/): wer die Seite macht, Quellen und Finanzierung
 
 ## Huftiere
 - [Damhirsch](https://waldtierkompass.de/arten/damhirsch/): Hirsch mit weiß gepunktetem Sommerfell und schaufelförmigem Geweih.
