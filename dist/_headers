@@ -1,0 +1,10 @@
+# Waldtierkompass – Header für statichost.eu (Format wie beim Vogelkompass)
+*
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+/assets/*
+    Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+    Cache-Control: public, max-age=31536000, immutable
+/photos/*
+    Cache-Control: public, max-age=2592000

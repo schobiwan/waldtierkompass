@@ -146,9 +146,10 @@ SEARCH_DLG = ('<dialog class="sdlg" id="sdlg" aria-labelledby="sdlg-title"> <for
               '<p class="smore" id="smore" hidden><a id="smore-link" href="{R}index.html#arten">Alle Treffer mit Filtern anzeigen</a></p> </dialog>')
 
 # ------------------------------------------------------------------ Layout
-def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=None, is_home=False, og="og.jpg", og_alt=None, og_type="website"):
+def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=None, is_home=False, og="og.jpg", og_alt=None, og_type="website",
+         ld=None, root=None, noindex=False):
     depth = path.count("/")
-    R = "../" * depth
+    R = root if root is not None else "../" * depth
     canon = DOMAIN + "/" + (path[:-len("index.html")] if path.endswith("index.html") else path)
     cr = ""
     if crumbs:
@@ -161,9 +162,11 @@ def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=Non
         cr += ('<script type="application/ld+json">' + json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
                {"@type": "ListItem", "position": i + 1, "name": lab, "item": u} for i, (lab, u) in enumerate(trail)]}, ensure_ascii=False) + '</script>')
     dj = f'<script type="application/json" id="wk-data">{json.dumps(data, ensure_ascii=False)}</script>' if data is not None else ""
+    if ld:
+        dj = '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace("</", "<\\/") + '</script>' + dj
     sc = f'<script type="module" src="{R}assets/{(scripts[0] if scripts else "app.js")}"></script>'
     full_title = title if is_home else f"{title} · {SITE}"
-    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}"{"" if PREVIEW else " data-clean"}> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark"><link rel="icon" href="{R}favicon.ico" sizes="48x48"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="{R}apple-touch-icon.png"><link rel="manifest" href="{R}site.webmanifest"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{960 if og == "og.jpg" else 720}"><meta property="og:image:height" content="{503 if og == "og.jpg" else 377}"><meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs" id="tabs"> {nav_tabs(R, path, active)} </ul> <button class="navsearch" type="button" id="navsearch" aria-haspopup="dialog" aria-controls="sdlg">{ICON["find"]}<span class="sr-only">Tier suchen</span><span class="nsl" aria-hidden="true">Suchen</span></button> </div> <div class="mbackdrop" id="mbackdrop" hidden></div> </nav> {SEARCH_DLG.replace("{R}", R or "")} <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
+    return f'''<!DOCTYPE html><html lang="de" data-root="{R or './'}"{"" if PREVIEW else " data-clean"}> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>{esc(full_title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}"><meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark">{'<meta name="robots" content="noindex">' if noindex else ""}<link rel="icon" href="{R}favicon.ico" sizes="48x48"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="{R}apple-touch-icon.png"><link rel="manifest" href="{R}site.webmanifest"><link rel="preload" href="{R}fonts/fraunces-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="{R}fonts/figtree-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{SITE}"><meta property="og:locale" content="de_DE"><meta property="og:title" content="{esc(full_title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{960 if og == "og.jpg" else 720}"><meta property="og:image:height" content="{503 if og == "og.jpg" else 377}"><meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">{LDJSON if is_home else ""}<link rel="stylesheet" href="{R}assets/site.css"></head> <body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> <nav class="appnav" aria-label="Hauptnavigation"> <div class="wrap"> <a class="brand" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span><span class="sr-only">, zur Startseite</span></a> <ul class="tabs" id="tabs"> {nav_tabs(R, path, active)} </ul> <button class="navsearch" type="button" id="navsearch" aria-haspopup="dialog" aria-controls="sdlg">{ICON["find"]}<span class="sr-only">Tier suchen</span><span class="nsl" aria-hidden="true">Suchen</span></button> </div> <div class="mbackdrop" id="mbackdrop" hidden></div> </nav> {SEARCH_DLG.replace("{R}", R or "")} <main id="main" tabindex="-1"> {cr} {body} </main> {footer(R)} {dj}{sc} </body> </html>'''
 
 def footer(R):
     ent = [("arten/index.html", "Alle Waldtiere"), ("spuren/index.html", "Spuren lesen"), ("unterscheiden/index.html", "Doppelgänger unterscheiden"),
@@ -432,6 +435,18 @@ def species_desc(s):
             return d
     return d[:157].rsplit(" ", 1)[0] + " …"
 
+def species_ld(s):
+    """WebPage mit Art (Taxon) und Hauptfoto samt Fotograf und Lizenz, wie beim Vogelkompass."""
+    k = s["k"]; a, lic, url = CREDITS[k]
+    return {"@context": "https://schema.org", "@type": "WebPage", "name": f"{s['n']} ({s['lat']})", "description": species_desc(s),
+            "inLanguage": "de-DE", "url": f"{DOMAIN}/arten/{k}/",
+            "author": {"@type": "Person", "name": "Nico Schober"},
+            "about": {"@type": "Taxon", "name": s["lat"], "alternateName": s["n"], "taxonRank": "species"},
+            "image": f"{DOMAIN}/photos/{k}.webp",
+            "primaryImageOfPage": {"@type": "ImageObject", "contentUrl": f"{DOMAIN}/photos/{k}.webp", "creator": {"@type": "Person", "name": a},
+                                   "license": lic_url(lic) or url, "acquireLicensePage": url, "creditText": f"{a}, Wikimedia Commons",
+                                   "copyrightNotice": f"© {a}, {lic}"}}
+
 def build_species(s):
     R = "../../"
     k = s["k"]
@@ -456,7 +471,7 @@ def build_species(s):
 <div class="sp-cols"> <div class="sp-main"> <section aria-labelledby="h-marks"> <h2 id="h-marks">So erkennst du {pronoun(s["g"])}</h2> <ul class="marks">{"".join(f"<li>{esc(m)}</li>" for m in s["marks"])}</ul> <dl class="facts">{facts}</dl> </section> <section aria-labelledby="h-year"> <h2 id="h-year">Wann im Jahr</h2> {months_bar(s)} {legend(False)} <p class="sr-only">Aktiv: {mlist(s["p"])}. Hauptzeit: {mlist(s["h"])}.</p> <p class="yeartext">{yeartext}</p> </section> <section class="life" aria-labelledby="h-life"> <h2 id="h-life">Lebensweise</h2> {life} </section> <section class="helpbox" aria-label="Hilfe und Beobachtung"> <details class="fold" open><summary><h2>Rücksicht und Schutz</h2></summary><p>{esc(s["help"])}</p></details> <details class="fold" open><summary><h2>Beobachtungstipp</h2></summary><p>{esc(s["tip"])}</p></details> </section> {alike} <section class="more" aria-labelledby="h-more"> <h2 id="h-more">Mehr erfahren</h2> <ul class="morelinks"> <li><a href="{wiki}" target="_blank" rel="noopener">Wikipedia<span class="sr-only"> (öffnet in neuem Fenster)</span></a></li> </ul> </section> </div>
 <aside class="sp-side" aria-label="Empfehlungen"> <section class="gearbox" aria-labelledby="h-gear"><h2 id="h-gear">Passend dazu</h2><ul class="products compact"> {"".join(product(R, g, True) for g in gear)} </ul>{ADNOTE}<p class="gearall"><a href="{R}ausruestung/index.html">Alle Ausrüstungstipps ansehen</a></p></section> </aside> </div> </article>'''
     write(f"arten/{k}/index.html", page(f"arten/{k}/index.html", f"{s['n']} erkennen", species_desc(s),
-                                        body, active="index", crumbs=[("Arten", "arten/index.html"), (s["n"], "")], og=f"og-{k}.jpg", og_alt=s["n"], og_type="article"))
+                                        body, active="index", crumbs=[("Arten", "arten/index.html"), (s["n"], "")], og=f"og-{k}.jpg", og_alt=s["n"], og_type="article", ld=species_ld(s)))
 
 def build_pairs():
     R = "../"
@@ -624,6 +639,48 @@ def build_assets():
         w, h = im.size; th = round(w / 1.91); y = max(0, (h - th) // 3)
         im.crop((0, y, w, y + th)).save(os.path.join(OUT, "photos", f"og-{sp['k']}.jpg"), quality=78, optimize=True, progressive=True)
 
+def build_extras():
+    """Fehlerseite, Cache-Header für statichost und llms.txt (übernommen vom Vogelkompass)."""
+    body = (f'<section class="block page"><div class="wrap prose"><h1>Hier ist kein Tier</h1>'
+            f'<p>Die Seite, die du suchst, gibt es nicht oder nicht mehr. Vielleicht hilft dir einer dieser Wege weiter:</p>'
+            f'<ul class="explore"><li><a href="/index.html"><b>Zur Startseite</b><span>Tier suchen und nach Gruppe filtern</span></a></li>'
+            f'<li><a href="/arten/index.html"><b>Alle {len(SPECIES)} Arten</b><span>Steckbriefe nach Gruppen</span></a></li>'
+            f'<li><a href="/spuren/index.html"><b>Spuren lesen</b><span>Trittsiegel und andere Hinweise</span></a></li>'
+            f'<li><a href="/waldjahr/index.html"><b>Waldjahr</b><span>Was im Wald gerade los ist</span></a></li></ul></div></section>')
+    write("404.html", page("404.html", "Seite nicht gefunden", "Diese Seite gibt es nicht.", body, root="/", noindex=True))
+    write("_headers", """# Waldtierkompass – Header für statichost.eu (Format wie beim Vogelkompass)
+*
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+/assets/*
+    Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+    Cache-Control: public, max-age=31536000, immutable
+/photos/*
+    Cache-Control: public, max-age=2592000
+""")
+    grp = {}
+    for x in SPECIES:
+        grp.setdefault(x["grp"], []).append(x)
+    lines = [f"# {SITE}", "",
+             f"> Waldtiere in Deutschland erkennen: {len(SPECIES)} Arten mit Foto, Merkmalen, Spuren und Aktivität im Jahresverlauf, dazu {len(PAIRS)} Vergleiche ähnlicher Arten. "
+             "Privates, unabhängiges Angebot von Nico Schober aus Bremen. Fotos von Wikimedia Commons.", "",
+             "Sprache: Deutsch. Angaben zu Aktivität und Jahreszeiten sind grobe Richtwerte für Deutschland.", "",
+             "## Bestimmen",
+             f"- [Tier suchen]({DOMAIN}/): Suche nach Name oder Merkmal, Filter nach Gruppe und Aktivität",
+             f"- [Alle Arten]({DOMAIN}/arten/): Steckbriefe nach Gruppen",
+             f"- [Doppelgänger unterscheiden]({DOMAIN}/unterscheiden/): ähnliche Arten im direkten Vergleich",
+             f"- [Spuren lesen]({DOMAIN}/spuren/): Trittsiegel und andere Hinweise",
+             f"- [Waldjahr]({DOMAIN}/waldjahr/): welche Tiere in welchem Monat aktiv sind",
+             f"- [Ausrüstung]({DOMAIN}/ausruestung/): Fernglas, Wildkamera, Bestimmungsbücher", ""]
+    for g, xs in grp.items():
+        lines.append(f"## {g}")
+        lines += [f"- [{x['n']}]({DOMAIN}/arten/{x['k']}/): {x['short']}" for x in sorted(xs, key=lambda x: x["n"])]
+        lines.append("")
+    lines += ["## Schwesterseiten", "- [Vogelkompass](https://vogelkompass.de/): Vögel bestimmen",
+              "- [Meereskompass](https://meereskompass.de/): Tiere an Nord- und Ostsee", ""]
+    write("llms.txt", "\n".join(lines))
+
 def finalize():
     """CSS entschlacken und minifizieren, JS bündeln, Sitemap schreiben."""
     os.makedirs(os.path.join(OUT, "assets"), exist_ok=True)
@@ -643,7 +700,7 @@ def finalize():
                     "--legal-comments=none", f"--outdir={os.path.join(OUT, 'assets')}", "--log-level=warning"], check=True)
     # Kurze Adressen: interne Links ohne index.html (nur Live-Seite)
     if not PREVIEW:
-        link = re.compile(r'href="(?![a-z]+:|#|/)([^"]*?)index\.html(#[^"]*)?"')
+        link = re.compile(r'href="(?![a-z]+:|#|//)([^"]*?)index\.html(#[^"]*)?"')
         for d, _, fs in os.walk(OUT):
             for f in fs:
                 if f.endswith(".html"):
@@ -679,7 +736,7 @@ if __name__ == "__main__":
     build_assets(); build_home(); build_arten_index()
     for s in SPECIES:
         build_species(s)
-    build_pairs(); build_year(); build_tracks(); build_gear(); build_legal()
+    build_pairs(); build_year(); build_tracks(); build_gear(); build_legal(); build_extras()
     finalize()
     n = sum(len(fs) for _, _, fs in os.walk(OUT))
     print("Dateien:", n)

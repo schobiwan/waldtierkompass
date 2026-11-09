@@ -1,0 +1,62 @@
+# Waldtierkompass
+
+> Waldtiere in Deutschland erkennen: 33 Arten mit Foto, Merkmalen, Spuren und Aktivität im Jahresverlauf, dazu 16 Vergleiche ähnlicher Arten. Privates, unabhängiges Angebot von Nico Schober aus Bremen. Fotos von Wikimedia Commons.
+
+Sprache: Deutsch. Angaben zu Aktivität und Jahreszeiten sind grobe Richtwerte für Deutschland.
+
+## Bestimmen
+- [Tier suchen](https://waldtierkompass.de/): Suche nach Name oder Merkmal, Filter nach Gruppe und Aktivität
+- [Alle Arten](https://waldtierkompass.de/arten/): Steckbriefe nach Gruppen
+- [Doppelgänger unterscheiden](https://waldtierkompass.de/unterscheiden/): ähnliche Arten im direkten Vergleich
+- [Spuren lesen](https://waldtierkompass.de/spuren/): Trittsiegel und andere Hinweise
+- [Waldjahr](https://waldtierkompass.de/waldjahr/): welche Tiere in welchem Monat aktiv sind
+- [Ausrüstung](https://waldtierkompass.de/ausruestung/): Fernglas, Wildkamera, Bestimmungsbücher
+
+## Huftiere
+- [Damhirsch](https://waldtierkompass.de/arten/damhirsch/): Hirsch mit weiß gepunktetem Sommerfell und schaufelförmigem Geweih.
+- [Reh](https://waldtierkompass.de/arten/reh/): Kleinster Hirsch bei uns, mit hellem Fleck am Hinterteil und ohne sichtbaren Schwanz.
+- [Rothirsch](https://waldtierkompass.de/arten/rothirsch/): Unser größtes Wildtier, berühmt für sein Röhren in der Herbstbrunft.
+- [Wildschwein](https://waldtierkompass.de/arten/wildschwein/): Kräftiges, dunkles Borstentier, das in Gruppen den Waldboden umpflügt.
+
+## Raubtiere
+- [Baummarder](https://waldtierkompass.de/arten/baummarder/): Geschickter Kletterer mit dottergelbem Kehlfleck, der fast nur im Wald lebt.
+- [Dachs](https://waldtierkompass.de/arten/dachs/): Kräftiger Grabkünstler mit schwarz-weiß gestreiftem Gesicht.
+- [Hermelin](https://waldtierkompass.de/arten/hermelin/): Kleiner, flinker Jäger mit schwarzer Schwanzspitze, im Winter oft weiß.
+- [Luchs](https://waldtierkompass.de/arten/luchs/): Größte Katze Europas mit Pinselohren und kurzem Stummelschwanz.
+- [Marderhund](https://waldtierkompass.de/arten/marderhund/): Hundeartiger Einwanderer aus Ostasien, der aussieht wie ein Waschbär ohne Ringelschwanz.
+- [Rotfuchs](https://waldtierkompass.de/arten/rotfuchs/): Rotbrauner Räuber mit buschigem Schwanz und weißer Schwanzspitze.
+- [Steinmarder](https://waldtierkompass.de/arten/steinmarder/): Der Marder vom Dachboden, mit weißem, gegabeltem Kehlfleck.
+- [Waschbär](https://waldtierkompass.de/arten/waschbaer/): Eingewanderter Kletterkünstler mit schwarzer Gesichtsmaske und geringeltem Schwanz.
+- [Wildkatze](https://waldtierkompass.de/arten/wildkatze/): Scheue Waldkatze mit buschigem Schwanz und stumpfem, schwarzem Ende.
+- [Wolf](https://waldtierkompass.de/arten/wolf/): Wildes Vorbild des Haushunds, lebt in Familienrudeln und ist sehr scheu.
+
+## Kleinsäuger
+- [Braunes Langohr](https://waldtierkompass.de/arten/braunes-langohr/): Fledermaus mit riesigen Ohren, fast so lang wie der Körper.
+- [Eichhörnchen](https://waldtierkompass.de/arten/eichhoernchen/): Flinker Kletterer mit buschigem Schwanz, der im Herbst Nüsse vergräbt.
+- [Feldhase](https://waldtierkompass.de/arten/feldhase/): Schneller Läufer mit sehr langen Ohren mit schwarzer Spitze.
+- [Haselmaus](https://waldtierkompass.de/arten/haselmaus/): Winziger, orangebrauner Bilch mit großen Augen und Kugelnest im Gebüsch.
+- [Igel](https://waldtierkompass.de/arten/igel/): Stacheliger Insektenfresser, der nachts schmatzend durch Laub und Gärten zieht.
+- [Maulwurf](https://waldtierkompass.de/arten/maulwurf/): Samtschwarzer Gräber mit Schaufelhänden, der fast nur unter der Erde lebt.
+- [Rötelmaus](https://waldtierkompass.de/arten/roetelmaus/): Häufigste Maus im Wald, mit rotbraunem Rücken und kurzem Schwanz.
+- [Siebenschläfer](https://waldtierkompass.de/arten/siebenschlaefer/): Grauer Bilch mit buschigem Schwanz, der rund sieben Monate Winterschlaf hält.
+- [Wildkaninchen](https://waldtierkompass.de/arten/wildkaninchen/): Geselliger Gräber, kleiner als der Hase, mit kürzeren Ohren.
+
+## Amphibien
+- [Bergmolch](https://waldtierkompass.de/arten/bergmolch/): Molch mit leuchtend orangem Bauch, das Männchen im Frühjahr blau.
+- [Erdkröte](https://waldtierkompass.de/arten/erdkroete/): Plumpe, warzige Kröte, die jedes Frühjahr zu ihrem Geburtsteich wandert.
+- [Feuersalamander](https://waldtierkompass.de/arten/feuersalamander/): Schwarz-gelber Lurch der feuchten Laubwälder, unterwegs nach warmem Regen.
+- [Grasfrosch](https://waldtierkompass.de/arten/grasfrosch/): Brauner Frosch mit dunklem Fleck hinter dem Auge, oft weit vom Wasser im Wald.
+
+## Reptilien
+- [Blindschleiche](https://waldtierkompass.de/arten/blindschleiche/): Beinlose Echse mit glänzenden Schuppen, keine Schlange.
+- [Kreuzotter](https://waldtierkompass.de/arten/kreuzotter/): Unsere einzige verbreitete Giftschlange, mit Zickzackband auf dem Rücken.
+- [Ringelnatter](https://waldtierkompass.de/arten/ringelnatter/): Harmlose Wasserschlange mit gelben Halbmonden am Hinterkopf.
+- [Waldeidechse](https://waldtierkompass.de/arten/waldeidechse/): Kleine, braune Eidechse, die lebende Junge zur Welt bringt.
+
+## Insekten
+- [Hirschkäfer](https://waldtierkompass.de/arten/hirschkaefer/): Größter Käfer Europas, das Männchen mit geweihartigen Kiefern.
+- [Rote Waldameise](https://waldtierkompass.de/arten/rote-waldameise/): Baumeisterin der großen Nadelhügel im Wald, Gesundheitspolizei des Waldes.
+
+## Schwesterseiten
+- [Vogelkompass](https://vogelkompass.de/): Vögel bestimmen
+- [Meereskompass](https://meereskompass.de/): Tiere an Nord- und Ostsee
