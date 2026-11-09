@@ -1,6 +1,6 @@
 
 /* ===== Waldtierkompass: Ergänzungen zum Vogelkompass-Grundgerüst ===== */
-.bird img{background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+
 .acts{position:absolute;left:10px;top:10px;z-index:2;display:flex;gap:4px;pointer-events:none}
 .act{display:grid;place-items:center;width:30px;height:30px;border-radius:999px;background:#2a1f18b8;color:#f6efe4;backdrop-filter:blur(2px)}
 .act svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
@@ -10,11 +10,11 @@
 .act-tag svg path[d^="M10.5"]{fill:currentColor;stroke:none}
 .grp-h{margin:34px 0 14px;color:var(--heading);font-size:1.5rem}
 .grp-h:first-of-type{margin-top:8px}
-.sp-photo img{background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+
 .pair figure img,.ph.big img,.alike img{background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
 .merksatz{margin:16px 0 0;padding:14px 16px;border-left:4px solid var(--rust);background:var(--surface);border-radius:0 8px 8px 0;max-width:60em}
 .merksatz b{color:var(--rust)}
-.pairpage>section{margin-top:28px}
+
 .pairpage .ph.big{margin-top:6px}
 
 /* Kalender: Gruppen-Zeilen */
@@ -57,7 +57,7 @@
 
 figcaption small a,.sp-photo figcaption a{position:relative;z-index:3;color:inherit;text-underline-offset:2px}
 .products.compact .pimg img{height:100%}
-.gearband .products{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:18px}
+
 .gearband .product .pwhy{font-size:.9rem}
 .gear-h{margin:34px 0 14px;color:var(--heading)}
 .gear-h:first-of-type{margin-top:8px}
@@ -109,7 +109,7 @@ figcaption small a,.sp-photo figcaption a{position:relative;z-index:3;color:inhe
 .now-nav{display:flex;align-items:center;gap:6px}
 .now-nav a{margin-right:8px;font-size:.88rem;font-weight:600;color:color-mix(in srgb,var(--forest-ink) 80%,var(--forest));text-underline-offset:3px}
 .now-nav a:hover{color:var(--forest-ink)}
-.cbtn{display:grid;place-items:center;width:36px;height:36px;padding:0;border-radius:50%;border:1px solid color-mix(in srgb,var(--forest-ink) 30%,var(--forest));background:transparent;color:var(--forest-ink);cursor:pointer;transition:background .2s ease,opacity .2s ease}
+
 .cbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .cbtn:hover:not(:disabled){background:color-mix(in srgb,var(--forest-ink) 12%,var(--forest))}
 .cbtn:disabled{opacity:.35;cursor:default}
@@ -135,21 +135,17 @@ figcaption small a,.sp-photo figcaption a{position:relative;z-index:3;color:inhe
 .nowcards{gap:10px;margin-right:-16px;padding-right:16px}.nowcards li{flex-basis:44%}}
 @media(prefers-reduced-motion:reduce){.nowcards{scroll-behavior:auto}}
 
-.sp-intro .text{margin:18px 0 0}
 @media(max-width:960px){.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.pair figcaption{z-index:2}
-.pair .pair-link:after{z-index:1}
+
 .cmp-wrap,.cal-wrap{position:relative}
 /* Rechtliche Seiten: ruhigere Überschriften */
 section.block.page>.wrap.prose>h1{font-size:clamp(1.7rem,3vw,2.2rem);margin-bottom:10px}
 section.block.page>.wrap.prose>h2{font:700 1.08rem/1.3 var(--body);color:var(--heading);margin:26px 0 6px}
 /* Kopfbereich hellgrün wie junges Laub (im Dunkelmodus bleibt er dunkel) */
-:root{--chrome:#dfe6cc;--chrome-ink:#2f3524;--chrome-line:#c5cfab;--hero-accent:#a63d22;--hero-accent-ink:#fff}
+
 @media(prefers-color-scheme:dark){:root{--chrome:#1f1612;--chrome-ink:#efe6da;--chrome-line:#3d3029;--hero-accent:#e8a24a;--hero-accent-ink:#2a1f18}}
 .appnav,.hero5,.nowband{--forest:var(--chrome);--forest-ink:var(--chrome-ink)}
-body:before{background:var(--chrome)}
-.appnav{border-bottom-color:var(--chrome-line)}
-.appnav .logo{--logo-accent:var(--hero-accent)}
+
 .appnav :focus-visible,.appnav .tabs .tab:focus-visible{outline-color:var(--hero-accent)}
 
 /* Leichtes Blattmuster im Kopfbereich */
@@ -170,15 +166,13 @@ body:before{background:var(--chrome)}
 .linkbtn{border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--rust);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 #empty-suggest{color:var(--fg)}
 section.block>.wrap>h2+.grid,section.block>.wrap>h2+.pills,section.block>.wrap>h2+.products,section.block>.wrap>h2+.trkgrid,section.block>.wrap>h2+.tips,section.block>.wrap>h2+.pairs,section.block>.wrap>h2+.monthlinks,section.block>.wrap>h2+.azlist{margin-top:18px}
-.months span{position:relative;font-size:.7rem;line-height:1}
-.months span.h:after{content:"";position:absolute;top:3px;right:3px;width:4px;height:4px;border-radius:50%;background:currentColor}
-.legend{font-size:.85rem}
+
 .sp .legend{margin-top:8px;gap:6px 16px}
 .gearall{margin:10px 0 0;font-weight:700}
 .gearall a{color:var(--rust)}
 .jump{margin-top:22px}
 .jump .pills{list-style:none;margin:0;padding:0}
-.small{font-size:.9rem}
+
 .trk-img svg{width:calc(78% * var(--s, .8));height:calc(78% * var(--s, .8))}
 @media(max-width:600px){
  table.cmp-pair,table.cmp-pair tbody,table.cmp-pair tr,table.cmp-pair th,table.cmp-pair td{display:block;width:100%}
@@ -200,7 +194,7 @@ section.block>.wrap>h2+.grid,section.block>.wrap>h2+.pills,section.block>.wrap>h
 .trk .trk-t{display:flex;flex-direction:column;gap:4px}
 .trk-t span{font-size:.9rem;color:var(--muted)}
 @media(max-width:560px){.trk-t b{font-size:1.08rem}}
-.cal .n{position:sticky;left:0;z-index:2;background:var(--surface)}
+
 .cal thead th:first-child{position:sticky;left:0;z-index:3;background:var(--surface)}
 .cal .grow th span{position:sticky;left:0;display:inline-block;font:700 .82rem var(--body);color:var(--muted)}
 @media(max-width:600px){.cal .n{width:112px;min-width:112px}.cal .n a{width:104px}}
@@ -222,7 +216,7 @@ main:has(>.gearband:last-child)+footer,main:has(>section:last-child>.gearband)+f
 /* 1.4.12: Beschriftung der unteren Navigation umbrechen statt kürzen */
 @media(max-width:960px){.tab span{white-space:normal;overflow:visible;text-overflow:clip;text-align:center;line-height:1.1;hyphens:manual;overflow-wrap:anywhere}}
 /* 2.5.8: Brotkrumen und Textlinks mit mindestens 24 px Tippfläche */
-.crumbs a{display:inline-flex;align-items:center;min-height:24px}
+
 .gearall a{display:inline-flex;align-items:center;min-height:24px}
 /* 200 % Zoom und niedrige Fenster: Suchleiste klebt nicht mehr und verdeckt nichts */
 @media(max-height:500px){.bar{position:static}}

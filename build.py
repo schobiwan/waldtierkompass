@@ -718,54 +718,64 @@ def build_extras():
               "- [Meereskompass](https://meereskompass.de/): Tiere an Nord- und Ostsee", ""]
     write("llms.txt", "\n".join(lines))
 
-def finalize():
-    """CSS entschlacken und minifizieren, JS bündeln, Sitemap schreiben."""
-    os.makedirs(os.path.join(OUT, "assets"), exist_ok=True)
-    css_src = os.path.join(OUT, "assets", "_full.css")
-    with open(css_src, "w", encoding="utf-8") as f:
-        f.write(open(os.path.join(HERE, "src", "css", "base.css"), encoding="utf-8").read() + open(os.path.join(HERE, "src", "css", "extra.css"), encoding="utf-8").read())
-    purged = os.path.join(OUT, "assets", "_purged.css")
-    subprocess.run([os.path.join(TOOLS, "purgecss"), "--css", css_src, "--content", f"{OUT}/**/*.html", f"{HERE}/src/js/*.js",
+def bundle_css():
+    """base.css + extra.css zusammenfügen, ungenutzte Regeln entfernen (purgecss), minifizieren (lightningcss)."""
+    assets = os.path.join(OUT, "assets")
+    os.makedirs(assets, exist_ok=True)
+    full, purged = os.path.join(assets, "_full.css"), os.path.join(assets, "_purged.css")
+    with open(full, "w", encoding="utf-8") as f:
+        for part in ("base.css", "extra.css"):
+            f.write(open(os.path.join(HERE, "src", "css", part), encoding="utf-8").read() + "\n")
+    subprocess.run([os.path.join(TOOLS, "purgecss"), "--css", full, "--content", f"{OUT}/**/*.html", f"{HERE}/src/js/*.js",
                     "--safelist", *SAFELIST, "--output", purged], check=True)
-    subprocess.run([os.path.join(TOOLS, "lightningcss"), "--minify", "--targets", ">= 0.5%", purged, "-o", os.path.join(OUT, "assets", "site.css")], check=True)
-    os.remove(css_src); os.remove(purged)
-    for f in os.listdir(os.path.join(OUT, "assets")):
+    subprocess.run([os.path.join(TOOLS, "lightningcss"), "--minify", "--targets", ">= 0.5%", purged, "-o", os.path.join(assets, "site.css")], check=True)
+    os.remove(full); os.remove(purged)
+
+def bundle_js():
+    """app.js (alle Seiten) und home.js (Startseite, enthält app.js) mit esbuild bündeln."""
+    assets = os.path.join(OUT, "assets")
+    for f in os.listdir(assets):
         if f.endswith(".js"):
-            os.remove(os.path.join(OUT, "assets", f))
+            os.remove(os.path.join(assets, f))
     entries = [os.path.join(HERE, "src", "js", f) for f in ("app.js", "home.js")]
     subprocess.run([os.path.join(TOOLS, "esbuild"), *entries, "--bundle", "--format=esm", "--minify", "--target=es2020",
-                    "--legal-comments=none", f"--outdir={os.path.join(OUT, 'assets')}", "--log-level=warning"], check=True)
-    # Kurze Adressen: interne Links ohne index.html (nur Live-Seite)
-    if not PREVIEW:
-        link = re.compile(r'href="(?![a-z]+:|#|//)([^"]*?)index\.html(#[^"]*)?"')
-        for d, _, fs in os.walk(OUT):
-            for f in fs:
-                if f.endswith(".html"):
-                    fp = os.path.join(d, f); t = open(fp, encoding="utf-8").read()
-                    t = link.sub(lambda m: f'href="{m.group(1) or "./"}{m.group(2) or ""}"', t)
-                    open(fp, "w", encoding="utf-8").write(t)
-    # Dateiversion an CSS und JS hängen, damit Browser nach einer Änderung nicht die alte Fassung aus dem Cache nehmen
+                    "--legal-comments=none", f"--outdir={assets}", "--log-level=warning"], check=True)
+
+CLEAN_LINK = re.compile(r'href="(?![a-z]+:|#|//)([^"]*?)index\.html(#[^"]*)?"')
+
+def rewrite_html():
+    """Ein Durchgang über alle Seiten: kurze Adressen ohne index.html (nur Live-Seite)
+    und Dateiversion an CSS und JS, damit Browser nach einer Änderung nicht die alte Fassung aus dem Cache nehmen."""
     import hashlib
-    ver = {f: hashlib.sha1(open(os.path.join(OUT, "assets", f), "rb").read()).hexdigest()[:8] for f in ("site.css", "app.js", "home.js")}
+    assets = os.path.join(OUT, "assets")
+    ver = {f: hashlib.sha1(open(os.path.join(assets, f), "rb").read()).hexdigest()[:8] for f in ("site.css", "app.js", "home.js")}
     for d, _, fs in os.walk(OUT):
         for f in fs:
-            if f.endswith(".html"):
-                fp = os.path.join(d, f); t = open(fp, encoding="utf-8").read()
-                for a, v in ver.items():
-                    t = t.replace(f'assets/{a}"', f'assets/{a}?v={v}"')
-                open(fp, "w", encoding="utf-8").write(t)
+            if not f.endswith(".html"):
+                continue
+            fp = os.path.join(d, f)
+            t = open(fp, encoding="utf-8").read()
+            if not PREVIEW:
+                t = CLEAN_LINK.sub(lambda m: f'href="{m.group(1) or "./"}{m.group(2) or ""}"', t)
+            for a, v in ver.items():
+                t = t.replace(f'assets/{a}"', f'assets/{a}?v={v}"')
+            open(fp, "w", encoding="utf-8").write(t)
+
+def write_meta_files():
+    """Sitemap (alle index.html), robots.txt und Build-Zeitpunkt (zum Prüfen, ob die Live-Seite aktuell ist)."""
     urls = []
     for d, _, fs in os.walk(OUT):
-        for f in fs:
-            if f == "index.html":
-                rel = os.path.relpath(os.path.join(d, f), OUT).replace(os.sep, "/")
-                urls.append(DOMAIN + "/" + rel[:-len("index.html")])
+        if "index.html" in fs:
+            rel = os.path.relpath(d, OUT).replace(os.sep, "/")
+            urls.append(DOMAIN + "/" + ("" if rel == "." else rel + "/"))
     urls.sort(key=lambda u: (u.count("/"), u))
     write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
           + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
-    # Zeitpunkt des Builds, um zu prüfen, ob die Live-Seite aktuell ist
     write("version.txt", _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") + "\n")
+
+def finalize():
+    bundle_css(); bundle_js(); rewrite_html(); write_meta_files()
 
 if __name__ == "__main__":
     shutil.rmtree(OUT, ignore_errors=True)

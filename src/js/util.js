@@ -1,5 +1,5 @@
 // Gemeinsame Hilfsfunktionen für den Waldtierkompass
-export const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 export const MSLUG = ["januar", "februar", "maerz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"];
 export const NOW = new Date().getMonth() + 1;
 export const NOW_NAME = MONTHS[NOW - 1];

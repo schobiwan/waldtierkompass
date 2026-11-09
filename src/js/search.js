@@ -11,7 +11,7 @@ const STOP = new Set(["mit", "und", "oder", "der", "die", "das", "den", "dem", "
 /** Wortstamm: eine typische Endung abschneiden, mindestens drei Buchstaben bleiben */
 const stem = (w) => { const s = w.replace(/(en|er|es|em|e|s|n)$/, ""); return s.length >= 3 ? s : w; };
 
-export const searchWords = (q) => (fold(q).match(/[a-z0-9]+/g) || []).filter((w) => !STOP.has(w)).map(stem);
+const searchWords = (q) => (fold(q).match(/[a-z0-9]+/g) || []).filter((w) => !STOP.has(w)).map(stem);
 
 export const prepare = (names, alt, marks) => ({ names: fold(names), alt: fold(alt), marks: marks.filter(Boolean).map(fold) });
 
