@@ -289,3 +289,23 @@ main:has(>.gearband:last-child)+footer,main:has(>section:last-child>.gearband)+f
   .mpanel{position:fixed;top:auto;left:8px;right:8px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:auto;max-height:calc(100vh - 140px);overflow:auto;animation:sheet .22s ease both}
   .mpanel:before{display:none}
 }
+
+/* ---------- Übernommen vom Vogelkompass (11.11.2026) ---------- */
+/* Autorenzeile unter der Überschrift und Projektzeile im Footer */
+.byline{margin:4px 0 14px;font-size:.88rem;color:var(--muted)}
+.byline a,footer .fby a{color:inherit;text-underline-offset:3px}
+.byline a:hover,footer .fby a:hover{color:var(--rust)}
+footer .fby{margin:14px 0 4px;font-weight:600}
+/* Hover für alle Knöpfe: Hauptknopf etwas kräftiger, umrandete Knöpfe mit Rand und leichter Fläche */
+.btn{transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover{background:color-mix(in srgb,var(--forest) 82%,#000);border-color:color-mix(in srgb,var(--forest) 82%,#000)}
+.btn.ghost:hover{background:color-mix(in srgb,var(--fg) 6%,transparent);border-color:var(--fg)}
+.btn.light:hover{background:color-mix(in srgb,var(--forest-ink) 88%,var(--forest));border-color:color-mix(in srgb,var(--forest-ink) 88%,var(--forest))}
+@media(prefers-color-scheme:dark){.btn:not(.ghost):not(.light):hover{background:color-mix(in srgb,var(--forest) 80%,#fff);border-color:color-mix(in srgb,var(--forest) 80%,#fff)}}
+/* Feine Trennlinie zwischen aufeinanderfolgenden Abschnitten, einheitlich 32 px darüber und darunter */
+:root{--sep:32px}
+section.block+section.block{padding-top:calc(var(--sep) - 8px)}
+section.block+section.block>.wrap:before{content:"";display:block;height:1px;background:var(--line);margin-bottom:var(--sep)} /* Linie bündig mit dem Inhalt, nicht mit dem Innenabstand */
+section.block>.wrap>:last-child,section.block>.wrap>:last-child>:last-child{margin-bottom:0}
+/* Listen mit Kurzbeschreibung: Karten einer Zeile gleich hoch */
+.azlist li{display:flex}.azlist a{flex:1}

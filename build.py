@@ -147,10 +147,28 @@ SEARCH_DLG = ('<dialog class="sdlg" id="sdlg" aria-labelledby="sdlg-title"> <for
               '<p class="smore" id="smore" hidden><a id="smore-link" href="{R}index.html#arten">Alle Treffer mit Filtern anzeigen</a></p> </dialog>')
 
 # ------------------------------------------------------------------ Layout
+# Stand der Inhalte für die Autorenzeile (bei inhaltlichen Änderungen anpassen)
+CONTENT_UPDATED = (2026, 11, 11)
+
+def byline(R):
+    """Sichtbare Autorenzeile wie beim Vogelkompass; passt zu author in den Strukturdaten."""
+    y, m, d = CONTENT_UPDATED
+    return f'<p class="byline">Von <a href="{R}ueber/index.html" rel="author">Nico Schober</a> · Stand: {d}. {MONTHS[m-1]} {y}</p>'
+
+# Inhaltsseiten mit Autorenzeile: Artseiten, Doppelgänger, Waldjahr, Spuren, Ausrüstung
+BYLINE_PAGES = re.compile(r"^(arten/[^/]+/|unterscheiden/|waldjahr/|spuren/|ausruestung/)")
+
+def add_byline(body, R):
+    """Autorenzeile direkt unter die Überschrift setzen (auf Artseiten unter den lateinischen Namen)."""
+    m = re.search(r'</h1>\s*(<p class="latin"[^>]*>.*?</p>)?', body, flags=re.S)
+    return body[:m.end()] + " " + byline(R) + body[m.end():] if m else body
+
 def page(path, title, desc, body, active=None, scripts=(), crumbs=None, data=None, is_home=False, og="og.jpg", og_alt=None, og_type="website",
          ld=None, root=None, noindex=False):
     depth = path.count("/")
     R = root if root is not None else "../" * depth
+    if BYLINE_PAGES.match(path):
+        body = add_byline(body, R)
     canon = DOMAIN + "/" + (path[:-len("index.html")] if path.endswith("index.html") else path)
     cr = ""
     if crumbs:
@@ -174,7 +192,7 @@ def footer(R):
            ("waldjahr/index.html", "Waldjahr und Kalender"), ("ausruestung/index.html", "Ausrüstung")]
     leg = [("ueber/index.html", "Über den Waldtierkompass"), ("impressum/index.html", "Impressum"), ("datenschutz/index.html", "Datenschutz"), ("bildnachweis/index.html", "Bildnachweis und Lizenzen")]
     li = lambda xs: "".join(f'<li><a href="{R}{h}">{t}</a></li>' for h, t in xs)
-    return f'''<footer> <div class="wrap"> <a class="flogo" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span></a> <div class="fcols"> <nav aria-label="Entdecken"><p class="fhead">Entdecken</p><ul>{li(ent)}</ul></nav> <nav aria-label="Rechtliches"><p class="fhead">Rechtliches</p><ul>{li(leg)}</ul></nav> <nav aria-label="Schwesterseite"><p class="fhead">Schwesterseite</p><ul><li><a href="https://vogelkompass.de/" rel="noopener">Vogelkompass: Vögel bestimmen</a></li><li><a href="https://meereskompass.de/" rel="noopener">Meereskompass: Tiere an der Küste</a></li></ul></nav> </div> <p class="footnote">Fotos: Wikimedia Commons, unter freien Lizenzen. Trittsiegel sind eigene Zeichnungen. Mit * markierte Links sind Werbelinks. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.</p> </div> </footer>'''
+    return f'''<footer> <div class="wrap"> <a class="flogo" href="{R}index.html"><svg class="logo" aria-hidden="true"><use href="#logo-mark"></use></svg><span>{SITE}</span></a> <div class="fcols"> <nav aria-label="Entdecken"><p class="fhead">Entdecken</p><ul>{li(ent)}</ul></nav> <nav aria-label="Rechtliches"><p class="fhead">Rechtliches</p><ul>{li(leg)}</ul></nav> <nav aria-label="Schwesterseite"><p class="fhead">Schwesterseite</p><ul><li><a href="https://vogelkompass.de/" rel="noopener">Vogelkompass: Vögel bestimmen</a></li><li><a href="https://meereskompass.de/" rel="noopener">Meereskompass: Tiere an der Küste</a></li></ul></nav> </div> <p class="fby">Ein privates Projekt von <a href="{R}ueber/index.html">Nico Schober</a></p> <p class="footnote">Fotos: Wikimedia Commons, unter freien Lizenzen. Trittsiegel sind eigene Zeichnungen. Mit * markierte Links sind Werbelinks. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.</p> </div> </footer>'''
 
 # ------------------------------------------------------------------ Bausteine
 def first_sentence(t):
