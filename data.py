@@ -620,6 +620,109 @@ PAIRS = [
    tip="Ist der Gang hochoval, war es die Wühlmaus. Querovale Gänge stammen vom Maulwurf."),
 ]
 
+# Vertiefte Vergleichsseiten: eigener Titel, Beschreibung, Fließtext, häufige Fragen und Quellen.
+# text = [(Überschrift, Absatz)], faq = [(Frage, Antwort)], sources = [(Name, Adresse)], updated = ISO-Datum.
+PAIR_DEEP = {
+ "ringelnatter-oder-kreuzotter": dict(
+   title="Ringelnatter oder Kreuzotter? Die Unterschiede",
+   desc="Ringelnatter oder Kreuzotter? Gelbe Halbmonde am Hinterkopf oder Zickzackband: So unterscheidest du die harmlose Natter sicher von der Giftschlange.",
+   updated="2026-11-16",
+   text=[
+     ("Auf einen Blick erkennen",
+      "Die Ringelnatter trägt hinter dem Kopf zwei gelbliche Halbmondflecken, die schwarz eingefasst sind. Ihre Pupillen sind rund, der Körper ist schlank und oft um einen Meter lang, große Weibchen werden noch länger. Die Kreuzotter bleibt mit 50 bis 70 cm deutlich kürzer und wirkt gedrungen. Über ihren Rücken läuft ein dunkles Zickzackband, die Pupillen stehen senkrecht wie Schlitze."),
+     ("Wo du welche Schlange triffst",
+      "Ringelnattern leben in fast ganz Deutschland, meist in der Nähe von Teichen, Gräben und Bächen. Sie schwimmen ausgezeichnet. Kreuzottern sind viel seltener. Ihre Schwerpunkte liegen in den Mooren und Heiden Norddeutschlands, in den östlichen Mittelgebirgen, im Schwarzwald, auf der Schwäbischen Alb, im Alpenvorland und in den Alpen. In den westlichen Mittelgebirgen wie Eifel, Hunsrück, Taunus und Odenwald fehlt die Kreuzotter."),
+     ("Die Barrenringelnatter im Westen",
+      "Westlich des Rheins lebt vor allem die Barrenringelnatter, die erst seit 2017 als eigene Art gilt. Ihre Halbmonde sind blasser oder fehlen, dafür trägt sie an den Flanken dunkle Querbalken. Auch sie ist ungiftig."),
+   ],
+   faq=[
+     ("Ist die Ringelnatter giftig?",
+      "Nein. Die Ringelnatter ist für Menschen harmlos. Fühlt sie sich bedroht, flieht sie, zischt, spreizt den Nacken oder stellt sich tot."),
+     ("Wie gefährlich ist der Biss einer Kreuzotter?",
+      "Für gesunde Erwachsene ist ein Biss meist nicht lebensgefährlich. Kinder, ältere Menschen und Menschen mit Vorerkrankungen können stärker reagieren. Typisch ist eine schmerzhafte Schwellung an der Bissstelle, seltener kommen Übelkeit, Schwindel oder Kreislaufprobleme dazu. Jeder Biss gehört ärztlich abgeklärt."),
+     ("Was tun nach einem Kreuzotterbiss?",
+      "Ruhe bewahren, das gebissene Körperteil ruhigstellen, Ringe und Uhr abnehmen und ärztliche Hilfe holen. Bei Atemnot, Kreislaufproblemen oder Schwellungen im Hals sofort den Notruf 112 wählen. Die Wunde nicht abbinden, nicht aussaugen und nicht einschneiden."),
+     ("Welche Schlange schwimmt im Gartenteich?",
+      "Sehr wahrscheinlich eine Ringelnatter. Sie lebt am Wasser und jagt dort Frösche, Molche und kleine Fische. Achte auf die hellen Halbmonde am Hinterkopf."),
+     ("Ich habe eine schwarze Schlange gesehen. Welche war es?",
+      "Schwarze Tiere gibt es bei beiden Arten. Dann fehlen Zickzackband und oft auch die Halbmonde. Es helfen Körperbau und Pupille: lang und schlank mit runder Pupille spricht für die Ringelnatter, kurz und gedrungen mit Schlitzpupille für die Kreuzotter. Im Zweifel Abstand halten."),
+     ("Sind Ringelnatter und Kreuzotter geschützt?",
+      "Ja, beide sind nach dem Bundesnaturschutzgesetz besonders geschützt. Sie dürfen nicht gefangen, verletzt oder getötet werden. Die Kreuzotter gilt in der Roten Liste Deutschlands als stark gefährdet, die Ringelnatter als gefährdet."),
+     ("Wie verhalte ich mich, wenn ich einer Schlange begegne?",
+      "Ruhig stehen bleiben, Abstand halten und dem Tier den Rückzug lassen. Schlangen greifen nicht an, sie beißen nur, wenn sie sich bedrängt fühlen. In Kreuzottergebieten helfen festes Schuhwerk und lange Hosen, Hunde bleiben an der Leine."),
+   ],
+   sources=[
+     ("DGHT: Merkblatt Schlangen in Deutschland", "https://dght.de/wp-content/uploads/2024/05/DGHT-Faltblatt_Schlangen-2.pdf"),
+     ("Apotheken Umschau: Kreuzotterbiss", "https://www.apotheken-umschau.de/gesund-bleiben/kreuzotter-biss-symptome-erste-hilfe-und-schutz-1552443.html"),
+     ("NABU: Reptilien in Deutschland", "https://www.nabu.de/tiere-und-pflanzen/amphibien-und-reptilien/reptilien/wissen.html"),
+   ]),
+ "luchs-oder-wildkatze": dict(
+   title="Luchs oder Wildkatze? Die Unterschiede",
+   desc="Luchs oder Wildkatze? Pinselohren, Stummelschwanz und Größe verraten den Luchs. Alle Unterschiede bei Aussehen, Spur und Vorkommen in Deutschland.",
+   updated="2026-11-16",
+   text=[
+     ("Größe und Gestalt",
+      "Der Luchs ist die größte Katze Europas: hochbeinig, mit einer Schulterhöhe von 50 bis 70 cm, etwa so hoch wie ein Schäferhund. Die Wildkatze ist kaum größer als eine Hauskatze, wirkt aber kräftiger. Weibchen wiegen um 4 kg, Kater etwa 5 kg."),
+     ("Ohren, Schwanz und Fell",
+      "Den Luchs erkennst du an den schwarzen Haarpinseln auf den Ohren, am Backenbart und am kurzen Stummelschwanz mit schwarzer Spitze. Sein Fell ist meist gefleckt. Die Wildkatze hat einen langen, buschigen Schwanz mit dunklen Ringen und stumpfem, schwarzem Ende. Ihr Fell ist verwaschen grau-gelblich getigert."),
+     ("Wo sie in Deutschland leben",
+      "Luchse gibt es bei uns nur in drei kleinen Vorkommen: im Harz, in Ostbayern rund um den Bayerischen Wald und im Pfälzerwald. Im Monitoringjahr 2022/2023 wurden bundesweit mindestens 189 Tiere nachgewiesen. Wildkatzen sind häufiger. Der BUND schätzt ihren Bestand auf 6.000 bis 8.000 Tiere, überwiegend in den Wäldern Mittel- und Süddeutschlands."),
+   ],
+   faq=[
+     ("Ist der Luchs eine Wildkatze?",
+      "Nein. Beide gehören zur Familie der Katzen, sind aber verschiedene Arten. Der Eurasische Luchs heißt wissenschaftlich Lynx lynx, die Europäische Wildkatze Felis silvestris. Die Wildkatze ist auch keine verwilderte Hauskatze, sondern eine eigene Wildart."),
+     ("Wie viel größer ist ein Luchs als eine Wildkatze?",
+      "Deutlich. Ein Luchs reicht einem Erwachsenen bis ans Knie und bringt ein Mehrfaches an Gewicht auf die Waage. Die Wildkatze hat das Format einer kräftigen Hauskatze."),
+     ("Wie unterscheiden sich die Spuren?",
+      "Beide ziehen beim Laufen die Krallen ein, die Abdrücke sind rund und zeigen keine Krallen. Das Trittsiegel des Luchses misst 7 bis 9 cm, das der Wildkatze nur etwa 4 cm und ist von dem einer Hauskatze nicht zu unterscheiden."),
+     ("Wo kann ich in Deutschland einen Luchs sehen?",
+      "In freier Natur kaum. Luchse sind scheu, vor allem in der Dämmerung und nachts unterwegs und durchstreifen riesige Reviere. Die besten Chancen bieten Spuren im Schnee im Harz, im Bayerischen Wald und im Pfälzerwald."),
+     ("Ich habe eine getigerte Katze im Wald gesehen. War das eine Wildkatze?",
+      "Möglich, aber nach dem Aussehen allein kaum sicher zu sagen. Für die Wildkatze sprechen der dicke Schwanz mit stumpfem, schwarzem Ende und die verwaschene Zeichnung. Sicher gelingt der Nachweis oft nur genetisch, zum Beispiel über Haare an Lockstöcken."),
+     ("Was mache ich, wenn ich junge Katzen im Wald finde?",
+      "Nicht anfassen und nicht mitnehmen. Es können junge Wildkatzen sein, deren Mutter gerade jagt. Der BUND rät, die Tiere an Ort und Stelle zu lassen."),
+     ("Sind Luchs und Wildkatze geschützt?",
+      "Ja, beide sind in Deutschland streng geschützt. Den Erhaltungszustand des Luchses stuft das Bundesamt für Naturschutz als kritisch ein, die Wildkatze gilt laut Roter Liste als gefährdet."),
+   ],
+   sources=[
+     ("Bundesamt für Naturschutz: Luchsvorkommen in Deutschland", "https://www.bfn.de/sites/default/files/2021-04/2021_02_25_BfN_Luchs_kommentierte_Vorkommenskarte_bf.pdf"),
+     ("Deutscher Bundestag: Der Luchs im Monitoringjahr 2022/2023", "https://dserver.bundestag.de/btd/20/122/2012224.pdf"),
+     ("BUND Naturschutz: Steckbrief Europäische Wildkatze", "https://www.bund-naturschutz.de/fileadmin/Bilder_und_Dokumente/Themen/Tiere_und_Pflanzen/Tiere/S%C3%A4ugetiere/Wildkatze/Europaeische-Wildkatze-Steckbrief-_C_-BUND-Naturschutz.pdf"),
+     ("BUND: Wildkatzenwälder von morgen", "https://www.presseportal.de/pm/7666/6132526"),
+   ]),
+ "waldeidechse-oder-zauneidechse": dict(
+   title="Waldeidechse oder Zauneidechse? Die Unterschiede",
+   desc="Waldeidechse oder Zauneidechse? Größe, Färbung und Lebensraum im Vergleich: So erkennst du die beiden häufigsten Eidechsen in Deutschland.",
+   updated="2026-11-16",
+   text=[
+     ("Größe und Gestalt",
+      "Die Zauneidechse wird bis zu 24 cm lang, ist kräftig gebaut und hat einen großen, hohen Kopf. Die Waldeidechse ist mit höchstens 18 cm die kleinste heimische Eidechse. Sie wirkt zierlich, mit kleinem Kopf und kurzen Beinen."),
+     ("Färbung",
+      "Zauneidechsen-Männchen tragen zur Paarungszeit von April bis Juni leuchtend grüne Flanken und Kopfseiten. Weibchen und Jungtiere sind braun und haben an den Seiten auffällige Augenflecken: dunkle Flecken mit hellem Kern. Die Waldeidechse ist braun bis graubraun mit dunklen Seitenbändern. Der Bauch der Männchen ist kräftig gelb bis orange und schwarz gepunktet."),
+     ("Lebensraum",
+      "Die Zauneidechse mag es trocken und sonnig: Böschungen, Bahndämme, Heiden und Waldränder mit lockerem, sandigem Boden. Die Waldeidechse meidet ausgesprochen trockenwarme Standorte. Du findest sie in Mooren, auf Waldlichtungen und feuchten Wiesen, besonders häufig in den Mittelgebirgen."),
+   ],
+   faq=[
+     ("Welche Eidechse ist größer?",
+      "Die Zauneidechse. Sie erreicht bis zu 24 cm Gesamtlänge, die Waldeidechse höchstens 18 cm."),
+     ("Ich habe eine grüne Eidechse gesehen. Welche Art war es?",
+      "Sind nur Flanken und Kopfseiten grün und der Rücken braun, war es ein Zauneidechsen-Männchen im Frühjahr. Ganz grüne, große Eidechsen sind Smaragdeidechsen. Sie kommen in Deutschland nur an wenigen warmen Orten vor."),
+     ("Legt die Waldeidechse Eier?",
+      "Nein. Die Waldeidechse bringt lebende Junge zur Welt. So kommt sie auch in kühlen Lagen zurecht, in denen Eier im Boden nicht warm genug würden. Die Zauneidechse legt ihre Eier in lockeren, sonnigen Boden."),
+     ("Was ist die kleine, fast schwarze Eidechse?",
+      "Sehr wahrscheinlich eine junge Waldeidechse. Frisch geborene Tiere sind sehr dunkel, fast schwarz bronzefarben, mit einer Reihe kleiner heller Punkte an den Seiten."),
+     ("Sind Eidechsen in Deutschland geschützt?",
+      "Ja. Die Waldeidechse ist besonders geschützt und gilt als ungefährdet. Die Zauneidechse ist streng geschützt, steht im Anhang IV der europäischen FFH-Richtlinie und auf der Vorwarnliste der Roten Liste. Beide dürfen nicht gefangen oder gestört werden."),
+     ("Wo und wann sehe ich Eidechsen am besten?",
+      "An sonnigen Vormittagen im Frühjahr und Frühsommer. Dann wärmen sich die Tiere auf Baumstümpfen, Totholz, Steinen und an Wegrändern auf. Langsam gehen und ein paar Meter Abstand halten, sonst sind sie blitzschnell verschwunden."),
+   ],
+   sources=[
+     ("DGHT: Merkblatt Echsen in Deutschland", "https://www.dght.de/wp-content/uploads/2025/12/Echsenfaltblatt_ok-4.pdf"),
+     ("HLNUG: Broschüre Zauneidechse", "https://www.hlnug.de/fileadmin/shop/publikationen/naturschutz/artenschutz/00794_1570_Broschuere_Zauneidechse_final.pdf"),
+     ("Bayerisches Landesamt für Umwelt: Reptilien", "https://www.lfu.bayern.de/natur/bayaz/artenschutz_tiere/reptilien/index.htm"),
+   ]),
+}
+
 # Was im Wald passiert, Monat für Monat
 MONTH_EVENTS = {
  1: ["Füchse sind in der Ranzzeit, nachts sind heisere Bellrufe zu hören.", "Spuren im Schnee zeigen, wer unterwegs war.", "Wildschweine sind in der Rauschzeit."],

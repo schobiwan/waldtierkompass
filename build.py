@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Statischer Build des Waldtierkompass nach dem Muster von Vogelkompass."""
 import os, re, json, shutil, html, random, subprocess, datetime as _dt
-from data import SPECIES, PAIRS, EXT, GROUPS, HABS, ACTS, SIZES, MONTH_EVENTS
+from data import SPECIES, PAIRS, PAIR_DEEP, EXT, GROUPS, HABS, ACTS, SIZES, MONTH_EVENTS
 import art
 CREDITS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "credits.json"), encoding="utf-8"))
 
@@ -509,8 +509,20 @@ def build_pairs():
         rnd = random.Random(p["k"]); g0 = art_of(p["a"])[1]
         same = [q for q in others if art_of(q["a"])[1] == g0]; rest = [q for q in others if q not in same]
         rnd.shuffle(same); rnd.shuffle(rest); rel = (same + rest)[:3]
-        body = f'''<article class="wrap pairpage"> <h1>{esc(name_of(p["a"]))} oder {esc(name_of(p["b"]))}?</h1> <p class="intro">{esc(p["short"])}</p> <div class="ph big"> {figs} </div> <section aria-labelledby="h-cmp"> <h2 id="h-cmp">Die Unterschiede</h2> <div class="cmp-wrap"><table class="cmp cmp-pair"> <thead><tr><td></td><th scope="col">{esc(name_of(p["a"]))}</th><th scope="col">{esc(name_of(p["b"]))}</th></tr></thead> <tbody>{rows}</tbody> </table></div> <p class="merksatz"><b>Merkhilfe:</b> {esc(p["tip"])}</p> <p class="actions"> {btns} </p> </section> <section class="related" aria-labelledby="h-more"> <h2 id="h-more">Weitere Doppelgänger</h2> <ul class="pairs three">{"".join(pair_card(R, q, "h3") for q in rel)}</ul> </section> </article>'''
-        write(f"unterscheiden/{p['k']}/index.html", page(f"unterscheiden/{p['k']}/index.html", f"{name_of(p['a'])} oder {name_of(p['b'])}?", p["short"], body, active="unterscheiden",
+        d = PAIR_DEEP.get(p["k"])
+        deep = ld = ""
+        if d:
+            deep = "".join(f'<section class="deep" aria-labelledby="h-t{i}"> <h2 id="h-t{i}">{esc(h)}</h2> <p>{esc(t)}</p> </section> ' for i, (h, t) in enumerate(d["text"]))
+            deep += ('<section class="faq" aria-labelledby="h-faq"> <h2 id="h-faq">Häufige Fragen</h2> '
+                     + "".join(f'<div class="qa"> <h3>{esc(q)}</h3> <p>{esc(a)}</p> </div> ' for q, a in d["faq"]) + '</section> ')
+            y, mo, _ = d["updated"].split("-")
+            deep += ('<section class="more" aria-labelledby="h-src"> <h2 id="h-src">Quellen</h2> <ul class="morelinks"> '
+                     + "".join(f'<li><a href="{esc(u)}" target="_blank" rel="noopener">{esc(n)}<span class="sr-only"> (öffnet in neuem Fenster)</span></a></li> ' for n, u in d["sources"])
+                     + f'</ul> <p class="stand">Stand: <time datetime="{d["updated"]}">{MONTHS[int(mo)-1]} {y}</time></p> </section> ')
+            ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+                  {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in d["faq"]]}
+        body = f'''<article class="wrap pairpage"> <h1>{esc(name_of(p["a"]))} oder {esc(name_of(p["b"]))}?</h1> <p class="intro">{esc(p["short"])}</p> <div class="ph big"> {figs} </div> <section aria-labelledby="h-cmp"> <h2 id="h-cmp">Die Unterschiede</h2> <div class="cmp-wrap"><table class="cmp cmp-pair"> <thead><tr><td></td><th scope="col">{esc(name_of(p["a"]))}</th><th scope="col">{esc(name_of(p["b"]))}</th></tr></thead> <tbody>{rows}</tbody> </table></div> <p class="merksatz"><b>Merkhilfe:</b> {esc(p["tip"])}</p> <p class="actions"> {btns} </p> </section> {deep}<section class="related" aria-labelledby="h-more"> <h2 id="h-more">Weitere Doppelgänger</h2> <ul class="pairs three">{"".join(pair_card(R, q, "h3") for q in rel)}</ul> </section> </article>'''
+        write(f"unterscheiden/{p['k']}/index.html", page(f"unterscheiden/{p['k']}/index.html", d["title"] if d else f"{name_of(p['a'])} oder {name_of(p['b'])}?", d["desc"] if d else p["short"], body, active="unterscheiden", ld=ld or None,
               crumbs=[("Doppelgänger", "unterscheiden/index.html"), (f"{name_of(p['a'])} oder {name_of(p['b'])}", "")]))
 
 def cal_table(R):
@@ -779,6 +791,12 @@ def rewrite_html():
                 t = t.replace(f'assets/{a}"', f'assets/{a}?v={v}"')
             open(fp, "w", encoding="utf-8").write(t)
 
+def lastmod(u):
+    """Änderungsdatum für Seiten, deren Inhalt ein eigenes Stand-Datum trägt."""
+    m = re.search(r"/unterscheiden/([^/]+)/$", u)
+    d = PAIR_DEEP.get(m.group(1)) if m else None
+    return f"<lastmod>{d['updated']}</lastmod>" if d else ""
+
 def write_meta_files():
     """Sitemap (alle index.html), robots.txt und Build-Zeitpunkt (zum Prüfen, ob die Live-Seite aktuell ist)."""
     urls = []
@@ -788,7 +806,7 @@ def write_meta_files():
             urls.append(DOMAIN + "/" + ("" if rel == "." else rel + "/"))
     urls.sort(key=lambda u: (u.count("/"), u))
     write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-          + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")
+          + "".join(f"  <url><loc>{u}</loc>{lastmod(u)}</url>\n" for u in urls) + "</urlset>\n")
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
     write("version.txt", _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") + "\n")
 
