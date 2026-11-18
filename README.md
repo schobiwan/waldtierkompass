@@ -38,3 +38,8 @@ Der Build schreibt `dist/` komplett neu, entfernt ungenutztes CSS, minifiziert C
 Nach Änderungen an Texten oder Code lokal `npm run build` ausführen und `dist/` mit committen.
 
 Die Domain steht in `build.py` unter `DOMAIN` (`https://waldtierkompass.de`).
+
+## Suchmaschinen
+
+- Sitemap mit Änderungsdatum (`CONTENT_UPDATED` in `build.py`, bei inhaltlichen Änderungen anpassen).
+- **IndexNow:** Nach jedem Push mit geändertem `dist/` meldet `.github/workflows/indexnow.yml` die geänderten Seiten an Bing, Yandex und Co. (`tools/indexnow.mjs`). Der Schlüssel steht als `INDEXNOW_KEY` in `build.py`, die Datei `dist/<schlüssel>.txt` entsteht beim Bauen. Schlüssel nie ändern.

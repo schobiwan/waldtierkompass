@@ -1,0 +1,23 @@
+# Meldet nach jedem Push geänderte Seiten per IndexNow an Bing & Co. (Bing liefert auch die Ergebnisse für ChatGPT-Suche und Copilot).
+# dist/ ist eingecheckt: alte Fassung = dist/ des vorigen Commits, neue Fassung = dist/ jetzt. Das Skript wartet, bis statichost die neue Fassung ausliefert.
+name: IndexNow
+on:
+  push:
+    branches: [main]
+    paths: ['dist/**']
+  workflow_dispatch:
+concurrency: { group: indexnow, cancel-in-progress: false }
+jobs:
+  melden:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Vorige Fassung holen
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        run: git worktree add /tmp/alt ${{ github.event.before }} 2>/dev/null || git worktree add /tmp/alt HEAD~1
+      - name: Geänderte Seiten melden
+        run: WAIT=1 node tools/indexnow.mjs /tmp/alt/dist dist
