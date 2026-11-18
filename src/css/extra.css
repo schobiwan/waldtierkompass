@@ -324,3 +324,27 @@ h1,h2{letter-spacing:-.01em}
 .bird h3{color:var(--heading)}
 .tag.status{background:var(--moss);border-color:var(--moss);color:#fff}
 @media(prefers-color-scheme:dark){.tag.status{color:#121512}}
+
+/* ---------- Jahresband auf Artseiten (wie bei Vogel-, Meeres- und Gartentierkompass) ----------
+   Schlanke Balken: Hauptzeit Waldgrün, aktiv hell, sonst Spur; Monatsnamen darunter, aktueller Monat orange mit Punkt */
+.months{gap:3px;margin-top:10px}
+.months>span{height:auto;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.72rem;line-height:1;color:var(--muted);font-weight:400;background:none;box-shadow:none;outline:0;border-radius:0}
+.months>span::before{content:"";align-self:stretch;height:10px;border-radius:2px;background:color-mix(in srgb,var(--line) 70%,transparent)}
+.months>span:first-child::before{border-radius:999px 2px 2px 999px}
+.months>span:last-child::before{border-radius:2px 999px 999px 2px}
+.months>span.p,.months>span.h{background:none;box-shadow:none;color:var(--muted)}
+.months>span.p::before{background:color-mix(in srgb,var(--moss) 40%,var(--surface))}
+.months>span.h::before{background:var(--moss)}
+.months>span.h::after{content:none}
+.months i{font-style:normal}
+.months>span.now{color:var(--rust);font-weight:700;outline:0}
+.months>span.now::after{content:"";position:static;width:5px;height:5px;margin-top:-2px;border-radius:50%;background:var(--rust)}
+.months .ms{display:none}
+@media(max-width:560px){.months{gap:2px}.months .ml{display:none}.months .ms{display:block}}
+.mlegend{display:flex;flex-wrap:wrap;gap:4px 16px;margin:10px 0 0;font-size:.78rem;color:var(--muted)}
+.mlegend span{display:inline-flex;align-items:center;gap:6px}
+.mlegend span::before{content:"";width:16px;height:8px;border-radius:2px}
+.mlegend .lh::before{background:var(--moss)}
+.mlegend .lp::before{background:color-mix(in srgb,var(--moss) 40%,var(--surface))}
+.mlegend .ln::before{width:6px;height:6px;border-radius:50%;background:var(--rust)}
+@media(forced-colors:active){.months>span::before,.mlegend span::before{forced-color-adjust:none;background:Canvas;border:1px dashed CanvasText}.months>span.p::before,.mlegend .lp::before{border:2px solid CanvasText}.months>span.h::before,.mlegend .lh::before{background:CanvasText}}
