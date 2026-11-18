@@ -348,3 +348,25 @@ h1,h2{letter-spacing:-.01em}
 .mlegend .lp::before{background:color-mix(in srgb,var(--moss) 40%,var(--surface))}
 .mlegend .ln::before{width:6px;height:6px;border-radius:50%;background:var(--rust)}
 @media(forced-colors:active){.months>span::before,.mlegend span::before{forced-color-adjust:none;background:Canvas;border:1px dashed CanvasText}.months>span.p::before,.mlegend .lp::before{border:2px solid CanvasText}.months>span.h::before,.mlegend .lh::before{background:CanvasText}}
+
+/* ---------- Waldjahr „Wann siehst du wen?“: dieselbe Bildsprache wie das Jahresband der Artseiten (wie beim Meereskompass) ----------
+   Je Zelle ein schlanker Balken, der aktuelle Monat als leicht getönte Spalte mit orangem Monatskürzel und Punkt. */
+.callegend{margin:0 0 14px}
+table.cal{border-spacing:2px 0}
+table.cal td.m{position:relative;height:34px;background:none;box-shadow:none;border-radius:0}
+table.cal td.m.p,table.cal td.m.h{background:none;box-shadow:none}
+table.cal td.m::before{content:"";position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:2px;background:color-mix(in srgb,var(--line) 70%,transparent)}
+table.cal td.m.p::before{background:color-mix(in srgb,var(--moss) 40%,var(--surface))}
+table.cal td.m.h::before{background:var(--moss)}
+table.cal td.m.h::after{content:none}
+table.cal td.m.now,table.cal td.m.p.now,table.cal td.m.h.now,table.cal td.m.now.sel{box-shadow:none;background:color-mix(in srgb,var(--rust) 9%,transparent)}
+table.cal tbody tr:not(.grow):hover td.m{background-color:color-mix(in srgb,var(--fg) 4%,transparent)}
+table.cal th.now{color:var(--rust)}
+table.cal th.now abbr::after{content:"";display:block;width:5px;height:5px;margin:3px auto 0;border-radius:50%;background:var(--rust)}
+table.cal th.sel,table.cal td.m.sel{box-shadow:none}
+table.cal td.m.sel::before{outline:2px solid var(--forest);outline-offset:1px}
+table.cal td.m:first-of-type::before{border-radius:999px 2px 2px 999px}
+table.cal td.m:last-child::before{border-radius:2px 999px 999px 2px}
+table.cal .n a{min-height:34px}
+@media(max-width:560px){table.cal td.m{height:30px}table.cal td.m::before{height:8px;margin-top:-4px}table.cal .n a{min-height:30px}}
+@media(forced-colors:active){table.cal td.m::before{forced-color-adjust:none;background:Canvas;border:1px dashed CanvasText}table.cal td.m.p::before{border:2px solid CanvasText}table.cal td.m.h::before{background:CanvasText}}

@@ -283,10 +283,6 @@ def card(R, s, i=0, hidden=False, eager=False):
             f'<span class="row"><span class="tag status">{esc(s["grp"])}</span></span> <p class="short">{esc(s["short"])}</p> </div> '
             f'<span class="acts">{acts}</span> </li>')
 
-def legend(cur=True):
-    return ('<p class="legend"><span><i></i>kaum zu sehen</span><span><i class="p"></i>aktiv</span><span><i class="h"></i>beste Zeit</span>'
-            + ('<span><i class="now"></i>aktueller Monat</span>' if cur else '') + '</p>')
-
 def months_bar(s):
     out = []
     for m in range(1, 13):
@@ -553,7 +549,7 @@ def build_year():
     events = "".join(f'<li data-month="{m}"><b>{MONTHS[m-1]}</b><span>{esc(MONTH_EVENTS[m][0])}</span></li>' for m in range(1, 13))
     body = f'''<section class="block page"> <div class="wrap"> <h1>Das Waldjahr</h1> <p class="intro">Was im Wald wann passiert: Brunft, Krötenwanderung, Winterschlaf. Wähle einen Monat, um zu sehen, wer dann unterwegs ist und was es zu entdecken gibt.</p> <ul class="monthlinks">{links}</ul> </div> </section>
 <section class="block" aria-labelledby="h-ev"> <div class="wrap"> <h2 id="h-ev">Das Wichtigste im Jahreslauf</h2> <ul class="yearline">{events}</ul> </div> </section>
-<section class="block" aria-labelledby="h-cal"> <div class="wrap"> <h2 id="h-cal">Wann siehst du wen?</h2> <p class="intro">Monate, in denen die Art aktiv ist, und wann sie besonders gut zu beobachten ist.</p> {legend()} <p class="swipe">Seitlich wischen, um alle Monate zu sehen.</p> {cal_table(R)} </div> </section>'''
+<section class="block" aria-labelledby="h-cal"> <div class="wrap"> <h2 id="h-cal">Wann siehst du wen?</h2> <p class="intro">Monate, in denen die Art aktiv ist, und wann sie besonders gut zu beobachten ist.</p> <p class="mlegend callegend" aria-hidden="true"><span class="lh">Hauptzeit</span><span class="lp">aktiv</span><span class="ln">aktueller Monat</span></p> <p class="swipe">Seitlich wischen, um alle Monate zu sehen.</p> {cal_table(R)} </div> </section>'''
     write("waldjahr/index.html", page("waldjahr/index.html", "Das Waldjahr", "Waldkalender: welche Waldtiere wann aktiv sind, mit Brunft, Krötenwanderung und Winterschlaf Monat für Monat.", body, active="waldjahr", crumbs=[("Waldjahr", "")]))
     for m in range(1, 13):
         R = "../../"
