@@ -11,9 +11,11 @@ const SITES = {
 const hits = (t, w) => t === w || t.endsWith(w) || (w.length >= 5 && t.startsWith(w)) || (t.length >= 4 && w.startsWith(t));
 
 /** Schwesterseite zum (normalisierten) Suchbegriff oder null */
+const flat = (w) => w.replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u");
 export function sisterFor(term) {
-  const words = term.split(/\s+/).filter(Boolean);
-  for (const s of Object.values(SITES)) if (words.some((t) => s.words.some((w) => hits(t, w)))) return s;
+  // Suchbegriff und Wortliste gleich falten („Mowe“, „Moewe“ und „Möwe“)
+  const words = flat(term).split(/\s+/).filter(Boolean);
+  for (const s of Object.values(SITES)) if (words.some((t) => s.words.some((w) => hits(t, flat(w))))) return s;
   return null;
 }
 

@@ -1,7 +1,7 @@
 // Startseite: Suche, Filter und Sortierung
 import "./app.js";
-import { $, $$, nums, norm, escapeHtml, NOW, reduced, setPressed, focusEl, IDX } from "./util.js";
-import { distance } from "./search.js";
+import { $, $$, nums, fold as norm, escapeHtml, NOW, reduced, setPressed, focusEl, IDX } from "./util.js";
+import { distance, prepare, rank } from "./search.js";
 import { sisterFor, sisterHint } from "./sisters.js";
 
 const grid = $("grid");
@@ -106,6 +106,12 @@ function render() {
   sg.hidden = !hit && !sister;
   if (sister) sg.innerHTML = sisterHint(sister);
   else if (hit) sg.innerHTML = `Meintest du <button type="button" class="linkbtn" data-try="${escapeHtml(hit.name)}">${escapeHtml(hit.name)}</button>?`;
+  // Kein Tier, aber vielleicht ein Thema („Spuren“, „Brunft“): passende Seite anbieten
+  if (!list.length && term && !sister && !hit) pageHint(state.q.trim()).then((p) => {
+    if (!p || norm(state.q.trim()) !== term) return;
+    sg.innerHTML = `Passende Seite: <a class="linkbtn" href="${p.href}${IDX}">${escapeHtml(p.name)}</a>`;
+    sg.hidden = false;
+  });
 
   const n = state.count();
   const fc = $("fcount");
@@ -127,6 +133,16 @@ function render() {
   const act = $("active");
   act.innerHTML = chips.join("");
   act.hidden = !chips.length;
+}
+
+// Themenseiten aus den Suchdaten (erst laden, wenn die Startseite kein Tier findet)
+let pages = null;
+async function pageHint(query) {
+  try {
+    pages ??= (await (await fetch("search.json")).json()).filter((r) => r.length > 5)
+      .map(([name, , names, alt, marks, href]) => ({ name, href, e: prepare(names, alt, marks.split("|")) }));
+  } catch { return null; }
+  return pages.map((p) => ({ ...p, r: rank(p.e, query) })).filter((p) => p.r >= 0).sort((a, b) => a.r - b.r)[0] || null;
 }
 
 let t = 0;

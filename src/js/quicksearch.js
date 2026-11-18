@@ -13,7 +13,9 @@ async function data() {
   if (entries) return entries;
   try {
     const rows = await (await fetch(`${ROOT}search.json`)).json();
-    entries = rows.map(([name, key, names, alt, marks]) => ({ name, key, e: prepare(names, alt, marks.split("|")) }));
+    // Tiere: [Name, Schlüssel, Namen, Doppelgänger, Merkmale]; Seiten zusätzlich [Adresse, Art der Seite, Symbol]
+    entries = rows.map(([name, key, names, alt, marks, href, kind, icon]) =>
+      ({ name, key, href: href ?? `arten/${key}/`, kind, icon, e: prepare(names, alt, marks.split("|")) }));
   } catch { entries = null; return []; } // offline: beim nächsten Öffnen erneut versuchen
   return entries;
 }
@@ -25,20 +27,30 @@ async function results() {
   const all = await data();
   if (my !== seq) return; // eine neuere Eingabe ist schon unterwegs
   if (!all.length) { list.innerHTML = '<li class="snone">Die Suche ist gerade nicht erreichbar.</li>'; status.textContent = "Die Suche ist gerade nicht erreichbar."; return; }
-  const hits = all.map((x) => ({ ...x, r: rank(x.e, q) })).filter((x) => x.r >= 0)
-    .sort((a, b) => a.r - b.r || a.name.localeCompare(b.name, "de"));
-  if (!hits.length) {
+  // Tiere vor Seiten, dann nach Rang und Name
+  let hits = all.map((x) => ({ ...x, r: rank(x.e, q) })).filter((x) => x.r >= 0)
+    .sort((a, b) => (a.kind ? 1 : 0) - (b.kind ? 1 : 0) || a.r - b.r || a.name.localeCompare(b.name, "de"));
+  let fuzzyHit = false;
+  const sister = !hits.length && sisterFor(fold(q));
+  if (!hits.length && !sister) {
+    // Tippfehler („Wildscwein“): den ähnlichsten Namen gleich als Treffer zeigen
     const g = suggest(q, all.map((x) => x.name));
     const hit = g && all.find((x) => x.name === g);
-    const sister = sisterFor(fold(q));
-    list.innerHTML = `<li class="snone">Nichts gefunden.${sister ? " " + sisterHint(sister) : hit ? ` Meintest du <a href="${ROOT}arten/${hit.key}/${IDX}">${escapeHtml(hit.name)}</a>?` : ""}</li>`;
+    if (hit) { hits = [{ ...hit, r: 9 }]; fuzzyHit = true; }
+  }
+  const note = (x) => x.r === 9 ? "ähnliche Schreibweise" : x.kind ? x.kind : x.r === 3 ? "ähnelt der gesuchten Art" : x.r >= 4 ? "passt zu den Merkmalen" : "";
+  const pic = (x) => x.icon ? `<span class="sico">${x.icon}</span>`
+    : `<img src="${ROOT}photos/${x.key}-400.webp" alt="" width="48" height="38" loading="lazy">`;
+  if (!hits.length) {
+    list.innerHTML = `<li class="snone">Nichts gefunden.${sister ? " " + sisterHint(sister) : ""}</li>`;
   } else {
     list.innerHTML = hits.slice(0, 8).map((x) =>
-      `<li><a href="${ROOT}arten/${x.key}/${IDX}"><img src="${ROOT}photos/${x.key}-400.webp" alt="" width="48" height="38" loading="lazy">${escapeHtml(x.name)}${x.r >= 3 ? `<span>${x.r === 3 ? "ähnelt der gesuchten Art" : "passt zu den Merkmalen"}</span>` : ""}</a></li>`).join("");
+      `<li><a href="${ROOT}${x.href}${IDX}">${pic(x)}${escapeHtml(x.name)}${note(x) ? `<span>${note(x)}</span>` : ""}</a></li>`).join("");
   }
-  more.hidden = hits.length <= 8;
+  const animalHits = hits.filter((x) => !x.kind).length;
+  more.hidden = animalHits <= 8 || fuzzyHit;
   // Kurze Ansage für Screenreader statt der ganzen Liste
-  status.textContent = hits.length ? `${hits.length} Treffer${hits.length > 8 ? ", die ersten 8 werden gezeigt" : ""}` : "Nichts gefunden";
+  status.textContent = hits.length ? `${hits.length} Treffer${fuzzyHit ? " bei ähnlicher Schreibweise" : ""}${hits.length > 8 ? ", die ersten 8 werden gezeigt" : ""}` : "Nichts gefunden";
   moreLink.href = `${ROOT}${IDX}?q=${encodeURIComponent(q)}#arten`;
 }
 

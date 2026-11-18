@@ -1,9 +1,8 @@
 // Artsuche für die Schnellsuche, übernommen vom Vogelkompass: Namen zuerst, dann Doppelgänger, dann Merkmale.
 // Mehrere Wörter in beliebiger Reihenfolge, Wortendungen und Umlaute egal („Eichhoernchen“, „nachtaktive Marder“).
 
-import { norm } from "./util.js";
-// Kleinschreibung, Umlaute ausgeschrieben (gleiche Regel wie die Startseite)
-export const fold = (t) => norm(t || "");
+import { fold } from "./util.js";
+export { fold };
 
 const STOP = new Set(["mit", "und", "oder", "der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem", "einer",
   "am", "im", "an", "in", "auf", "von", "vom", "zum", "zur"]);

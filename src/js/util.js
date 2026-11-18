@@ -8,6 +8,8 @@ export const $ = (id) => document.getElementById(id);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 export const nums = (s) => (s || "").split(",").filter(Boolean).map(Number);
 export const norm = (s) => String(s).toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");
+/** Für die Suche: Umlaute auf den Grundvokal falten, getipptes „ae“ ebenso („Eichhornchen“ = „Eichhoernchen“ = „Eichhörnchen“) */
+export const fold = (s) => norm(s || "").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u");
 export const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 export const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 export const setPressed = (el, on) => el.setAttribute("aria-pressed", String(!!on));

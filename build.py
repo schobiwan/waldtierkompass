@@ -678,7 +678,7 @@ def build_legal():
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOOLS = os.path.join(HERE, "node_modules", ".bin")
-SAFELIST = ["now", "open", "calm", "scrolled", "clear", "fcount", "pk"]
+SAFELIST = ["now", "open", "calm", "scrolled", "clear", "fcount", "pk", "sico"]
 
 def build_assets():
     from PIL import Image
@@ -690,6 +690,24 @@ def build_assets():
         alt = " ".join(name_of(p["b"] if p["a"] == k else p["a"]) for p in PAIRS if k in (p["a"], p["b"]))
         rows.append([sp["n"], k, " ".join([sp["n"], sp["lat"], SYN.get(k, "")]), alt,
                      "|".join([sp["grp"] + " " + GRP_SYN[sp["grp"]], sp["short"], " ".join(ACTS[a] for a in sp["act"])])])
+    # Themenseiten und Vergleiche: zusätzlich [Adresse, Art der Seite, Symbol]; Symbol leer = Foto des ersten Tiers
+    sym = lambda k: ICON[k].replace('aria-hidden="true"', 'aria-hidden="true" focusable="false"')
+    def pg(title, href, names, marks, kind="Seite", icon="find", key=""):
+        rows.append([title, key, names, "", marks, href, kind, sym(icon) if icon else ""])
+    pg("Tierspuren lesen und bestimmen", "spuren/", "Spuren Tierspuren Spurensuche Trittsiegel Fährte Fährten Fußabdruck Pfotenabdruck Abdruck Spur",
+       "Fraßspuren Nuss Haselnuss Zapfen angenagt|Schnee Matsch Pfote Krallen Zehen", icon="track")
+    pg("Das Waldjahr", "waldjahr/", "Waldjahr Waldkalender Kalender Jahreslauf Monat Monate",
+       "Brunft Rauschzeit Ranzzeit Krötenwanderung Winterschlaf Winterruhe Laichzeit Setzzeit", icon="year")
+    for m in range(1, 13):
+        pg(f"Der Wald im {MONTHS[m-1]}", f"waldjahr/{MSLUG[m-1]}/", f"{MONTHS[m-1]} Wald im {MONTHS[m-1]}", "", kind="Waldjahr", icon="year")
+    pg("Doppelgänger unterscheiden", "unterscheiden/", "Doppelgänger Unterschied Unterschiede unterscheiden Verwechslung verwechseln Vergleich ähnlich",
+       "Reh Hirsch Marder Natter Otter", icon="pair")
+    for p in PAIRS:
+        pg(f"{name_of(p['a'])} oder {name_of(p['b'])}?", f"unterscheiden/{p['k']}/", f"{name_of(p['a'])} {name_of(p['b'])} Unterschied",
+           p["short"], kind="Vergleich", icon="", key=photo_key(p["a"]))
+    pg("Ausrüstung für Waldbeobachter", "ausruestung/", "Ausrüstung Ausruestung Zubehör Fernglas Wildkamera Wärmebildkamera Stirnlampe Rotlicht Lupe Gips",
+       "Igelhaus Fledermauskasten Futterkasten Fledermaus-Detektor Bestimmungsbuch Buch", icon="pack")
+    pg("Alle Waldtiere", "arten/", "Alle Waldtiere Arten Tiere Liste Übersicht Steckbriefe", "Huftiere Raubtiere Kleinsäuger Amphibien Reptilien Insekten")
     write("search.json", json.dumps(rows, ensure_ascii=False, separators=(",", ":")))
     # Symbole für Browser ohne SVG-Favicon, Google-Suchergebnisse und den Startbildschirm (aus icons/, erzeugt aus favicon.svg)
     for f in os.listdir(os.path.join(HERE, "icons")):
