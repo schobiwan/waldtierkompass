@@ -61,3 +61,4 @@ Sprache: Deutsch. Angaben zu Aktivität und Jahreszeiten sind grobe Richtwerte f
 ## Schwesterseiten
 - [Vogelkompass](https://vogelkompass.de/): Vögel bestimmen
 - [Meereskompass](https://meereskompass.de/): Tiere an Nord- und Ostsee
+- [Gartentierkompass](https://gartentierkompass.de/): Tiere im Garten bestimmen

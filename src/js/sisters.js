@@ -1,9 +1,11 @@
-// Schwesterseiten: Sucht jemand nach Vögeln oder Meerestieren, verweisen Startseite und Schnellsuche dorthin
+// Schwesterseiten: Sucht jemand nach Vögeln, Meeres- oder Gartentieren, verweisen Startseite und Schnellsuche dorthin
 const SITES = {
   meer: { url: "https://meereskompass.de/", name: "Meereskompass", what: "Tiere an Nord- und Ostsee",
     words: ["kueste", "strand", "nordsee", "ostsee", "wattenmeer", "robbe", "seehund", "kegelrobbe", "wal", "schweinswal", "delfin", "delphin", "qualle", "krabbe", "garnele", "muschel", "seestern", "bernstein", "seeigel", "moewe", "seeschwalbe", "austernfischer", "basstoelpel", "kormoran", "eiderente", "papageitaucher", "trottellumme"] },
   vogel: { url: "https://vogelkompass.de/", name: "Vogelkompass", what: "Vögel",
     words: ["vogel", "voegel", "eule", "kauz", "uhu", "specht", "meise", "amsel", "drossel", "fink", "bussard", "falke", "habicht", "sperber", "kraehe", "rabe", "elster", "haeher", "taube", "kuckuck", "zaunkoenig", "rotkehlchen", "kleiber", "schnepfe", "storch", "reiher", "ente", "gans", "schwan", "milan", "adler"] },
+  garten: { url: "https://gartentierkompass.de/", name: "Gartentierkompass", what: "Tiere im Garten",
+    words: ["garten", "schnecke", "nacktschnecke", "wegschnecke", "weinbergschnecke", "marienkaefer", "blattlaus", "laeuse", "hummel", "biene", "schmetterling", "raupe", "falter", "kohlweissling", "zitronenfalter", "maulwurf", "wuehlmaus", "schermaus", "regenwurm", "ohrwurm", "florfliege", "schwebfliege", "wespe", "spinne", "kaefer", "zuensler", "mauerbiene"] },
 };
 
 // Wort trifft genau, als Ende eines zusammengesetzten Worts („Buckelwal“) oder als Anfang ab 5 Buchstaben („Robben“).
