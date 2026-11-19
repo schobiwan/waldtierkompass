@@ -41,8 +41,7 @@ class SpeciesData(unittest.TestCase):
                 # Reihenfolge ist frei: Winterarten wie das Hermelin zählen über den Jahreswechsel (11, 12, 1, 2)
 
     # Arten, deren Doppelgänger-Verweis bewusst auf ein Paar ohne sie selbst zeigt
-    # (Rotfuchs → „Wolf oder Haushund?“; offen, ob so gewollt, Nov. 2026)
-    ALIKE_ELSEWHERE = {"rotfuchs"}
+    ALIKE_ELSEWHERE = set()
 
     def test_alike_points_to_pair_with_this_species(self):
         pairs = {p["k"]: p for p in PAIRS}

@@ -15,7 +15,7 @@ OUT = os.path.join(HERE, "preview" if PREVIEW else "dist")
 TOOLS = os.path.join(HERE, "node_modules", ".bin")
 
 # Stand der Inhalte für die Autorenzeile und die Sitemap (bei inhaltlichen Änderungen anpassen)
-CONTENT_UPDATED = (2026, 11, 18)
+CONTENT_UPDATED = (2026, 11, 19)
 CONTENT_ISO = "%04d-%02d-%02d" % CONTENT_UPDATED
 
 # IndexNow-Schlüssel (Datei <schlüssel>.txt im Wurzelverzeichnis; nie ändern oder löschen)
