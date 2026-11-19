@@ -69,5 +69,3 @@ document.addEventListener("click", (e) => { if (!e.target.closest(".has-menu")) 
 backdrop?.addEventListener("click", () => closeAll());
 // Ein Klick auf einen Eintrag mit Sprungmarke auf derselben Seite schließt das Menü
 $$(".mpanel a").forEach((a) => a.addEventListener("click", () => closeAll()));
-
-export { closeAll };

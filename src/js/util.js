@@ -1,4 +1,6 @@
-// Gemeinsame Hilfsfunktionen für den Waldtierkompass
+// Gemeinsame Hilfsfunktionen für den Waldtierkompass (mit Zugriff auf die Seite)
+export { norm, fold, escapeHtml, nums, debounce } from "./text.js";
+
 const MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 export const MSLUG = ["januar", "februar", "maerz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"];
 export const NOW = new Date().getMonth() + 1;
@@ -6,17 +8,15 @@ export const NOW_NAME = MONTHS[NOW - 1];
 
 export const $ = (id) => document.getElementById(id);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-export const nums = (s) => (s || "").split(",").filter(Boolean).map(Number);
-export const norm = (s) => String(s).toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");
-/** Für die Suche: Umlaute auf den Grundvokal falten, getipptes „ae“ ebenso („Eichhornchen“ = „Eichhoernchen“ = „Eichhörnchen“) */
-export const fold = (s) => norm(s || "").replace(/ae/g, "a").replace(/oe/g, "o").replace(/ue/g, "u");
-export const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 export const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 export const setPressed = (el, on) => el.setAttribute("aria-pressed", String(!!on));
-const root = document.documentElement.dataset.root || "./";
+
+// Weg zur Wurzel der Seite (data-root im <html>), z. B. "../../"
+export const ROOT = document.documentElement.dataset.root || "./";
 // Live-Seite nutzt kurze Adressen (/arten/dachs/), die Vorschau verlinkt index.html
 export const IDX = document.documentElement.hasAttribute("data-clean") ? "" : "index.html";
-export const href = (p) => root + p + IDX;
+export const href = (p) => ROOT + p + IDX;
+
 export function focusEl(el) {
   if (!(el instanceof HTMLElement)) return;
   if (!el.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute("tabindex", "-1");

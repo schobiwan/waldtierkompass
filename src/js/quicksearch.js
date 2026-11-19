@@ -1,10 +1,9 @@
 // Schnellsuche auf jeder Seite (wie beim Vogelkompass): Knopf „Suchen“ in der Leiste oder Taste „/“.
 // Auf der Startseite springt sie stattdessen zum Suchfeld im Kopfbereich.
-import { $, escapeHtml, focusEl, IDX } from "./util.js";
-import { prepare, rank, suggest, fold } from "./search.js";
+import { $, escapeHtml, focusEl, debounce, fold, ROOT, IDX } from "./util.js";
+import { prepare, rank, suggest } from "./search.js";
 import { sisterFor, sisterHint } from "./sisters.js";
 
-const ROOT = document.documentElement.dataset.root || "./";
 const dlg = $("sdlg"), btn = $("navsearch"), sq = $("sq"), list = $("sresults"), more = $("smore"), moreLink = $("smore-link"), status = $("sstatus");
 const home = $("hq") || $("q"); // Suchfeld der Startseite
 
@@ -65,8 +64,7 @@ function openSearch() {
 btn?.addEventListener("click", openSearch);
 $("sclose")?.addEventListener("click", () => dlg.close());
 dlg?.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
-let t = 0;
-sq?.addEventListener("input", () => { clearTimeout(t); t = window.setTimeout(results, 100); });
+sq?.addEventListener("input", debounce(results, 100));
 // Escape schließt das Fenster sofort, statt erst das Feld zu leeren
 sq?.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); dlg.close(); } });
 $("sform")?.addEventListener("submit", async (e) => {

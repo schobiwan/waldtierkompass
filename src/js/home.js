@@ -1,6 +1,7 @@
 // Startseite: Suche, Filter und Sortierung
 import "./app.js";
-import { $, $$, nums, fold as norm, escapeHtml, NOW, reduced, setPressed, focusEl, IDX } from "./util.js";
+import "./nowband.js";
+import { $, $$, nums, fold, escapeHtml, debounce, NOW, reduced, setPressed, focusEl, IDX } from "./util.js";
 import { distance, prepare, rank } from "./search.js";
 import { sisterFor, sisterHint } from "./sisters.js";
 
@@ -11,8 +12,8 @@ const animals = $$("#grid > li.bird").map((li) => ({
   li,
   key: li.dataset.key,
   name: li.dataset.name,
-  search: norm(li.dataset.search),
-  words: [...new Set(norm(li.dataset.search).split(/[^a-z0-9]+/).filter((w) => w.length > 2))],
+  search: fold(li.dataset.search),
+  words: [...new Set(fold(li.dataset.search).split(/[^a-z0-9]+/).filter((w) => w.length > 2))],
   grp: li.dataset.grp,
   act: li.dataset.act.split("|"),
   hab: li.dataset.hab.split("|"),
@@ -37,7 +38,7 @@ const state = {
     this.now = false;
   },
   matches(a) {
-    const term = norm(this.q.trim());
+    const term = fold(this.q.trim());
     return (!term || fuzzy(a, term))
       && (!this.grp.size || this.grp.has(a.grp))
       && (!this.act.size || a.act.some((x) => this.act.has(x)))
@@ -48,18 +49,17 @@ const state = {
 };
 
 // Tippfehler verzeihen: Levenshtein-Abstand (gemeinsam mit der Schnellsuche), auch gegen den Wortanfang
-const dist = distance;
 const tolerance = (t) => (t.length >= 7 ? 2 : t.length >= 3 ? 1 : 0);
 function fuzzy(a, term) {
   if (a.search.includes(term)) return true;
   const k = tolerance(term);
   if (!k || term.includes(" ")) return false;
-  return a.words.some((w) => dist(term, w) <= k || (w.length > term.length && dist(term, w.slice(0, term.length)) <= k));
+  return a.words.some((w) => distance(term, w) <= k || (w.length > term.length && distance(term, w.slice(0, term.length)) <= k));
 }
 function suggest(term) {
   let best = null, bd = 99;
   animals.forEach((a) => a.words.forEach((w) => {
-    const d = Math.min(dist(term, w), w.length > term.length ? dist(term, w.slice(0, term.length)) + 1 : 99);
+    const d = Math.min(distance(term, w), w.length > term.length ? distance(term, w.slice(0, term.length)) + 1 : 99);
     if (d < bd) { bd = d; best = a; }
   }));
   return bd <= tolerance(term) + (term.length >= 5 ? 1 : 0) ? best : null;
@@ -100,7 +100,7 @@ function render() {
   }
   lastOrder = order;
   $("empty").hidden = list.length > 0;
-  const sg = $("empty-suggest"), term = norm(state.q.trim());
+  const sg = $("empty-suggest"), term = fold(state.q.trim());
   const hit = !list.length && term ? suggest(term) : null;
   const sister = !list.length && term ? sisterFor(term) : null;
   sg.hidden = !hit && !sister;
@@ -108,7 +108,7 @@ function render() {
   else if (hit) sg.innerHTML = `Meintest du <button type="button" class="linkbtn" data-try="${escapeHtml(hit.name)}">${escapeHtml(hit.name)}</button>?`;
   // Kein Tier, aber vielleicht ein Thema („Spuren“, „Brunft“): passende Seite anbieten
   if (!list.length && term && !sister && !hit) pageHint(state.q.trim()).then((p) => {
-    if (!p || norm(state.q.trim()) !== term) return;
+    if (!p || fold(state.q.trim()) !== term) return;
     sg.innerHTML = `Passende Seite: <a class="linkbtn" href="${p.href}${IDX}">${escapeHtml(p.name)}</a>`;
     sg.hidden = false;
   });
@@ -145,10 +145,10 @@ async function pageHint(query) {
   return pages.map((p) => ({ ...p, r: rank(p.e, query) })).filter((p) => p.r >= 0).sort((a, b) => a.r - b.r)[0] || null;
 }
 
-let t = 0;
-const typed = (v) => { clearTimeout(t); t = setTimeout(() => { setQuery(v); render(); }, 120); };
+const typed = debounce((v) => { setQuery(v); render(); }, 120);
 q.addEventListener("input", () => { if (hq) hq.value = q.value; typed(q.value); });
-q.addEventListener("keydown", (e) => { if (e.key === "Escape" && q.value) { e.preventDefault(); setQuery(""); render(); } });
+// Escape leert die Suche; eine noch ausstehende Eingabe darf sie nicht wiederherstellen
+q.addEventListener("keydown", (e) => { if (e.key === "Escape" && q.value) { e.preventDefault(); typed.cancel(); setQuery(""); render(); } });
 sortSel.addEventListener("change", () => { state.sort = sortSel.value; render(); });
 
 const panel = $("fpanel"), toggle = $("f-toggle");
@@ -188,46 +188,6 @@ if (fromUrl) setQuery(fromUrl);
 render();
 grid.classList.add("calm");
 
-// Karussell "Jetzt unterwegs": Arten in Hauptzeit zuerst, dann alle übrigen aktiven Arten
-{
-  const list = $("nowcards");
-  const items = $$("#nowcards > li");
-  const peak = items.filter((li) => nums(li.dataset.peak).includes(NOW));
-  const rest = items.filter((li) => !peak.includes(li) && nums(li.dataset.present).includes(NOW));
-  items.forEach((li) => { li.hidden = true; li.classList.toggle("pk", peak.includes(li)); });
-  [...peak, ...rest].forEach((li) => { li.hidden = false; list.appendChild(li); });
-  // Tier des Monats: erste Art in Hauptzeit
-  const top = peak[0] || rest[0];
-  if (top && top.dataset.k !== $("spot-link")?.getAttribute("href")?.split("/")[1]) {
-    const k = top.dataset.k, im = $("spot-img");
-    $("spot-link").href = `arten/${k}/${IDX}`;
-    im.src = `photos/${k}.webp`;
-    im.srcset = `photos/${k}-400.webp 400w, photos/${k}.webp 720w`;
-    $("spot-name").textContent = top.dataset.name;
-    $("spot-hl").textContent = top.dataset.hl;
-    const c = top.querySelector(".cred"), sc = $("spot-cred");
-    if (c && sc) { sc.innerHTML = c.innerHTML; sc.href = c.getAttribute("href"); }
-  }
-  if (top) top.hidden = true; // steht schon groß im Kopfbereich
-  $$(".h5-events").forEach((ul) => { ul.hidden = Number(ul.dataset.m) !== NOW; });
-  const prev = $("now-prev"), next = $("now-next");
-  const step = () => { const li = list.querySelector("li:not([hidden])"); return li ? li.offsetWidth + 12 : list.clientWidth; };
-  const sync = () => {
-    const max = list.scrollWidth - list.clientWidth - 2;
-    prev.disabled = list.scrollLeft <= 2;
-    next.disabled = list.scrollLeft >= max;
-  };
-  const go = (dir) => {
-    const per = Math.max(1, Math.round(list.clientWidth / step()));
-    list.scrollBy({ left: dir * per * step(), behavior: reduced() ? "auto" : "smooth" });
-  };
-  prev?.addEventListener("click", () => go(-1));
-  next?.addEventListener("click", () => go(1));
-  list.addEventListener("scroll", sync, { passive: true });
-  addEventListener("resize", sync);
-  sync();
-}
-
 // Zum Raster springen: die Suchleiste klebt oben, deshalb Ziel selbst berechnen
 function toResults() {
   const bar = $("arten"), top = grid.getBoundingClientRect().top + scrollY - (bar ? bar.offsetHeight : 0) - 12;
@@ -243,7 +203,7 @@ $$(".hchip").forEach((b) => b.addEventListener("click", () => {
 // Suche im Kopfbereich steuert das Raster
 $("hsearch")?.addEventListener("submit", (e) => {
   e.preventDefault();
-  clearTimeout(t); setQuery(hq.value); render();
+  typed.cancel(); setQuery(hq.value); render();
   toResults();
 });
 hq?.addEventListener("input", () => { q.value = hq.value; typed(hq.value); });
