@@ -1,0 +1,35 @@
+# Baut die Website am 1. jedes Monats neu (wie Vogel- und Meereskompass): „Im Wald im <Monat>“, „Jetzt im <Monat> unterwegs“
+# und die Monatslinks stimmen dann auch für Google und ohne JavaScript. dist/ wird eingecheckt, statichost veröffentlicht
+# nach dem Push, und der IndexNow-Ablauf meldet die geänderten Seiten.
+name: Monatlicher Neubau
+on:
+  schedule:
+    - cron: '17 0 1 * *'   # 1. des Monats, 00:17 UTC (01:17/02:17 deutscher Zeit)
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  neubau:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Bauen
+        env:
+          TZ: Europe/Berlin
+        run: python3 build.py
+      - name: Geänderte Seiten pushen
+        run: |
+          git config user.name "Nico Schober"
+          git config user.email "info@nicoschober.com"
+          git add dist
+          if git diff --cached --quiet; then echo "Nichts geändert"; exit 0; fi
+          git commit -m "Monatlicher Neubau ($(date +%Y-%m))"
+          git push
