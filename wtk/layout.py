@@ -157,7 +157,7 @@ def page(path, title, desc, body, active=None, script="app.js", crumbs=None, is_
     canon = canonical(path)
     cr = breadcrumbs(R, crumbs, canon) if crumbs else ""
     lds = ld_script(ld, safe=True) if ld else ""
-    full_title = title if is_home else f"{title} · {SITE}"
+    full_title = title if is_home or SITE in title else f"{title} · {SITE}"   # Titel mit Seitennamen (z. B. Über-Seite) ohne Zusatz
     return (f'<!DOCTYPE html><html lang="de" data-root="{R or "./"}"{"" if PREVIEW else " data-clean"}> '
             f'{head(R, full_title, desc, canon, og, og_alt, og_type, is_home, noindex)} '
             f'<body> {LOGO} <a class="skip" href="#main">Zum Inhalt springen</a> {appnav(R, path, active)} {search_dialog(R)} '

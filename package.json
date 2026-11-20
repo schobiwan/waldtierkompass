@@ -5,8 +5,10 @@
   "description": "Waldtierkompass – statische Website zum Bestimmen von Waldtieren",
   "scripts": {
     "build": "python3 build.py",
-    "test": "python3 build.py && python3 -m unittest discover -s tests -t . && node --test tests/js/*.test.mjs && python3 tools/check.py",
-    "test:browser": "node tests/browser/run.mjs"
+    "test": "python3 build.py && python3 -m unittest discover -s tests -t . && node --test tests/js/*.test.mjs && python3 tools/check.py && node tests/browser/run.mjs && node tests/kompass/seiten.mjs",
+    "test:browser": "node tests/browser/run.mjs",
+    "test:seiten": "node tests/kompass/seiten.mjs",
+    "perf": "node tests/kompass/perf.mjs"
   },
   "devDependencies": {
     "axe-core": "^4.14.1",

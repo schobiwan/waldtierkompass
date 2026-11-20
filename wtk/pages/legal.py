@@ -70,9 +70,9 @@ def about(R):
 
 def build():
     R = "../"
-    write("impressum/index.html", page("impressum/index.html", "Impressum", "Impressum des Waldtierkompass.", IMPRESSUM, crumbs=[("Impressum", "")]))
-    write("datenschutz/index.html", page("datenschutz/index.html", "Datenschutz", "Datenschutzerklärung des Waldtierkompass.", DATENSCHUTZ, crumbs=[("Datenschutz", "")]))
-    write("bildnachweis/index.html", page("bildnachweis/index.html", "Bildnachweis und Lizenzen", "Bildnachweis und Lizenzen des Waldtierkompass.", bildnachweis(),
+    write("impressum/index.html", page("impressum/index.html", "Impressum", "Impressum des Waldtierkompass: Anbieter Nico Schober aus Bremen, Kontakt per E-Mail, Hinweise zu Haftung, Links und Urheberrecht.", IMPRESSUM, crumbs=[("Impressum", "")]))
+    write("datenschutz/index.html", page("datenschutz/index.html", "Datenschutz", "Datenschutz beim Waldtierkompass: keine Cookies, kein Tracking, Hosting in der EU bei statichost.eu und deine Rechte nach der DSGVO.", DATENSCHUTZ, crumbs=[("Datenschutz", "")]))
+    write("bildnachweis/index.html", page("bildnachweis/index.html", "Bildnachweis und Lizenzen", "Bildnachweis des Waldtierkompass: Fotografinnen, Fotografen und freie Lizenzen aller Tierfotos von Wikimedia Commons auf einen Blick.", bildnachweis(),
                                           crumbs=[("Bildnachweis", "")]))
     ld = {"@context": "https://schema.org", "@type": "AboutPage", "name": f"Über den {SITE}", "url": f"{DOMAIN}/ueber/", "inLanguage": "de-DE",
           "mainEntity": {**AUTHOR, "address": {"@type": "PostalAddress", "addressLocality": "Bremen", "addressCountry": "DE"}},
