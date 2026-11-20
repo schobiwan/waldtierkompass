@@ -4,7 +4,7 @@ import json
 import re
 
 from data import SPECIES, PAIRS
-from .config import SITE, DOMAIN, PREVIEW, AWIN_META, CONTENT_UPDATED, MONTHS, SISTER_URL
+from .config import SITE, DOMAIN, PREVIEW, AWIN_META, CONTENT_UPDATED, MONTHS, SISTER_URL, AUTHOR
 from .helpers import esc, count_group
 from .icons import ICON, LOGO, LOGO_USE
 
@@ -17,7 +17,7 @@ def ld_script(obj, safe=False):
 
 LDJSON = ld_script({"@context": "https://schema.org", "@type": "WebSite", "name": SITE, "url": DOMAIN + "/",
                     "inLanguage": "de-DE", "description": "Waldtiere in Deutschland bestimmen: Fotos, Trittsiegel, Doppelgänger und Waldjahr.",
-                    "publisher": {"@type": "Person", "name": "Nico Schober", "url": DOMAIN + "/ueber/"}})
+                    "publisher": AUTHOR})
 
 # ------------------------------------------------------------------ Navigation
 # Hauptnavigation nach den Fragen der Besucher (wie beim Vogelkompass):

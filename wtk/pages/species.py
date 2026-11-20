@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Artseiten (/arten/<art>/) und die Übersicht aller Arten (/arten/)."""
 from data import SPECIES, GROUPS, ACTS
-from ..config import SITE, DOMAIN, CONTENT_ISO, MONTHS, MSLUG
+from ..config import SITE, DOMAIN, CONTENT_ISO, MONTHS, MSLUG, AUTHOR
 from ..helpers import (CREDITS, PAIRBY, esc, write, slug, in_group, name_of, gender_of, photo_key, other_of, pair_title,
                        ein, mit_art, pronoun, join_and, mlist, mrange)
 from ..components import card, actlegend, months_bar, trackbox, track_text
@@ -62,7 +62,7 @@ def species_ld(s):
     a, lic, url = CREDITS[k]
     return {"@context": "https://schema.org", "@type": "WebPage", "name": f"{s['n']} ({s['lat']})", "description": species_desc(s),
             "inLanguage": "de-DE", "url": f"{DOMAIN}/arten/{k}/", "dateModified": CONTENT_ISO,
-            "author": {"@type": "Person", "name": "Nico Schober", "url": f"{DOMAIN}/ueber/"},
+            "author": AUTHOR,
             "about": {"@type": "Taxon", "name": s["lat"], "alternateName": s["n"], "taxonRank": "species"},
             "image": f"{DOMAIN}/photos/{k}.webp",
             "primaryImageOfPage": {"@type": "ImageObject", "contentUrl": f"{DOMAIN}/photos/{k}.webp", "creator": {"@type": "Person", "name": a},

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Impressum, Datenschutz, Bildnachweis und „Über den Waldtierkompass“."""
 from data import SPECIES, PAIRS
-from ..config import SITE, DOMAIN, SISTER_URL
+from ..config import SITE, DOMAIN, SISTER_URL, AUTHOR
 from ..helpers import CREDITS, write, name_of, key_of_photo
 from ..layout import page
 from ..media import credit_row
@@ -75,7 +75,7 @@ def build():
     write("bildnachweis/index.html", page("bildnachweis/index.html", "Bildnachweis und Lizenzen", "Bildnachweis und Lizenzen des Waldtierkompass.", bildnachweis(),
                                           crumbs=[("Bildnachweis", "")]))
     ld = {"@context": "https://schema.org", "@type": "AboutPage", "name": f"Über den {SITE}", "url": f"{DOMAIN}/ueber/", "inLanguage": "de-DE",
-          "mainEntity": {"@type": "Person", "name": "Nico Schober", "address": {"@type": "PostalAddress", "addressLocality": "Bremen", "addressCountry": "DE"}},
+          "mainEntity": {**AUTHOR, "address": {"@type": "PostalAddress", "addressLocality": "Bremen", "addressCountry": "DE"}},
           "about": {"@type": "WebSite", "name": SITE, "url": DOMAIN + "/"}}
     write("ueber/index.html", page("ueber/index.html", "Über den Waldtierkompass: Macher, Quellen, Finanzierung",
                                    "Wer den Waldtierkompass macht, woher Fotos, Steckbriefe und Trittsiegel stammen, wie die Seite sich finanziert und wie du Fehler meldest.",
