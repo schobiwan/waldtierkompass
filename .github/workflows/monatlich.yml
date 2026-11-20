@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - run: npm ci
+      - run: npm ci && pip install pillow==12.3.0
       - name: Bauen
         env:
           TZ: Europe/Berlin
