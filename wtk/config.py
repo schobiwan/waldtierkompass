@@ -44,7 +44,7 @@ except Exception:
 # Gemeinsame Kennung für Nico Schober auf allen Kompassseiten (Vogel-, Wald-, Meeres-, Gartentierkompass).
 # Muss nicht erreichbar sein; so erkennt Google, dass dieselbe Person hinter allen Seiten steht.
 PERSON_ID = "https://nicoschober.com/#person"
-AUTHOR = {"@type": "Person", "@id": PERSON_ID, "name": "Nico Schober", "url": DOMAIN + "/ueber/"}
+AUTHOR = {"@type": "Person", "@id": PERSON_ID, "name": "Nico Schober", "url": "https://nicoschober.com/"}
 
 # Schwesterseiten (Fußzeile, Startseite, Über-Seite, llms.txt). Die Beschreibungen stehen jeweils dort, wo sie gebraucht werden.
 SISTER_URL = {
