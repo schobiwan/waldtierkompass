@@ -17,6 +17,8 @@ function showSpot(li) {
   $("spot-link").href = `arten/${k}/${IDX}`;
   im.src = `photos/${k}.webp`;
   im.srcset = `photos/${k}-400.webp 400w, photos/${k}.webp 720w`;
+  const so = $("spot-src");
+  if (so) so.srcset = `photos/${k}-400.avif 400w, photos/${k}.avif 720w`;
   $("spot-name").textContent = li.dataset.name;
   $("spot-hl").textContent = li.dataset.hl;
   const c = li.querySelector(".cred"), sc = $("spot-cred");

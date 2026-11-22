@@ -39,7 +39,7 @@ async function results() {
   }
   const note = (x) => x.r === 9 ? "ähnliche Schreibweise" : x.kind ? x.kind : x.r === 3 ? "ähnelt der gesuchten Art" : x.r >= 4 ? "passt zu den Merkmalen" : "";
   const pic = (x) => x.icon ? `<span class="sico">${x.icon}</span>`
-    : `<img src="${ROOT}photos/${x.key}-400.webp" alt="" width="48" height="38" loading="lazy">`;
+    : `<picture><source type="image/avif" srcset="${ROOT}photos/${x.key}-400.avif"><img src="${ROOT}photos/${x.key}-400.webp" alt="" width="48" height="38" loading="lazy"></picture>`;
   if (!hits.length) {
     list.innerHTML = `<li class="snone">Nichts gefunden.${sister ? " " + sisterHint(sister) : ""}</li>`;
   } else {

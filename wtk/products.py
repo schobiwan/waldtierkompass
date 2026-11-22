@@ -108,8 +108,10 @@ def product(R, key, compact=False, sizes="(max-width: 560px) 46vw, 280px"):
     why = f'<p class="pwhy">{esc(p["why"])}</p>' if not compact else ""
     meta = f'<span>{p["cat"]}{" · Unser Tipp" if (p["tip"] and compact) else ""}</span>'
     if has_photo:
-        pic = (f'<img src="{R}photos/p-{key}-400.webp" srcset="{R}photos/p-{key}-400.webp 400w, {R}photos/p-{key}.webp 720w" '
-               f'sizes="{"88px" if compact else sizes}" alt="" width="400" height="300" loading="lazy" decoding="async">')
+        sz = "88px" if compact else sizes
+        pic = (f'<picture><source type="image/avif" srcset="{R}photos/p-{key}-400.avif 400w, {R}photos/p-{key}.avif 720w" sizes="{sz}">'
+               f'<img src="{R}photos/p-{key}-400.webp" srcset="{R}photos/p-{key}-400.webp 400w, {R}photos/p-{key}.webp 720w" '
+               f'sizes="{sz}" alt="" width="400" height="300" loading="lazy" decoding="async"></picture>')
     else:
         pic = f'<span class="picon"><svg viewBox="0 0 24 24" aria-hidden="true">{PICON[p["icon"]]}</svg></span>'
     under = pcred(R, key, "pcred") if (has_photo and not compact) else ""

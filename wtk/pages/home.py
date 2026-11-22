@@ -34,7 +34,8 @@ def now_card(x, i, spot):
     hidden = "" if (NOWM in x["p"] and x is not spot) else " hidden"
     return (f'<li data-peak="{month_list(x["h"])}" data-present="{month_list(x["p"])}" data-k="{x["k"]}" data-name="{esc(x["n"])}" '
             f'data-hl="{esc(first_sentence(x["hl"]))}"{hidden}>'
-            f'<a href="arten/{x["k"]}/index.html"><img src="photos/{x["k"]}-400.webp" alt="" width="400" height="300" loading="{"eager" if 0 < i < 4 else "lazy"}" decoding="async">'
+            f'<a href="arten/{x["k"]}/index.html"><picture><source type="image/avif" srcset="photos/{x["k"]}-400.avif">'
+            f'<img src="photos/{x["k"]}-400.webp" alt="" width="400" height="300" loading="{"eager" if 0 < i < 4 else "lazy"}" decoding="async"></picture>'
             f'<span class="nc-ov"><b>{esc(x["n"])}</b><i>Hauptzeit</i></span></a>{cred(x["k"])}</li>')
 
 
@@ -59,8 +60,9 @@ def hero(now_name, spot):
             '<button class="hsearch-btn" type="submit">Suchen</button> </form> '
             f'<div class="hchips" role="group" aria-label="Nach Tiergruppe zeigen">{gchips}</div> '
             f'<div class="h5-month"><h2 class="h5-mh">Im Wald im {now_name}</h2>{events}</div> </div>\n'
-            f'<figure class="spot" id="spot"> <a href="arten/{k}/index.html" id="spot-link"><img id="spot-img" src="photos/{k}.webp" '
-            f'srcset="photos/{k}-400.webp 400w, photos/{k}.webp 720w" sizes="(max-width: 900px) 92vw, 600px" alt="" width="720" height="540" fetchpriority="high"> '
+            f'<figure class="spot" id="spot"> <a href="arten/{k}/index.html" id="spot-link"><picture><source id="spot-src" type="image/avif" srcset="photos/{k}-400.avif 400w, photos/{k}.avif 720w" sizes="(max-width: 900px) 92vw, 600px">'
+            f'<img id="spot-img" src="photos/{k}.webp" '
+            f'srcset="photos/{k}-400.webp 400w, photos/{k}.webp 720w" sizes="(max-width: 900px) 92vw, 600px" alt="" width="720" height="540" fetchpriority="high"></picture> '
             f'<figcaption><span class="spot-tag">Hauptzeit im {now_name}</span><b id="spot-name">{esc(spot["n"])}</b><span id="spot-hl">{esc(first_sentence(spot["hl"]))}</span></figcaption></a> '
             f'{cred(k, cls="spot-cred", id_="spot-cred")} </figure> </div> </header>')
 

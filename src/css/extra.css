@@ -1,3 +1,5 @@
+/* <picture> (AVIF mit WebP-Rückfall) verhält sich wie das Bild darin */
+picture{display:contents}
 
 /* ===== Waldtierkompass: Ergänzungen zum Vogelkompass-Grundgerüst ===== */
 

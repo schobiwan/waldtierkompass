@@ -22,7 +22,7 @@ Statische Website zum Bestimmen von Waldtieren in Deutschland. Schwesterseite zu
 | `src/css/` | Stylesheet (`base.css` = Grundgerüst, `extra.css` = Ergänzungen) |
 | `src/js/` | Skripte für Suche, Filter, Navigation und Monatsangaben (`text.js` und `search.js` ohne Seitenzugriff, in Node testbar) |
 | `tests/` | Tests (siehe unten) |
-| `photos/` | Tierfotos als WebP (720 px und 400 px breit) |
+| `photos/` | Tierfotos als WebP und AVIF (720 px und 400 px breit); AVIF nach neuen Fotos mit `node tools/make_avif.mjs` erzeugen |
 | `photos_src/` | Ausgangsbild für das Vorschaubild in sozialen Netzwerken |
 | `fonts/` | Fraunces und Figtree, lokal eingebunden |
 | `dist/` | **Fertige Website** – diesen Ordner veröffentlichen |

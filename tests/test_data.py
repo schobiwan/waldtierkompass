@@ -105,11 +105,11 @@ class PhotosAndCredits(unittest.TestCase):
 
     def test_photo_files_exist(self):
         for k in self.needed_photos():
-            for suffix in (".webp", "-400.webp"):
+            for suffix in (".webp", "-400.webp", ".avif", "-400.avif"):
                 with self.subTest(k + suffix):
                     self.assertTrue(os.path.exists(os.path.join(HERE, "photos", k + suffix)))
         for k in PHOTO:
-            for suffix in (".webp", "-400.webp"):
+            for suffix in (".webp", "-400.webp", ".avif", "-400.avif"):
                 with self.subTest("p-" + k + suffix):
                     self.assertTrue(os.path.exists(os.path.join(HERE, "photos", f"p-{k}{suffix}")))
 

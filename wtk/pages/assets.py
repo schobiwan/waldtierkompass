@@ -79,7 +79,7 @@ def build():
     write("site.webmanifest", manifest())
     shutil.copytree(os.path.join(HERE, "fonts"), os.path.join(OUT, "fonts"), dirs_exist_ok=True)
     photos = os.path.join(OUT, "photos")
-    copy_files(os.path.join(HERE, "photos"), photos, ".webp")
+    copy_files(os.path.join(HERE, "photos"), photos, (".webp", ".avif"))
     og_crop(os.path.join(HERE, "photos_src", "wk-reh.jpg"), os.path.join(photos, "og.jpg"), quality=80)
     for sp in SPECIES:
         og_crop(os.path.join(HERE, "photos", sp["k"] + ".webp"), os.path.join(photos, f"og-{sp['k']}.jpg"), quality=78, top_third=True)
