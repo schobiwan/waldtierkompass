@@ -12,13 +12,14 @@ def new_tab(url, text, note="öffnet in neuem Fenster", rel="noopener"):
     return f'<a href="{url}" target="_blank" rel="{rel}">{text}<span class="sr-only"> ({note})</span></a>'
 
 
-def img(R, key, alt="", eager=False, cls="", sizes=SIZES_CARD):
+def img(R, key, alt="", eager=False, cls="", sizes=SIZES_CARD, high=False):
     lz = "eager" if eager else "lazy"
+    fp = ' fetchpriority="high"' if high else ""
     c = f' class="{cls}"' if cls else ""
     # AVIF für Browser, die es können (rund ein Viertel kleiner), sonst WebP; <picture> ist per CSS display:contents
     return (f'<picture><source type="image/avif" srcset="{R}photos/{key}-400.avif 400w, {R}photos/{key}.avif 720w" sizes="{sizes}">'
             f'<img{c} src="{R}photos/{key}.webp" srcset="{R}photos/{key}-400.webp 400w, {R}photos/{key}.webp 720w" sizes="{sizes}" '
-            f'alt="{esc(alt)}" width="720" height="576" loading="{lz}" decoding="async"></picture>')
+            f'alt="{esc(alt)}" width="720" height="576" loading="{lz}"{fp} decoding="async"></picture>')
 
 
 def lic_url(lic):

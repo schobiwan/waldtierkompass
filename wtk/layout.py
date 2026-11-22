@@ -123,6 +123,8 @@ def breadcrumbs(R, crumbs, canon):
 
 
 # ------------------------------------------------------------------ Kopf
+# Speculation Rules: Seiten der eigenen Website werden beim Hovern/Antippen vorab geladen (nur prefetch, keine Cookies, keine Fremdlinks)
+SPEC_RULES = '<script type="speculationrules">{"prefetch":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>'
 FONTS = ("fraunces-latin-600-normal", "figtree-latin-400-normal", "figtree-latin-700-normal")
 OG_DEFAULT = "og.jpg"
 
@@ -132,7 +134,7 @@ def head(R, title, desc, canon, og, og_alt, og_type, is_home, noindex):
     fonts = "".join(f'<link rel="preload" href="{R}fonts/{f}.woff2" as="font" type="font/woff2" crossorigin>' for f in FONTS)
     return ('<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
             f'<title>{esc(title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{canon}">'
-            '<meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1f1612" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark">'
+            '<meta name="theme-color" content="#dfe6cc" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0f2418" media="(prefers-color-scheme: dark)"><meta name="color-scheme" content="light dark">'
             + ('<meta name="robots" content="noindex">' if noindex else "") +
             f'<link rel="icon" href="{R}favicon.ico" sizes="48x48"><link rel="icon" href="{R}favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="{R}apple-touch-icon.png"><link rel="manifest" href="{R}site.webmanifest">'
             + fonts +
@@ -141,7 +143,7 @@ def head(R, title, desc, canon, og, og_alt, og_type, is_home, noindex):
             f'<meta property="og:image" content="{DOMAIN}/photos/{og}"><meta property="og:image:width" content="{og_w}"><meta property="og:image:height" content="{og_h}">'
             f'<meta property="og:image:alt" content="{esc(og_alt or "Reh am Waldrand")}"><meta name="twitter:card" content="summary_large_image">'
             + (LDJSON + AWIN_META if is_home else "") +
-            f'<link rel="stylesheet" href="{R}assets/site.css"></head>')
+            f'<link rel="stylesheet" href="{R}assets/site.css">' + SPEC_RULES + '</head>')
 
 
 def canonical(path):

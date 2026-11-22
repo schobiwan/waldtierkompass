@@ -99,7 +99,7 @@ def build(s):
     life = "".join(f'<details class="fold" open data-fold><summary><h3>{esc(a)}</h3></summary><p>{esc(b)}</p></details>' for a, b in s["life"])
     wiki = "https://de.wikipedia.org/w/index.php?search=" + s["lat"].replace(" ", "+")
     gear = "".join(product(R, g, True) for g in gear_for(s))
-    top = (f'<div class="sp-top"> <figure class="sp-photo"> {img(R, k, s["n"], eager=True, sizes="(max-width: 760px) 92vw, 560px")} <figcaption>{credit(k)}</figcaption> </figure> '
+    top = (f'<div class="sp-top"> <figure class="sp-photo"> {img(R, k, s["n"], eager=True, high=True, sizes="(max-width: 760px) 92vw, 560px")} <figcaption>{credit(k)}</figcaption> </figure> '
            f'<div class="sp-intro"> <h1>{esc(s["n"])}</h1> <p class="latin" lang="la">{esc(s["lat"])}</p> '
            f'<p class="row"><span class="tag status">{esc(s["grp"])}</span><span class="tag">{esc(s["sz"])}</span>{act_tags}</p> '
            f'<p class="habs">{habs}</p> <p class="text">{esc(s["short"])} {esc(s["hl"])}</p> {trackbox(s)} </div> </div>')
