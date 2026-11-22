@@ -30,6 +30,7 @@ Gilt gleich für Vogel-, Waldtier-, Meeres- und Gartentierkompass. Dieser Abschn
 5. Prüfen, dass die Änderung live ist (`https://waldtierkompass.de/version.txt`)
 
 ## Nützliches
+- Automatische Prüfung: `.github/workflows/pruefung.yml` läuft bei jedem Push auf `main` (und bei Pull Requests) mit `npm test` und `npm run perf`. Ein roter Lauf heißt: Barrierefreiheit oder PageSpeed-Budget verletzt – vor weiteren Änderungen beheben. Die Veröffentlichung bei statichost hält er nicht auf. Perf-Ausreißer auf den GitHub-Rechnern per „Re-run“ gegenprüfen.
 - Aufbau, Ordner und Tests: siehe `README.md`.
 - Bei inhaltlichen Änderungen `CONTENT_UPDATED` in `wtk/config.py` anpassen (Autorenzeile, Sitemap).
 - IndexNow meldet geänderte Seiten nach jedem Push automatisch (`.github/workflows/indexnow.yml`); den Schlüssel `INDEXNOW_KEY` nie ändern.
