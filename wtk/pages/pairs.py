@@ -51,7 +51,7 @@ def build(p):
     R = "../../"
     a, b = p["a"], p["b"]
     na, nb = esc(name_of(a)), esc(name_of(b))
-    figs = "".join(f'<figure>{img(R, photo_key(k), name_of(k), eager=True, high=(k == a), sizes="(max-width: 760px) 92vw, 560px")}'
+    figs = "".join(f'<figure>{img(R, photo_key(k), name_of(k), eager=(k == a), high=(k == a), sizes="(max-width: 760px) 92vw, 560px")}'
                    f'<figcaption>{esc(name_of(k))} <i lang="la">{esc(lat_of(k))}</i><small>{credit(photo_key(k))}</small></figcaption></figure>' for k in (a, b))
     rows = "".join(f'<tr><th scope="row">{esc(x)}</th><td data-label="{na}">{esc(y)}</td><td data-label="{nb}">{esc(z)}</td></tr>' for x, y, z in p["rows"])
     btns = " ".join(f'<a class="btn{"" if i == 0 else " ghost"}" href="{R}arten/{k}/index.html">{esc(name_of(k))} im Porträt</a>'

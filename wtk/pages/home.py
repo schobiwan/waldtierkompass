@@ -35,7 +35,7 @@ def now_card(x, i, spot):
     return (f'<li data-peak="{month_list(x["h"])}" data-present="{month_list(x["p"])}" data-k="{x["k"]}" data-name="{esc(x["n"])}" '
             f'data-hl="{esc(first_sentence(x["hl"]))}"{hidden}>'
             f'<a href="arten/{x["k"]}/index.html"><picture><source type="image/avif" srcset="photos/{x["k"]}-400.avif">'
-            f'<img src="photos/{x["k"]}-400.webp" alt="" width="400" height="300" loading="{"eager" if 0 < i < 4 else "lazy"}" decoding="async"></picture>'
+            f'<img src="photos/{x["k"]}-400.webp" alt="" width="400" height="300" loading="lazy" decoding="async"></picture>'
             f'<span class="nc-ov"><b>{esc(x["n"])}</b><i>Hauptzeit</i></span></a>{cred(x["k"])}</li>')
 
 
