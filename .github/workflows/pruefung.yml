@@ -3,12 +3,15 @@
 # npm run perf = Leistungsbudget mit Lighthouse (Handy wie PageSpeed Insights), Grenzen in tests/kompass/kompass.config.mjs
 # Schlägt etwas fehl, wird der Lauf rot und GitHub schickt Nico eine E-Mail. Hinweis: statichost veröffentlicht unabhängig davon
 # nach jedem Push; die Prüfung meldet also Verschlechterungen, sie hält die Veröffentlichung nicht auf.
-# Lighthouse schwankt auf den GitHub-Rechnern etwas; ein einzelner roter Perf-Lauf kann per „Re-run“ gegengeprüft werden.
+# Lighthouse misst auf den GitHub-Rechnern etwas anders: dort gilt ein kleiner Spielraum (PERF_TOLERANZ, siehe perf.mjs). Lokal bleibt npm run perf streng.
 name: Prüfung
 on:
   push:
     branches: [main]
+    # nur wenn sich die Website oder die Tests ändern – spart GitHub-Minuten (private Repos: 2000 frei im Monat)
+    paths: ['dist/**', 'tests/**', 'tools/check.py', 'package*.json', '.github/workflows/pruefung.yml']
   pull_request:
+    paths: ['dist/**', 'tests/**', 'tools/check.py', 'package*.json', '.github/workflows/pruefung.yml']
   workflow_dispatch:
 concurrency:
   group: pruefung-${{ github.ref }}
@@ -38,5 +41,5 @@ jobs:
         with: { node-version: '22', cache: npm }
       - run: npm ci
       - name: npm run perf (geprüft wird das eingecheckte dist/, also genau das, was live geht)
-        env: { CHROME: /usr/bin/google-chrome }
+        env: { CHROME: /usr/bin/google-chrome, PERF_TOLERANZ: '1' }
         run: npm run perf

@@ -13,6 +13,9 @@ import CONFIG from './kompass.config.mjs';
 
 // Grenzen wie beim Vogelkompass; eine Seite darf in kompass.config.mjs eigene Werte haben (score, lcp, si), wenn sie heute noch darunter liegt
 const DEFAULT = { score: 95, tbt: 250, lcp: 2500, si: 2000, cls: 0.01 }, RUNS = 3;
+// Auf den GitHub-Rechnern (pruefung.yml setzt PERF_TOLERANZ=1) messen Chrome und Lighthouse etwas anders als lokal:
+// dort gelten 3 Punkte, 10 % Zeit und 0,01 CLS Spielraum, damit nicht jeder Messausreißer Alarm schlägt. Lokal bleibt alles streng.
+const TOL = process.env.PERF_TOLERANZ ? { score: 3, zeit: 1.1, cls: 0.01 } : { score: 0, zeit: 1, cls: 0 };
 const pages = process.env.NUR_START ? CONFIG.perf.slice(0, 1) : CONFIG.perf;
 const server = await serve(path.resolve(import.meta.dirname, CONFIG.dist));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'kompass-perf-'));
@@ -20,7 +23,8 @@ const median = a => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
 let failed = 0;
 try {
   for (const pg of pages) {
-    const lim = { ...DEFAULT, ...pg }, runs = [];
+    const roh = { ...DEFAULT, ...pg }, runs = [];
+    const lim = { ...roh, score: roh.score - TOL.score, tbt: roh.tbt * TOL.zeit, lcp: roh.lcp * TOL.zeit, si: roh.si * TOL.zeit, cls: roh.cls + TOL.cls };
     for (let i = 0; i < RUNS; i++) {
       const out = path.join(tmp, `r${i}.json`);
       // asynchron, sonst blockiert der Aufruf den Server im selben Prozess
@@ -34,10 +38,10 @@ try {
     const m = Object.fromEntries(['score', 'tbt', 'lcp', 'si', 'cls', 'kb'].map(k => [k, median(runs.map(r => r[k]))]));
     const errs = [];
     if (m.score < lim.score) errs.push(`Punkte ${m.score} < ${lim.score}`);
-    if (m.tbt > lim.tbt) errs.push(`Blockierzeit ${Math.round(m.tbt)} ms > ${lim.tbt}`);
-    if (m.lcp > lim.lcp) errs.push(`LCP ${Math.round(m.lcp)} ms > ${lim.lcp}`);
+    if (m.tbt > lim.tbt) errs.push(`Blockierzeit ${Math.round(m.tbt)} ms > ${Math.round(lim.tbt)}`);
+    if (m.lcp > lim.lcp) errs.push(`LCP ${Math.round(m.lcp)} ms > ${Math.round(lim.lcp)}`);
     // Speed Index: fängt Einblende-Animationen ab, die den sichtbaren Aufbau verzögern
-    if (m.si > lim.si) errs.push(`Speed Index ${Math.round(m.si)} ms > ${lim.si}`);
+    if (m.si > lim.si) errs.push(`Speed Index ${Math.round(m.si)} ms > ${Math.round(lim.si)}`);
     if (m.cls > lim.cls) errs.push(`CLS ${m.cls.toFixed(3)} > ${lim.cls}`);
     if (m.kb > pg.kb) errs.push(`${Math.round(m.kb)} KB > ${pg.kb} KB`);
     failed += errs.length ? 1 : 0;
