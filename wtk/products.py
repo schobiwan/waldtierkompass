@@ -104,9 +104,9 @@ def product(R, key, compact=False, sizes="(max-width: 560px) 46vw, 280px"):
     """Produktkarte; compact = schmale Fassung für die Seitenleiste der Artseiten."""
     p = PRODUCTS[key]
     has_photo = key in PHOTO
-    tip = '<span class="ptip">Unser Tipp</span>' if p["tip"] and not compact else ""
+    tip = '<span class="ptip">Mein Tipp</span>' if p["tip"] and not compact else ""
     why = f'<p class="pwhy">{esc(p["why"])}</p>' if not compact else ""
-    meta = f'<span>{p["cat"]}{" · Unser Tipp" if (p["tip"] and compact) else ""}</span>'
+    meta = f'<span>{p["cat"]}{" · Mein Tipp" if (p["tip"] and compact) else ""}</span>'
     if has_photo:
         sz = "88px" if compact else sizes
         pic = (f'<picture><source type="image/avif" srcset="{R}photos/p-{key}-400.avif 400w, {R}photos/p-{key}.avif 720w" sizes="{sz}">'
