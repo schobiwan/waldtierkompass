@@ -400,3 +400,9 @@ footer{margin-top:88px}
 @media(max-width:560px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.bird .txt{padding:12px 13px 14px}section.block{padding-block:48px 8px}:root{--sep:36px}}
 /* <source> in <picture> (display:contents) darf keine Rasterzelle belegen – sonst rutscht z. B. „Nicht verwechseln“ auseinander */
 source{display:none}
+
+/* ---------- Heller Kopf (26.11.2026): nur die Navigationsleiste bleibt tiefgrün ----------
+   Startbereich und Monatsband in hellem Salbei mit dunkelgrüner Schrift; Orange dunkler, damit Kontraste AA halten. */
+.hero5,.nowband{--chrome:#e7ede0;--chrome-ink:#14301f;--chrome-line:#c9d4bf;--hero-accent:#b8430e;--hero-accent-ink:#fff;--logo-on-dark:#b8430e}
+.hero5{background:radial-gradient(60% 90% at 85% 20%,#f4f7ef 0,transparent 70%),var(--chrome)}
+.hero5::before,.nowband::before{opacity:.05}
