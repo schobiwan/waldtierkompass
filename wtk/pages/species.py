@@ -2,7 +2,7 @@
 """Artseiten (/arten/<art>/) und die Übersicht aller Arten (/arten/)."""
 from data import SPECIES, GROUPS, ACTS
 from ..config import SITE, DOMAIN, CONTENT_ISO, MONTHS, MSLUG, AUTHOR
-from ..helpers import (CREDITS, PAIRBY, esc, write, slug, in_group, name_of, gender_of, photo_key, other_of, pair_title,
+from ..helpers import (BY, CREDITS, PAIRBY, esc, write, slug, in_group, name_of, gender_of, photo_key, other_of, pair_title,
                        ein, mit_art, pronoun, join_and, mlist, mrange)
 from ..components import card, actlegend, months_bar, trackbox, track_text
 from ..icons import act_svg
@@ -84,8 +84,9 @@ def alike_box(s, R):
         return ""
     p = PAIRBY[s["alike"]]
     other = other_of(p, s["k"])
-    return (f'<section class="alike" aria-labelledby="h-alike"> {img(R, photo_key(other), name_of(other), sizes="(max-width: 900px) 96px, 140px")} <div> '
-            f'<h2 id="h-alike">Nicht verwechseln mit {ein(gender_of(other), "dat")} {esc(name_of(other))}</h2> '
+    href = f'{R}arten/{other}/index.html' if other in BY else f'{R}unterscheiden/{p["k"]}/index.html'
+    return (f'<section class="alike" aria-labelledby="h-alike"> <a class="alike-img" href="{href}" tabindex="-1" aria-hidden="true">{img(R, photo_key(other), "", sizes="(max-width: 900px) 96px, 140px")}</a> <div> '
+            f'<h2 id="h-alike">Nicht verwechseln mit {ein(gender_of(other), "dat")} <a href="{href}">{esc(name_of(other))}</a></h2> '
             f'<p>{esc(p["short"])}</p> <p><a href="{R}unterscheiden/{p["k"]}/index.html">{esc(pair_title(p))}? Alle Unterschiede</a></p> </div> </section>')
 
 

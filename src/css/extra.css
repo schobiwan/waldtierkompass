@@ -407,3 +407,7 @@ source{display:none}
 .hero5,.nowband{--chrome:#e7ede0;--chrome-ink:#14301f;--chrome-line:#c9d4bf;--hero-accent:#b8430e;--hero-accent-ink:#fff;--logo-on-dark:#b8430e}
 .hero5{background:radial-gradient(60% 90% at 85% 20%,#f4f7ef 0,transparent 70%),var(--chrome)}
 .hero5::before,.nowband::before{opacity:.05}
+
+/* „Nicht verwechseln“-Kasten: Bild und Name sind klickbar */
+.alike .alike-img{display:block;border-radius:6px;overflow:hidden}
+.alike h2 a{font-weight:inherit}
