@@ -87,7 +87,7 @@ def alike_box(s, R):
     href = f'{R}arten/{other}/index.html' if other in BY else f'{R}unterscheiden/{p["k"]}/index.html'
     return (f'<section class="alike" aria-labelledby="h-alike"> <a class="alike-img" href="{href}" tabindex="-1" aria-hidden="true">{img(R, photo_key(other), "", sizes="(max-width: 900px) 96px, 140px")}</a> <div> '
             f'<h2 id="h-alike">Nicht verwechseln mit {ein(gender_of(other), "dat")} <a href="{href}">{esc(name_of(other))}</a></h2> '
-            f'<p>{esc(p["short"])}</p> <p><a href="{R}unterscheiden/{p["k"]}/index.html">{esc(pair_title(p))}? Alle Unterschiede</a></p> </div> </section>')
+            f'<p>{esc(p["short"])}</p> <p><a class="alike-main" href="{R}unterscheiden/{p["k"]}/index.html">{esc(pair_title(p))}? Alle Unterschiede</a></p> </div> </section>')
 
 
 def build(s):

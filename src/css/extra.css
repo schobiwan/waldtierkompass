@@ -411,3 +411,9 @@ source{display:none}
 /* „Nicht verwechseln“-Kasten: Bild und Name sind klickbar */
 .alike .alike-img{display:block;border-radius:6px;overflow:hidden}
 .alike h2 a{font-weight:inherit}
+
+/* Ganzer Block „Nicht verwechseln“ führt zum Vergleich: der Vergleichslink füllt den Block, Name und Textlinks liegen darüber */
+.alike{position:relative}
+.alike .alike-main::after{content:"";position:absolute;inset:0}
+.alike a:not(.alike-main):not(.alike-img){position:relative;z-index:1}
+.alike:hover .alike-main{text-decoration-thickness:2px}
