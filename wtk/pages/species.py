@@ -8,7 +8,7 @@ from ..components import card, actlegend, months_bar, trackbox, track_text
 from ..icons import act_svg
 from ..layout import page
 from ..media import img, credit, lic_url, new_tab
-from ..products import product, gear_for, ADNOTE
+from ..products import product, gear_for, gearband, ADNOTE
 
 
 def build_index():
@@ -19,7 +19,8 @@ def build_index():
         sec.append(f'<h2 class="h3 grp-h" id="g-{slug(g)}">{g}</h2><ul class="grid">{"".join(card(R, s, i, eager=n + i < 4) for i, s in enumerate(ss))}</ul>')
         n += len(ss)
     body = (f'<section class="block page"> <div class="wrap"> <h1>Alle Waldtiere</h1> {actlegend()} <p class="intro">{len(SPECIES)} Arten, nach Gruppen geordnet. '
-            f'Zum Suchen und Filtern geht es zur <a href="../index.html#arten">Startseite</a>.</p> {"".join(sec)} </div> </section>')
+            f'Zum Suchen und Filtern geht es zur <a href="../index.html#arten">Startseite</a>.</p> {"".join(sec)} </div> </section>'
+            f'{gearband(R, "Zum Beobachten und Bestimmen", ("fernglas", "buch", "wildkamera", "lampe"))}')
     write("arten/index.html", page("arten/index.html", "Alle Waldtiere", "Alle Waldtiere im Überblick: Huftiere, Raubtiere, Kleinsäuger, Amphibien, Reptilien und Insekten.",
                                    body, active="index", crumbs=[("Arten", "")]))
 

@@ -41,7 +41,8 @@ def build_index():
             f'<section class="block" aria-labelledby="h-ev"> <div class="wrap"> <h2 id="h-ev">Das Wichtigste im Jahreslauf</h2> <ul class="yearline">{events}</ul> </div> </section>\n'
             f'<section class="block" aria-labelledby="h-cal"> <div class="wrap"> <h2 id="h-cal">Wann siehst du wen?</h2> <p class="intro">Monate, in denen die Art aktiv ist, '
             f'und wann sie besonders gut zu beobachten ist.</p> <p class="mlegend callegend" aria-hidden="true"><span class="lh">Hauptzeit</span><span class="lp">aktiv</span>'
-            f'<span class="ln">aktueller Monat</span></p> <p class="swipe">Seitlich wischen, um alle Monate zu sehen.</p> {cal_table(R)} </div> </section>')
+            f'<span class="ln">aktueller Monat</span></p> <p class="swipe">Seitlich wischen, um alle Monate zu sehen.</p> {cal_table(R)} </div> </section>'
+            f'{gearband(R, "Für jede Jahreszeit im Wald", ("fernglas", "wildkamera", "lampe", "igelhaus"))}')
     write("waldjahr/index.html", page("waldjahr/index.html", "Das Waldjahr",
                                       "Waldkalender: welche Waldtiere wann aktiv sind, mit Brunft, Krötenwanderung und Winterschlaf Monat für Monat.",
                                       body, active="waldjahr", crumbs=[("Waldjahr", "")]))

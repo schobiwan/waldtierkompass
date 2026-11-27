@@ -83,6 +83,14 @@ def gear_for(s):
     return GEAR_FOR.get(s["k"]) or GEAR_GRP[s["grp"]]
 
 
+def gear_for_pair(grp):
+    """Empfehlungen auf den Vergleichsseiten: Ausrüstung der Tiergruppe, dazu ein Bestimmungsbuch."""
+    ks = list(GEAR_GRP.get(grp, ("fernglas", "buch", "wildkamera")))
+    if "buch" not in ks:
+        ks = ks[:2] + ["buch"]
+    return tuple(ks[:3])
+
+
 def gear_for_month(m):
     """Empfehlungen je Jahreszeit auf den Monatsseiten."""
     if m in (10, 11, 12, 1, 2):

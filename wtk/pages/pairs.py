@@ -8,12 +8,14 @@ from ..helpers import BY, esc, write, name_of, lat_of, photo_key, art_of, pair_t
 from ..components import pair_card
 from ..layout import page
 from ..media import img, credit, new_tab
+from ..products import gearband, gear_for_pair
 
 
 def build_index():
     R = "../"
     body = (f'<section class="block page"> <div class="wrap"> <h1>Doppelgänger unterscheiden</h1> <p class="intro">Viele Waldtiere sehen sich auf den ersten Blick ähnlich '
-            f'oder hinterlassen fast gleiche Spuren. Diese Merkmale helfen beim Unterscheiden.</p> <ul class="pairs">{"".join(pair_card(R, p) for p in PAIRS)}</ul> </div> </section>')
+            f'oder hinterlassen fast gleiche Spuren. Diese Merkmale helfen beim Unterscheiden.</p> <ul class="pairs">{"".join(pair_card(R, p) for p in PAIRS)}</ul> </div> </section>'
+            f'{gearband(R, "Zum Unterscheiden draußen", ("fernglas", "buch", "gips", "lupe"))}')
     write("unterscheiden/index.html", page("unterscheiden/index.html", "Doppelgänger unterscheiden",
                                            "Reh oder Rothirsch, Baummarder oder Steinmarder, Ringelnatter oder Kreuzotter: Waldtiere sicher unterscheiden.",
                                            body, active="unterscheiden", crumbs=[("Doppelgänger", "")]))
@@ -63,7 +65,8 @@ def build(p):
             f'<thead><tr><td></td><th scope="col">{na}</th><th scope="col">{nb}</th></tr></thead> <tbody>{rows}</tbody> </table></div> '
             f'<p class="merksatz"><b>Merkhilfe:</b> {esc(p["tip"])}</p> <p class="actions"> {btns} </p> </section> '
             f'{deep}<section class="related" aria-labelledby="h-more"> <h2 id="h-more">Weitere Doppelgänger</h2> '
-            f'<ul class="pairs three">{"".join(pair_card(R, q, "h3") for q in related(p))}</ul> </section> </article>')
+            f'<ul class="pairs three">{"".join(pair_card(R, q, "h3") for q in related(p))}</ul> </section> </article>'
+            f'{gearband(R, "Zum Unterscheiden draußen", gear_for_pair(art_of(a)[1]))}')
     title = f"{pair_title(p)}?"
     write(f"unterscheiden/{p['k']}/index.html", page(f"unterscheiden/{p['k']}/index.html", d["title"] if d else title, d["desc"] if d else p["short"], body,
                                                      active="unterscheiden", ld=ld, crumbs=[("Doppelgänger", "unterscheiden/index.html"), (pair_title(p), "")]))
