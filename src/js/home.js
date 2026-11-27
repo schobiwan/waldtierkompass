@@ -90,13 +90,21 @@ function render() {
   if (order !== lastOrder) {
     animals.forEach((a) => { a.li.hidden = true; });
     sep.remove();
+    // Alles in einem Zug einsetzen (ein Layout statt vieler)
+    const frag = document.createDocumentFragment();
     list.forEach((a, i) => {
       a.li.hidden = false;
       a.li.style.setProperty("--i", String(Math.min(i, 14)));
-      if (state.sort === "now" && i > 0 && nowRank(a) === 2 && nowRank(list[i - 1]) < 2) grid.appendChild(sep);
-      grid.appendChild(a.li);
+      if (state.sort === "now" && i > 0 && nowRank(a) === 2 && nowRank(list[i - 1]) < 2) frag.appendChild(sep);
+      frag.appendChild(a.li);
     });
-    if (!reduced()) list.forEach((a) => { a.li.style.animation = "none"; void a.li.offsetWidth; a.li.style.animation = ""; });
+    grid.appendChild(frag);
+    // Einblenden neu starten: nur nach Filter oder Sortierung, nicht beim ersten Laden, und mit einem einzigen Layout für alle Karten
+    if (lastOrder && !reduced()) {
+      list.forEach((a) => { a.li.style.animation = "none"; });
+      void grid.offsetWidth;
+      list.forEach((a) => { a.li.style.animation = ""; });
+    }
   }
   lastOrder = order;
   $("empty").hidden = list.length > 0;
