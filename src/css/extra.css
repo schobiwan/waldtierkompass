@@ -417,3 +417,7 @@ source{display:none}
 .alike .alike-main::after{content:"";position:absolute;inset:0}
 .alike a:not(.alike-main):not(.alike-img){position:relative;z-index:1}
 .alike:hover .alike-main{text-decoration-thickness:2px}
+
+/* Vergleichskarten komplett klickbar: Klicks auf die Bildunterschrift gehen durch zum Kartenlink, die Credit-Links darin bleiben eigene Links */
+.pair figcaption{pointer-events:none}
+.pair figcaption a{pointer-events:auto;position:relative;z-index:2}
